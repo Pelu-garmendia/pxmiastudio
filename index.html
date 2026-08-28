@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soluciones Digitales — Sistemas para el comercio de barrio | Pxmiastudio</title>
+<meta name="description" content="Ventas, stock, turnos, fidelización y catálogo online, armados a medida para tu local de barrio. Un servicio de Pxmiastudio.">
+
+<link rel="icon" type="image/png" href="assets/favicon.png">
+
+<!-- Open Graph (WhatsApp, Facebook, Instagram) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Soluciones Digitales — Sistemas para el comercio de barrio">
+<meta property="og:description" content="Ventas, stock, turnos, fidelización y catálogo online, armados a medida para tu local. Un servicio de Pxmiastudio.">
+<meta property="og:image" content="assets/og-image.jpg">
+<meta property="og:locale" content="es_AR">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Soluciones Digitales — Sistemas para el comercio de barrio">
+<meta name="twitter:description" content="Ventas, stock, turnos, fidelización y catálogo online, armados a medida para tu local. Un servicio de Pxmiastudio.">
+<meta name="twitter:image" content="assets/og-image.jpg">
+
+<style>
+  :root{
+    --ink:#1c211d;
+    --paper:#faf6ec;
+    --paper-dim:#f0eadb;
+    --till-green:#2f4a3c;
+    --till-green-dark:#1a2b21;
+    --till-green-mid:#233c30;
+    --brass:#c99a3f;
+    --brass-light:#e4bd6c;
+    --terracotta:#b5563a;
+    --ok:#3f7d52;
+    --danger:#9c3229;
+    --gray-line:#d8d0bd;
+    --font-display:'Rockwell', 'Georgia', serif;
+    --font-body:'Helvetica Neue', Arial, sans-serif;
+    --font-mono:'Courier New', Courier, monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+  }
+  img{max-width:100%; display:block;}
+  section{padding:80px 24px;}
+  .container{max-width:1080px; margin:0 auto;}
+  h1,h2,h3{font-family:var(--font-display); margin:0;}
+  a{color:inherit;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:40;
+    background:var(--till-green-dark);
+    border-bottom:2px solid var(--brass);
+    padding:14px 24px;
+  }
+  .nav-inner{
+    max-width:1080px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .logo{
+    color:var(--paper);
+    font-family:var(--font-display);
+    font-size:18px;
+    letter-spacing:0.3px;
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .logo .dot{color:var(--brass);}
+  .logo .by-logo{
+    height:20px;
+    width:auto;
+    margin-left:4px;
+    border-radius:2px;
+    vertical-align:middle;
+  }
+  .nav-cta{
+    background:var(--brass);
+    color:#231a06;
+    font-weight:700;
+    font-size:13px;
+    padding:9px 18px;
+    border-radius:3px;
+    text-decoration:none;
+    letter-spacing:0.3px;
+    white-space:nowrap;
+  }
+  .nav-cta:hover{filter:brightness(1.08);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:var(--till-green-dark);
+    background-image:
+      radial-gradient(circle at 12% 15%, rgba(255,255,255,0.04), transparent 40%),
+      radial-gradient(circle at 88% 75%, rgba(255,255,255,0.04), transparent 45%);
+    padding:70px 24px 100px;
+  }
+  .hero-inner{
+    max-width:1080px; margin:0 auto;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:40px;
+    align-items:center;
+  }
+  @media (max-width:860px){ .hero-inner{grid-template-columns:1fr;} }
+
+  .eyebrow{
+    color:var(--brass-light);
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:3px;
+    font-weight:700;
+    margin-bottom:14px;
+  }
+  .hero h1{
+    color:var(--paper);
+    font-size:44px;
+    line-height:1.12;
+    letter-spacing:0.2px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--brass-light);
+  }
+  .hero p.lead{
+    color:#cfd9d1;
+    font-size:16.5px;
+    margin-top:18px;
+    max-width:480px;
+  }
+  .hero-ctas{
+    margin-top:30px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .btn-primary{
+    background:var(--brass);
+    color:#231a06;
+    font-weight:700;
+    font-size:14px;
+    padding:14px 24px;
+    border-radius:3px;
+    text-decoration:none;
+    letter-spacing:0.3px;
+  }
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-ghost{
+    border:1px solid #4a6656;
+    color:#cfd9d1;
+    font-size:14px;
+    padding:14px 22px;
+    border-radius:3px;
+    text-decoration:none;
+  }
+  .btn-ghost:hover{border-color:var(--brass-light); color:var(--brass-light);}
+
+  /* --- stack de tarjetas (elemento signature) --- */
+  .hero-stack{
+    position:relative;
+    height:340px;
+    perspective:900px;
+  }
+  .stack-card{
+    position:absolute;
+    background:var(--paper);
+    border-radius:8px;
+    box-shadow:0 16px 34px rgba(0,0,0,0.35);
+    font-family:var(--font-mono);
+    padding:16px 18px;
+    width:230px;
+    opacity:0;
+    animation:cardIn .6s ease forwards;
+    transition:transform .25s ease, box-shadow .25s ease;
+    will-change:transform;
+  }
+  .stack-card.c1{top:0; left:10px; --rot:-7deg; animation-delay:.1s;}
+  .stack-card.c2{top:60px; left:150px; --rot:5deg; animation-delay:.28s; z-index:2;}
+  .stack-card.c3{top:170px; left:40px; --rot:-3deg; animation-delay:.46s; z-index:3;}
+  .stack-card{transform:rotate(var(--rot));}
+  @keyframes cardIn{
+    from{opacity:0; transform:translateY(16px) rotate(var(--rot));}
+    to{opacity:1; transform:rotate(var(--rot));}
+  }
+  .stack-card .sc-label{
+    font-family:var(--font-body);
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:#8c8470;
+    margin-bottom:6px;
+  }
+  .sc-ticket .sc-row{display:flex; justify-content:space-between; font-size:12px; padding:3px 0; border-bottom:1px dashed var(--gray-line);}
+  .sc-ticket .sc-total{font-family:var(--font-display); color:var(--danger); font-size:16px; margin-top:6px; text-align:right;}
+  .sc-card{
+    background:linear-gradient(135deg,#8a6408,#d9ad3f);
+    color:#fdf8ea;
+    border-radius:6px;
+    padding:12px 14px;
+    width:100%;
+  }
+  .sc-card .tier{font-size:10px; text-transform:uppercase; letter-spacing:1.5px; opacity:0.9;}
+  .sc-card .pts{font-family:var(--font-display); font-size:22px; margin-top:4px;}
+  .sc-stock .sc-item{display:flex; justify-content:space-between; align-items:center; font-size:11.5px; padding:5px 0;}
+  .sc-tag{font-size:9.5px; padding:2px 8px; border-radius:10px; font-weight:700;}
+  .sc-tag.warn{background:#fbecd3; color:#b8781f;}
+  .sc-tag.ok{background:#e5f1e6; color:#3f7d52;}
+
+  /* ---------- SECCIONES GENERALES ---------- */
+  .section-head{
+    text-align:center;
+    max-width:640px;
+    margin:0 auto 46px;
+  }
+  .section-head .eyebrow{color:var(--terracotta);}
+  .section-head h2{font-size:30px; color:var(--ink);}
+  .section-head p{color:#5c5748; font-size:15px; margin-top:12px;}
+
+  /* ---------- PROBLEMA ---------- */
+  .problem-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+  }
+  @media (max-width:760px){ .problem-grid{grid-template-columns:1fr;} }
+  .problem-card{
+    background:var(--paper-dim);
+    border:1px solid var(--gray-line);
+    border-radius:8px;
+    padding:26px 22px;
+  }
+  .problem-card .num{
+    font-family:var(--font-display);
+    font-size:13px;
+    color:var(--terracotta);
+    letter-spacing:1px;
+  }
+  .problem-card h3{font-size:17px; margin-top:8px;}
+  .problem-card p{font-size:13.5px; color:#5c5748; margin-top:8px;}
+
+  /* ---------- MODULOS ---------- */
+  .modules{background:var(--till-green-mid);}
+  .modules .section-head h2{color:var(--paper);}
+  .modules .section-head p{color:#c9d9cd;}
+  .modules .section-head .eyebrow{color:var(--brass-light);}
+
+  .module-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:22px;
+  }
+  @media (max-width:760px){ .module-grid{grid-template-columns:1fr;} }
+
+  .module-card{
+    background:var(--paper);
+    border-radius:8px;
+    padding:22px;
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:18px;
+    align-items:center;
+    transition:transform .2s ease, box-shadow .2s ease;
+    cursor:default;
+  }
+  .module-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 26px rgba(0,0,0,0.25);
+  }
+  @media (max-width:480px){ .module-card{grid-template-columns:1fr;} }
+  .module-card h3{font-size:16.5px;}
+  .module-card p{font-size:13px; color:#5c5748; margin-top:6px;}
+
+  .mini-preview{
+    background:var(--paper-dim);
+    border:1px solid var(--gray-line);
+    border-radius:6px;
+    padding:10px;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+  }
+  .mini-preview .mp-row{display:flex; justify-content:space-between; padding:2px 0;}
+  .mini-preview .mp-total{border-top:1px solid var(--ink); margin-top:4px; padding-top:4px; font-weight:700; color:var(--terracotta);}
+  .mini-preview .mp-dot{width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;}
+  .mini-preview .mp-dot.ok{background:var(--ok);}
+  .mini-preview .mp-dot.warn{background:#b8781f;}
+  .mini-preview .mp-dot.danger{background:var(--danger);}
+  .mini-preview .mp-slot{
+    display:inline-block; background:#233c30; color:#d7e6da;
+    padding:3px 6px; border-radius:3px; margin:2px 2px 0 0; font-size:9.5px;
+  }
+  .mini-preview .mp-slot.taken{opacity:0.35; text-decoration:line-through;}
+  .mini-preview .mp-imgph{
+    height:44px; background:#e3ddc9; border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+    color:#a39d8b; font-size:9px; margin-bottom:6px;
+  }
+
+  /* ---------- COMO FUNCIONA ---------- */
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+    counter-reset:step;
+  }
+  @media (max-width:760px){ .steps{grid-template-columns:1fr;} }
+  .step{position:relative; padding-left:0;}
+  .step .step-num{
+    font-family:var(--font-display);
+    font-size:38px;
+    color:var(--brass);
+    line-height:1;
+  }
+  .step h3{font-size:16.5px; margin-top:10px;}
+  .step p{font-size:13.5px; color:#5c5748; margin-top:8px;}
+
+  /* ---------- POR QUE ELEGIRNOS ---------- */
+  .why-strip{
+    background:var(--paper-dim);
+    border-top:1px solid var(--gray-line);
+    border-bottom:1px solid var(--gray-line);
+  }
+  .why-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    text-align:center;
+  }
+  @media (max-width:760px){ .why-grid{grid-template-columns:1fr 1fr;} }
+  .why-item .why-icon{font-size:22px;}
+  .why-item h4{font-family:var(--font-body); font-weight:700; font-size:13.5px; margin-top:8px;}
+  .why-item p{font-size:12px; color:#5c5748; margin-top:4px;}
+
+  /* ---------- WEBS ---------- */
+  .webs{
+    background:var(--paper);
+  }
+  .webs-inner{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:44px;
+    align-items:center;
+  }
+  @media (max-width:820px){ .webs-inner{grid-template-columns:1fr;} }
+  .webs-copy .eyebrow{color:var(--terracotta);}
+  .webs-copy h2{font-size:28px; margin-top:6px;}
+  .webs-copy p.lead{font-size:15px; color:#5c5748; margin-top:14px; max-width:440px;}
+  .webs-list{
+    margin-top:22px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .webs-list-item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .webs-list-item .check{
+    color:var(--ok);
+    font-weight:700;
+    font-size:15px;
+    line-height:1.4;
+  }
+  .webs-list-item div{font-size:13.5px; color:#3a3630;}
+  .webs-list-item strong{display:block; font-size:14px; color:var(--ink);}
+  .webs-copy .btn-primary{margin-top:26px; display:inline-block;}
+
+  /* --- mockup de navegador (elemento signature) --- */
+  .browser-mock{
+    background:#fff;
+    border:1px solid var(--gray-line);
+    border-radius:10px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.18);
+    overflow:hidden;
+  }
+  .browser-bar{
+    background:var(--paper-dim);
+    border-bottom:1px solid var(--gray-line);
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .browser-bar .dot{width:9px; height:9px; border-radius:50%;}
+  .browser-bar .dot.r{background:#e0645a;}
+  .browser-bar .dot.y{background:#e6b84f;}
+  .browser-bar .dot.g{background:#5cb37d;}
+  .browser-bar .url{
+    flex:1;
+    background:#fff;
+    border:1px solid var(--gray-line);
+    border-radius:12px;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    color:#8c8470;
+    padding:4px 10px;
+    margin-left:8px;
+  }
+  .browser-body{
+    padding:22px 20px 26px;
+    background:linear-gradient(180deg, #f6f2e6, #fff);
+  }
+  .bm-nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .bm-logo{
+    font-family:var(--font-display);
+    font-size:14px;
+    color:var(--till-green);
+  }
+  .bm-links{display:flex; gap:10px;}
+  .bm-links span{
+    font-size:9px;
+    color:#8c8470;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .bm-hero-title{
+    font-family:var(--font-display);
+    font-size:19px;
+    color:var(--ink);
+    max-width:230px;
+    line-height:1.25;
+  }
+  .bm-hero-sub{
+    font-size:10.5px;
+    color:#8c8470;
+    margin-top:8px;
+    max-width:220px;
+  }
+  .bm-btn{
+    display:inline-block;
+    margin-top:14px;
+    background:var(--terracotta);
+    color:#fff;
+    font-size:10.5px;
+    font-weight:700;
+    padding:8px 14px;
+    border-radius:3px;
+  }
+  .bm-cards{
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+  }
+  .bm-card{
+    flex:1;
+    background:#fff;
+    border:1px solid var(--gray-line);
+    border-radius:6px;
+    padding:10px;
+  }
+  .bm-card .ph{
+    height:36px;
+    background:#e3ddc9;
+    border-radius:4px;
+    margin-bottom:6px;
+  }
+  .bm-card .line{
+    height:6px;
+    background:#e3ddc9;
+    border-radius:3px;
+    margin-top:5px;
+  }
+  .bm-card .line.short{width:60%;}
+
+  /* ---------- PARA QUIEN ---------- */
+  .for-who{
+    background:var(--paper-dim);
+    border-top:1px solid var(--gray-line);
+    border-bottom:1px solid var(--gray-line);
+  }
+  .for-who-tags{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:12px;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .for-who-tag{
+    background:#fff;
+    border:1px solid var(--gray-line);
+    color:var(--ink);
+    font-size:13.5px;
+    font-weight:700;
+    padding:10px 18px;
+    border-radius:24px;
+  }
+  .for-who-tag.any{
+    background:var(--till-green);
+    color:var(--paper);
+    border-color:var(--till-green);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-list{
+    max-width:700px;
+    margin:0 auto;
+  }
+  .faq-item{
+    border-bottom:1px solid var(--gray-line);
+  }
+  .faq-item summary{
+    list-style:none;
+    cursor:pointer;
+    padding:18px 4px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    font-weight:700;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item .faq-icon{
+    flex-shrink:0;
+    width:24px; height:24px;
+    border:1px solid var(--brass);
+    color:var(--brass);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px;
+    font-weight:700;
+    transition:transform .2s ease;
+  }
+  .faq-item[open] .faq-icon{transform:rotate(45deg);}
+  .faq-item p{
+    font-size:13.5px;
+    color:#5c5748;
+    padding:0 4px 18px 0;
+    max-width:600px;
+  }
+
+  /* ---------- CTA FINAL ---------- */
+  .final-cta{
+    background:var(--till-green-dark);
+    text-align:center;
+  }
+  .final-cta h2{color:var(--paper); font-size:30px;}
+  .final-cta p{color:#c9d9cd; margin-top:14px; max-width:520px; margin-left:auto; margin-right:auto;}
+  .final-cta .hero-ctas{justify-content:center; margin-top:28px;}
+
+  footer{
+    background:var(--till-green-dark);
+    border-top:1px solid #3d5a49;
+    color:#8ba190;
+    font-size:12px;
+    text-align:center;
+    padding:26px 22px;
+  }
+  footer .credit{
+    color:#c9d9cd;
+    font-size:12.5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  footer .credit strong{color:var(--brass-light); font-weight:700;}
+  footer .footer-logo{height:22px; width:auto; border-radius:2px; vertical-align:middle;}
+  footer .socials{
+    margin-top:10px;
+    display:flex;
+    justify-content:center;
+    gap:16px;
+  }
+  footer .socials a{
+    color:#8ba190;
+    text-decoration:none;
+    font-size:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  footer .socials a:hover{color:var(--brass-light);}
+
+  @media (prefers-reduced-motion: reduce){
+    .stack-card{animation:none; opacity:1;}
+    .reveal{opacity:1; transform:none; transition:none;}
+  }
+
+  /* ---------- REVEAL ON SCROLL ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(22px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .reveal.is-visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .reveal-stagger.is-visible > *{
+    animation:staggerIn .5s ease forwards;
+  }
+  .reveal-stagger > *:nth-child(1){animation-delay:.05s;}
+  .reveal-stagger > *:nth-child(2){animation-delay:.15s;}
+  .reveal-stagger > *:nth-child(3){animation-delay:.25s;}
+  .reveal-stagger > *:nth-child(4){animation-delay:.35s;}
+  .reveal-stagger > *:nth-child(5){animation-delay:.45s;}
+  @keyframes staggerIn{
+    from{opacity:0; transform:translateY(18px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .reveal-stagger > *{opacity:0;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Soluciones Digitales<span class="dot">.</span><img class="by-logo" src="assets/pxm-studio-logo.png" alt="Pxmiastudio"></div>
+    <a class="nav-cta" href="https://wa.me/5491135943909?text=Hola%2C%20quiero%20pedir%20una%20demo%20de%20Soluciones%20Digitales" target="_blank" rel="noopener">Pedí tu demo</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Sistemas de gestión para comercios de barrio</div>
+      <h1>El local de siempre,<br>con la <em>caja del futuro</em>.</h1>
+      <p class="lead">Ventas, stock, turnos, clientes fieles y catálogo online — armados a medida para tu rubro, sin que tengas que aprender nada complicado.</p>
+      <div class="hero-ctas">
+        <a class="btn-primary" href="https://wa.me/5491135943909?text=Hola%2C%20quiero%20mi%20demo%20gratis%20de%20Soluciones%20Digitales" target="_blank" rel="noopener">Quiero mi demo gratis</a>
+        <a class="btn-ghost" href="#modulos">Ver qué incluye</a>
+      </div>
+    </div>
+    <div class="hero-stack">
+      <div class="stack-card c1 sc-ticket">
+        <div class="sc-label">Ticket de venta</div>
+        <div class="sc-row"><span>Ibuprofeno 400mg</span><span>$1.500</span></div>
+        <div class="sc-row"><span>Jarabe para la tos</span><span>$2.300</span></div>
+        <div class="sc-total">TOTAL $3.800</div>
+      </div>
+      <div class="stack-card c2">
+        <div class="sc-label">Tarjeta de fidelización</div>
+        <div class="sc-card">
+          <div class="tier">Nivel Oro</div>
+          <div class="pts">1.620 pts</div>
+        </div>
+      </div>
+      <div class="stack-card c3 sc-stock">
+        <div class="sc-label">Control de stock</div>
+        <div class="sc-item"><span>Amoxicilina 500mg</span><span class="sc-tag warn">Por vencer</span></div>
+        <div class="sc-item"><span>Paracetamol 500mg</span><span class="sc-tag ok">En fecha</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="for-who reveal">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:26px;">
+      <div class="eyebrow">¿Es esto para tu local?</div>
+      <h2>Si atendés al público, es para vos</h2>
+      <p>No hace falta que sepas de sistemas ni de computación. Si tenés un local y clientes, esto te sirve.</p>
+    </div>
+    <div class="for-who-tags">
+      <span class="for-who-tag">Farmacias</span>
+      <span class="for-who-tag">Kioscos</span>
+      <span class="for-who-tag">Peluquerías</span>
+      <span class="for-who-tag">Ferreterías</span>
+      <span class="for-who-tag">Veterinarias</span>
+      <span class="for-who-tag">Almacenes</span>
+      <span class="for-who-tag">Librerías</span>
+      <span class="for-who-tag any">Y cualquier otro rubro</span>
+    </div>
+  </div>
+</section>
+
+<section class="problem reveal">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">El día a día del local</div>
+      <h2>Llevar la cuenta a mano tiene un límite</h2>
+      <p>No hace falta un sistema de cadena para dejar de perder tiempo y plata en cosas que se pueden resolver solas.</p>
+    </div>
+    <div class="problem-grid reveal-stagger">
+      <div class="problem-card">
+        <div class="num">01</div>
+        <h3>Productos vencidos sin aviso</h3>
+        <p>Sin una alerta clara, la mercadería vencida se detecta tarde — y eso es pérdida directa.</p>
+      </div>
+      <div class="problem-card">
+        <div class="num">02</div>
+        <h3>Turnos que se pisan o se olvidan</h3>
+        <p>Anotar citas en un cuaderno o por WhatsApp suelto genera errores y clientes que se van a otro lado.</p>
+      </div>
+      <div class="problem-card">
+        <div class="num">03</div>
+        <h3>Clientes fieles que nadie reconoce</h3>
+        <p>El que compra siempre debería sentir la diferencia. Sin un registro, todos los clientes son iguales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="modules reveal" id="modulos">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">La solución</div>
+      <h2>Cinco sistemas, uno solo armado para vos</h2>
+      <p>Elegís con cuáles empezar. Se arman a tu manera, según cómo trabajás en tu local.</p>
+    </div>
+    <div class="module-grid reveal-stagger">
+
+      <div class="module-card">
+        <div class="mini-preview">
+          <div class="mp-row"><span>Prod. A x2</span><span>$3.000</span></div>
+          <div class="mp-row"><span>Prod. B x1</span><span>$800</span></div>
+          <div class="mp-row mp-total"><span>TOTAL</span><span>$3.800</span></div>
+        </div>
+        <div>
+          <h3>Sistema de ventas</h3>
+          <p>Sumá productos, calculá el total y emití el ticket o boleta en el momento.</p>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="mini-preview">
+          <div class="mp-row"><span><span class="mp-dot danger"></span>Jarabe X</span><span>Vencido</span></div>
+          <div class="mp-row"><span><span class="mp-dot warn"></span>Amoxicilina</span><span>2 meses</span></div>
+          <div class="mp-row"><span><span class="mp-dot ok"></span>Paracetamol</span><span>8 meses</span></div>
+        </div>
+        <div>
+          <h3>Control de stock</h3>
+          <p>Cargá tus productos con su vencimiento y recibí el aviso 4 meses antes — configurable a tu gusto.</p>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="mini-preview">
+          <span class="mp-slot">09:00</span><span class="mp-slot taken">09:30</span><span class="mp-slot">10:00</span><span class="mp-slot">10:30</span>
+        </div>
+        <div>
+          <h3>Toma de turnos</h3>
+          <p>Agendá citas con nombre, DNI y celular. Tu agenda del día, ordenada y sin superposiciones.</p>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="mini-preview">
+          <div class="sc-card" style="padding:10px 12px;">
+            <div class="tier" style="font-size:9px;">Nivel Plata</div>
+            <div class="pts" style="font-size:17px;">720 pts</div>
+          </div>
+        </div>
+        <div>
+          <h3>Fidelización de clientes</h3>
+          <p>Sumá puntos por compra y premiá a quien vuelve siempre, con niveles que vos definís.</p>
+        </div>
+      </div>
+
+      <div class="module-card" style="grid-template-columns:1fr;">
+        <div style="display:flex; gap:10px;">
+          <div class="mini-preview" style="flex:1;">
+            <div class="mp-imgph">Foto</div>
+            <div style="font-weight:700; font-size:11px;">Producto A</div>
+            <div style="color:var(--terracotta); font-family:var(--font-display); font-size:13px;">$2.500</div>
+          </div>
+          <div class="mini-preview" style="flex:1;">
+            <div class="mp-imgph">Foto</div>
+            <div style="font-weight:700; font-size:11px;">Producto B</div>
+            <div style="color:var(--terracotta); font-family:var(--font-display); font-size:13px;">$4.300</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <h3>Catálogo online</h3>
+          <p>Subí la foto, el nombre y el precio de cada producto y armá tu vidriera digital en minutos.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="webs reveal">
+  <div class="container webs-inner">
+    <div class="webs-copy">
+      <div class="eyebrow">Otro servicio de Pxmiastudio</div>
+      <h2>¿Todavía no tenés página web?</h2>
+      <p class="lead">Además de los sistemas de gestión, también armamos la web de tu local — para que aparezcas en Google y tengas un lugar propio en internet, más allá de las redes sociales.</p>
+      <div class="webs-list">
+        <div class="webs-list-item">
+          <span class="check">✓</span>
+          <div><strong>Página institucional</strong>Quiénes son, qué ofrecen, ubicación y contacto, lista para compartir.</div>
+        </div>
+        <div class="webs-list-item">
+          <span class="check">✓</span>
+          <div><strong>Diseño a medida</strong>Con los colores, fotos y estilo de tu marca — no una plantilla genérica.</div>
+        </div>
+        <div class="webs-list-item">
+          <span class="check">✓</span>
+          <div><strong>Lista para conectar</strong>Se integra con el catálogo, los turnos o cualquier otra herramienta que ya tengas.</div>
+        </div>
+      </div>
+      <a class="btn-primary" href="https://wa.me/5491135943909?text=Hola%2C%20quiero%20consultar%20por%20una%20p%C3%A1gina%20web%20para%20mi%20local" target="_blank" rel="noopener">Quiero mi página web</a>
+    </div>
+
+    <div class="browser-mock">
+      <div class="browser-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="url">tulocal.com.ar</div>
+      </div>
+      <div class="browser-body">
+        <div class="bm-nav">
+          <div class="bm-logo">Tu Local</div>
+          <div class="bm-links"><span>Inicio</span><span>Productos</span><span>Contacto</span></div>
+        </div>
+        <div class="bm-hero-title">Todo lo que buscás, cerca de casa</div>
+        <div class="bm-hero-sub">Encontranos, mirá nuestros productos y escribinos directo.</div>
+        <span class="bm-btn">Ver catálogo</span>
+        <div class="bm-cards">
+          <div class="bm-card"><div class="ph"></div><div class="line"></div><div class="line short"></div></div>
+          <div class="bm-card"><div class="ph"></div><div class="line"></div><div class="line short"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how reveal">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Cómo funciona</div>
+      <h2>De la idea a tu local, en tres pasos</h2>
+    </div>
+    <div class="steps reveal-stagger">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Contamos qué necesitás</h3>
+        <p>Charlamos sobre tu local y elegimos juntos qué herramientas te sirven para el día a día.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Lo armamos a medida</h3>
+        <p>Ajustamos nombres, colores y campos para que se sienta hecho para tu local, no un sistema genérico.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Lo usás desde el día uno</h3>
+        <p>Funciona en la computadora del mostrador y en tu celular, sin instalar nada raro.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="why-strip reveal">
+  <div class="container">
+    <div class="why-grid reveal-stagger">
+      <div class="why-item">
+        <div class="why-icon">📱</div>
+        <h4>PC y celular</h4>
+        <p>Se abre en cualquier navegador, sin instalar apps.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🎯</div>
+        <h4>100% a medida</h4>
+        <p>Armado para tu rubro, no una plantilla genérica.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">🤝</div>
+        <h4>Soporte directo</h4>
+        <p>Ante cualquier ajuste, hablás directo con quien lo armó.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">💳</div>
+        <h4>Sin ataduras</h4>
+        <p>Empezás con lo que necesitás y sumás herramientas cuando quieras.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq reveal">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Antes de decidirte</div>
+      <h2>Preguntas que seguramente tengas</h2>
+      <p>Respuestas simples, sin letra chica.</p>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary>¿Tengo que saber de computación para usarlo?<span class="faq-icon">+</span></summary>
+        <p>No. Se maneja con botones simples, como cualquier aplicación del celular. Si sabés usar WhatsApp, ya sabés lo suficiente.</p>
+      </details>
+      <details class="faq-item">
+        <summary>¿Necesito instalar algo?<span class="faq-icon">+</span></summary>
+        <p>No. Se abre directo desde el navegador de tu computadora o tu celular, sin descargar ninguna aplicación.</p>
+      </details>
+      <details class="faq-item">
+        <summary>¿Puedo empezar con una sola herramienta?<span class="faq-icon">+</span></summary>
+        <p>Sí. Elegís por dónde arrancar — por ejemplo, solo ventas o solo turnos — y sumás el resto más adelante, cuando lo necesites.</p>
+      </details>
+      <details class="faq-item">
+        <summary>¿Cuánto tarda en estar listo para usar?<span class="faq-icon">+</span></summary>
+        <p>Depende de cuánto lo personalicemos para tu local, pero antes de arrancar te damos un tiempo estimado claro, sin sorpresas.</p>
+      </details>
+      <details class="faq-item">
+        <summary>¿Y si lo pruebo y no me convence?<span class="faq-icon">+</span></summary>
+        <p>Te mostramos todo funcionando, con tus propios productos si querés, antes de que tengas que decidir nada.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta reveal" id="contacto">
+  <div class="container">
+    <h2>¿Lo probamos en tu local?</h2>
+    <p>Te mostramos las 5 herramientas funcionando de verdad y armamos juntos la versión para tu negocio. Sin compromiso.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="https://wa.me/5491135943909?text=Hola%2C%20quiero%20saber%20m%C3%A1s%20sobre%20Soluciones%20Digitales%20para%20mi%20local" target="_blank" rel="noopener">Escribinos por WhatsApp</a>
+      <a class="btn-ghost" href="https://wa.me/5491135943909?text=Hola%2C%20quiero%20dejarles%20mis%20datos%20para%20que%20me%20contacten" target="_blank" rel="noopener">Dejar mis datos</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="credit">Soluciones Digitales — Sistemas de gestión para el comercio de barrio. Un servicio de <img class="footer-logo" src="assets/pxm-studio-logo.png" alt="Pxmiastudio"></div>
+  <div class="socials">
+    <a href="https://instagram.com/pxmiastudio" target="_blank" rel="noopener">Instagram @pxmiastudio</a>
+    <a href="https://www.facebook.com/profile.php?id=61589606840566" target="_blank" rel="noopener">Facebook @pxm studio</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // --- Revelado al hacer scroll ---
+  const revealEls = document.querySelectorAll('.reveal');
+  function activate(el){
+    el.classList.add('is-visible');
+    el.querySelectorAll('.reveal-stagger').forEach(s => s.classList.add('is-visible'));
+  }
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          activate(entry.target);
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.1});
+    revealEls.forEach(el=> io.observe(el));
+
+    // Red de seguridad: si por algún motivo el observer no dispara
+    // (por ejemplo, dentro de un visor que no calcula bien el scroll),
+    // igual mostramos todo el contenido a los 1.5s.
+    setTimeout(()=>{
+      revealEls.forEach(el=>{
+        if(!el.classList.contains('is-visible')) activate(el);
+      });
+    }, 1500);
+  } else {
+    revealEls.forEach(el=> activate(el));
+  }
+
+  // --- Parallax de las tarjetas del hero segun el mouse ---
+  const stack = document.querySelector('.hero-stack');
+  const cards = document.querySelectorAll('.stack-card');
+  if(stack && window.matchMedia('(hover: hover)').matches){
+    stack.addEventListener('mousemove', (e)=>{
+      const rect = stack.getBoundingClientRect();
+      const relX = (e.clientX - rect.left) / rect.width - 0.5;
+      const relY = (e.clientY - rect.top) / rect.height - 0.5;
+      cards.forEach((card, i)=>{
+        const depth = (i + 1) * 6;
+        const baseRot = getComputedStyle(card).getPropertyValue('--rot') || '0deg';
+        card.style.transform = `rotate(${baseRot}) translate(${relX*depth}px, ${relY*depth}px)`;
+      });
+    });
+    stack.addEventListener('mouseleave', ()=>{
+      cards.forEach(card=>{
+        const baseRot = getComputedStyle(card).getPropertyValue('--rot') || '0deg';
+        card.style.transform = `rotate(${baseRot})`;
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
