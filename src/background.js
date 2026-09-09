@@ -4,8 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ACCENT = new THREE.Color(0xd9ff4b);
-const DIM = new THREE.Color(0x3a3a44);
+const ACCENT = new THREE.Color(0x6fe3ff);
+const DIM = new THREE.Color(0x2a3550);
 
 export function initBackground(canvas, { reduceMotion = false } = {}) {
   const scene = new THREE.Scene();
@@ -65,10 +65,10 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
   const shapeGeo = new THREE.IcosahedronGeometry(2.4, 1);
   for (let i = 0; i < 3; i++) {
     const mat = new THREE.MeshBasicMaterial({
-      color: i === 0 ? ACCENT : 0x55555f,
+      color: i === 0 ? ACCENT : 0x2f4368,
       wireframe: true,
       transparent: true,
-      opacity: i === 0 ? 0.08 : 0.06,
+      opacity: i === 0 ? 0.1 : 0.07,
     });
     const mesh = new THREE.Mesh(shapeGeo, mat);
     mesh.position.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 6, -6 - i * 3);
