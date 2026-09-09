@@ -1,9 +1,13 @@
 import * as THREE from "three";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const ACCENT = new THREE.Color(0xd9ff4b);
 const DIM = new THREE.Color(0x3a3a44);
 
-export function initBackground(canvas) {
+export function initBackground(canvas, { reduceMotion = false } = {}) {
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -23,7 +27,7 @@ export function initBackground(canvas) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  // Sparse particle field — a subtle drifting grid of points.
+  // Sparse particle field - a subtle drifting grid of points.
   const COUNT = 900;
   const positions = new Float32Array(COUNT * 3);
   const colors = new Float32Array(COUNT * 3);
@@ -73,6 +77,18 @@ export function initBackground(canvas) {
     shapes.push(mesh);
   }
 
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  if (reduceMotion) {
+    // Render a single static frame; no drift, no parallax, no rAF loop.
+    renderer.render(scene, camera);
+    return;
+  }
+
   const mouse = { x: 0, y: 0 };
   window.addEventListener("pointermove", (e) => {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -80,19 +96,12 @@ export function initBackground(canvas) {
   });
 
   let scrollProgress = 0;
-  window.addEventListener(
-    "scroll",
-    () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      scrollProgress = max > 0 ? window.scrollY / max : 0;
+  ScrollTrigger.create({
+    start: 0,
+    end: () => document.documentElement.scrollHeight - window.innerHeight,
+    onUpdate: (self) => {
+      scrollProgress = self.progress;
     },
-    { passive: true }
-  );
-
-  window.addEventListener("resize", () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
   const clock = new THREE.Clock();
