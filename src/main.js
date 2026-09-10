@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { initBackground } from "./background.js";
+import { initQuoteForm } from "./quote-form.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -8,6 +9,7 @@ const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 initBackground(document.getElementById("bg-canvas"), { reduceMotion });
+initQuoteForm();
 
 if (reduceMotion) {
   // Skip animated entrances entirely; content is shown in its final state.

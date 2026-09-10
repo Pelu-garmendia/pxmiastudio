@@ -135,6 +135,49 @@
         </div>
       </section>
 
+      <section id="cotizar" class="section quote">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="reveal">Cotizá tu servicio.</h2>
+          </div>
+
+          <form class="quote-form reveal" id="quote-form" novalidate>
+            <fieldset class="quote-field">
+              <legend>¿Qué necesitás?</legend>
+              <div class="type-options">
+                <label class="type-option">
+                  <input type="radio" name="tipo" value="Sitio o tienda web" checked />
+                  <span>Sitio o tienda web</span>
+                </label>
+                <label class="type-option">
+                  <input type="radio" name="tipo" value="Marketing" />
+                  <span>Marketing</span>
+                </label>
+                <label class="type-option">
+                  <input type="radio" name="tipo" value="Software a medida" />
+                  <span>Software a medida</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="quote-field">
+              <label for="quote-detail">Contanos tu proyecto</label>
+              <textarea
+                id="quote-detail"
+                name="detalle"
+                rows="4"
+                placeholder="Ej: necesito una tienda online para mi marca de indumentaria, con pagos y envíos integrados…"
+              ></textarea>
+              <p class="quote-error" id="quote-error" role="alert" hidden>
+                Contanos un poco tu proyecto antes de enviar.
+              </p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">Enviar cotización por WhatsApp</button>
+          </form>
+        </div>
+      </section>
+
       <section id="contacto" class="section contact">
         <div class="container contact-inner">
           <h2 class="reveal">¿Listo para hacer crecer tu negocio?</h2>
@@ -165,6 +208,7 @@
         <div class="footer-links">
           <a href="#servicios">Servicios</a>
           <a href="#proceso">Proceso</a>
+          <a href="#cotizar">Cotizar</a>
           <a href="#contacto">Contacto</a>
         </div>
       </div>

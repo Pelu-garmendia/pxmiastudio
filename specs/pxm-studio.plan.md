@@ -4,10 +4,9 @@
 
 PXM Studio is a dark-themed marketing landing page (Spanish) for a software
 and marketing agency. The header shows only the logo (no nav). It has a hero
-section, a services list, a process section, and a contact section with
-WhatsApp and Instagram CTAs. A footer repeats anchor links to each section.
-The page has no forms or backend; every scenario is read-only navigation and
-content verification.
+section, a services list, a process section, a quote-request form that opens
+WhatsApp with a prefilled message, and a contact section with WhatsApp and
+Instagram CTAs. A footer repeats anchor links to each section.
 
 ## Test Scenarios
 
@@ -47,11 +46,36 @@ content verification.
     - expect: URL hash becomes "#contacto"
     - expect: the "¿Listo para hacer crecer tu negocio?" heading is visible
 
-### 3. Contact
+### 3. Quote form
 
 **Seed:** `tests/seed.spec.ts`
 
-#### 3.1. should-show-whatsapp-and-instagram-links
+#### 3.1. should-open-whatsapp-with-quote-message
+
+**File:** `tests/quote/should-open-whatsapp-with-quote-message.spec.ts`
+
+**Steps:**
+  1. Navigate to the quote section via the footer
+  2. Select "Marketing" as the service type
+  3. Fill in the project detail
+  4. Submit the form
+    - expect: a new tab opens to a `https://wa.me/5491135943909` URL
+    - expect: the URL's prefilled text contains the selected type and the detail
+
+#### 3.2. should-show-error-when-detail-empty
+
+**File:** `tests/quote/should-show-error-when-detail-empty.spec.ts`
+
+**Steps:**
+  1. Navigate to the quote section via the footer
+  2. Submit without filling the project detail
+    - expect: an inline error "Contanos un poco tu proyecto antes de enviar." is visible
+
+### 4. Contact
+
+**Seed:** `tests/seed.spec.ts`
+
+#### 4.1. should-show-whatsapp-and-instagram-links
 
 **File:** `tests/contact/should-show-whatsapp-and-instagram-links.spec.ts`
 
