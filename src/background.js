@@ -7,6 +7,89 @@ gsap.registerPlugin(ScrollTrigger);
 const ACCENT = new THREE.Color(0x6fe3ff);
 const DIM = new THREE.Color(0x2a3550);
 
+// A handful of points on the globe's surface, given as [longitude, latitude]
+// in degrees. One acts as the hub; the rest connect back to it, like a
+// network of offices/clients reaching a single studio.
+const NETWORK_POINTS = [
+  { lon: -58, lat: -34 }, // hub: Buenos Aires
+  { lon: -74, lat: 4 }, // Bogotá
+  { lon: -99, lat: 19 }, // Ciudad de México
+  { lon: -3, lat: 40 }, // Madrid
+  { lon: 2, lat: 41 }, // Barcelona
+  { lon: -70, lat: -33 }, // Santiago
+];
+
+function latLonToVector3(lat, lon, radius) {
+  const phi = (90 - lat) * (Math.PI / 180);
+  const theta = (lon + 180) * (Math.PI / 180);
+  return new THREE.Vector3(
+    -radius * Math.sin(phi) * Math.cos(theta),
+    radius * Math.cos(phi),
+    radius * Math.sin(phi) * Math.sin(theta)
+  );
+}
+
+function buildGlobe(radius) {
+  const group = new THREE.Group();
+
+  // Wireframe sphere - lat/long grid reads as a globe on its own.
+  const sphereGeo = new THREE.SphereGeometry(radius, 24, 18);
+  const sphereMat = new THREE.MeshBasicMaterial({
+    color: 0x2f4368,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.24,
+  });
+  group.add(new THREE.Mesh(sphereGeo, sphereMat));
+
+  // A faint solid fill behind the wireframe so the far side of the grid
+  // doesn't visually merge with the near side.
+  const fillMat = new THREE.MeshBasicMaterial({
+    color: 0x05070d,
+    transparent: true,
+    opacity: 0.55,
+  });
+  group.add(new THREE.Mesh(new THREE.SphereGeometry(radius * 0.99, 24, 18), fillMat));
+
+  const hub = latLonToVector3(NETWORK_POINTS[0].lat, NETWORK_POINTS[0].lon, radius);
+  const nodeGeo = new THREE.SphereGeometry(radius * 0.02, 8, 8);
+  const pulses = [];
+
+  NETWORK_POINTS.forEach((p, i) => {
+    const pos = latLonToVector3(p.lat, p.lon, radius);
+
+    const nodeMat = new THREE.MeshBasicMaterial({
+      color: ACCENT,
+      transparent: true,
+      opacity: i === 0 ? 0.9 : 0.55,
+    });
+    const node = new THREE.Mesh(nodeGeo, nodeMat);
+    node.position.copy(pos);
+    group.add(node);
+
+    if (i === 0) return; // hub doesn't connect to itself
+
+    // Arc from the hub to this point, lifted above the sphere's surface.
+    const mid = hub.clone().add(pos).multiplyScalar(0.5).normalize().multiplyScalar(radius * 1.35);
+    const curve = new THREE.QuadraticBezierCurve3(hub, mid, pos);
+    const arcGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(48));
+    const arcMat = new THREE.LineBasicMaterial({
+      color: ACCENT,
+      transparent: true,
+      opacity: 0.32,
+    });
+    group.add(new THREE.Line(arcGeo, arcMat));
+
+    // A small traveling pulse that loops along the arc, staggered per route.
+    const pulseMat = new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.9 });
+    const pulse = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.018, 6, 6), pulseMat);
+    group.add(pulse);
+    pulses.push({ curve, pulse, delay: i * 0.6 });
+  });
+
+  return { group, pulses };
+}
+
 export function initBackground(canvas, { reduceMotion = false } = {}) {
   const scene = new THREE.Scene();
 
@@ -60,22 +143,12 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
   const points = new THREE.Points(geometry, material);
   scene.add(points);
 
-  // A few large, low-opacity wireframe icosahedrons drifting in the back.
-  const shapes = [];
-  const shapeGeo = new THREE.IcosahedronGeometry(2.4, 1);
-  for (let i = 0; i < 3; i++) {
-    const mat = new THREE.MeshBasicMaterial({
-      color: i === 0 ? ACCENT : 0x2f4368,
-      wireframe: true,
-      transparent: true,
-      opacity: i === 0 ? 0.1 : 0.07,
-    });
-    const mesh = new THREE.Mesh(shapeGeo, mat);
-    mesh.position.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 6, -6 - i * 3);
-    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-    scene.add(mesh);
-    shapes.push(mesh);
-  }
+  // A rotating globe with a small network of connection arcs, tucked toward
+  // the back-right so it reads as ambient texture, not a focal illustration.
+  const { group: globe, pulses } = buildGlobe(2.8);
+  globe.position.set(3.4, -0.2, -4.6);
+  globe.rotation.set(0.35, 0, 0.1);
+  scene.add(globe);
 
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -88,6 +161,24 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
     renderer.render(scene, camera);
     return;
   }
+
+  // Pulses loop endlessly along their arc - motivated motion (shows the
+  // network "connecting"), muted opacity, stopped entirely above under
+  // reduced motion.
+  pulses.forEach(({ curve, pulse, delay }) => {
+    const progress = { t: 0 };
+    gsap.to(progress, {
+      t: 1,
+      duration: 2.6,
+      delay,
+      repeat: -1,
+      ease: "none",
+      onUpdate: () => {
+        pulse.position.copy(curve.getPointAt(progress.t));
+        pulse.material.opacity = Math.sin(progress.t * Math.PI) * 0.9;
+      },
+    });
+  });
 
   const mouse = { x: 0, y: 0 };
   window.addEventListener("pointermove", (e) => {
@@ -112,10 +203,7 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
     points.rotation.y = t * 0.02 + scrollProgress * 0.6;
     points.rotation.x = t * 0.01;
 
-    shapes.forEach((mesh, i) => {
-      mesh.rotation.x += 0.0006 + i * 0.0002;
-      mesh.rotation.y += 0.0009 + i * 0.0002;
-    });
+    globe.rotation.y = t * 0.06 + scrollProgress * 0.4;
 
     camera.position.x += (mouse.x * 0.6 - camera.position.x) * 0.02;
     camera.position.y += (-mouse.y * 0.4 - camera.position.y) * 0.02;
