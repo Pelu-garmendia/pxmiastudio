@@ -7,16 +7,39 @@ gsap.registerPlugin(ScrollTrigger);
 const ACCENT = new THREE.Color(0x6fe3ff);
 const DIM = new THREE.Color(0x2a3550);
 
-// A handful of points on the globe's surface, given as [longitude, latitude]
-// in degrees. One acts as the hub; the rest connect back to it, like a
-// network of offices/clients reaching a single studio.
+// Points on the globe's surface, given as [longitude, latitude] in degrees.
+// Index 0 is the hub (the studio); the rest are cities it reaches. A denser
+// network than a strict hub-and-spoke: a few direct city-to-city links too,
+// so it reads as a real network rather than a single star.
 const NETWORK_POINTS = [
-  { lon: -58, lat: -34 }, // hub: Buenos Aires
-  { lon: -74, lat: 4 }, // Bogotá
-  { lon: -99, lat: 19 }, // Ciudad de México
-  { lon: -3, lat: 40 }, // Madrid
-  { lon: 2, lat: 41 }, // Barcelona
-  { lon: -70, lat: -33 }, // Santiago
+  { lon: -58, lat: -34 }, // 0 hub: Buenos Aires
+  { lon: -74, lat: 4 }, // 1 Bogotá
+  { lon: -99, lat: 19 }, // 2 Ciudad de México
+  { lon: -70, lat: -33 }, // 3 Santiago
+  { lon: -46, lat: -23 }, // 4 São Paulo
+  { lon: -3, lat: 40 }, // 5 Madrid
+  { lon: 2, lat: 41 }, // 6 Barcelona
+  { lon: 0, lat: 51 }, // 7 Londres
+  { lon: -80, lat: 26 }, // 8 Miami
+  { lon: -74, lat: 41 }, // 9 Nueva York
+  { lon: -79, lat: 44 }, // 10 Toronto
+];
+
+// Which points connect to which, by index into NETWORK_POINTS.
+const CONNECTIONS = [
+  [0, 1],
+  [0, 2],
+  [0, 3],
+  [0, 4],
+  [0, 5],
+  [0, 8],
+  [0, 9],
+  [1, 2],
+  [3, 4],
+  [5, 6],
+  [8, 9],
+  [9, 10],
+  [9, 7],
 ];
 
 function latLonToVector3(lat, lon, radius) {
@@ -51,13 +74,10 @@ function buildGlobe(radius) {
   });
   group.add(new THREE.Mesh(new THREE.SphereGeometry(radius * 0.99, 24, 18), fillMat));
 
-  const hub = latLonToVector3(NETWORK_POINTS[0].lat, NETWORK_POINTS[0].lon, radius);
   const nodeGeo = new THREE.SphereGeometry(radius * 0.02, 8, 8);
-  const pulses = [];
+  const nodePositions = NETWORK_POINTS.map((p) => latLonToVector3(p.lat, p.lon, radius));
 
-  NETWORK_POINTS.forEach((p, i) => {
-    const pos = latLonToVector3(p.lat, p.lon, radius);
-
+  nodePositions.forEach((pos, i) => {
     const nodeMat = new THREE.MeshBasicMaterial({
       color: ACCENT,
       transparent: true,
@@ -66,17 +86,22 @@ function buildGlobe(radius) {
     const node = new THREE.Mesh(nodeGeo, nodeMat);
     node.position.copy(pos);
     group.add(node);
+  });
 
-    if (i === 0) return; // hub doesn't connect to itself
+  const pulses = [];
 
-    // Arc from the hub to this point, lifted above the sphere's surface.
-    const mid = hub.clone().add(pos).multiplyScalar(0.5).normalize().multiplyScalar(radius * 1.35);
-    const curve = new THREE.QuadraticBezierCurve3(hub, mid, pos);
+  CONNECTIONS.forEach(([a, b], i) => {
+    const start = nodePositions[a];
+    const end = nodePositions[b];
+
+    // Arc between the two points, lifted above the sphere's surface.
+    const mid = start.clone().add(end).multiplyScalar(0.5).normalize().multiplyScalar(radius * 1.3);
+    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
     const arcGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(48));
     const arcMat = new THREE.LineBasicMaterial({
       color: ACCENT,
       transparent: true,
-      opacity: 0.32,
+      opacity: 0.28,
     });
     group.add(new THREE.Line(arcGeo, arcMat));
 
@@ -84,7 +109,7 @@ function buildGlobe(radius) {
     const pulseMat = new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.9 });
     const pulse = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.018, 6, 6), pulseMat);
     group.add(pulse);
-    pulses.push({ curve, pulse, delay: i * 0.6 });
+    pulses.push({ curve, pulse, delay: i * 0.45 });
   });
 
   return { group, pulses };
