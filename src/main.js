@@ -1,9 +1,6 @@
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { initBackground } from "./background.js";
 import { initQuoteForm } from "./quote-form.js";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -12,13 +9,12 @@ initBackground(document.getElementById("bg-canvas"), { reduceMotion });
 initQuoteForm();
 
 if (reduceMotion) {
-  // Skip animated entrances entirely; content is shown in its final state.
-  gsap.set(
-    ".reveal, .reveal-up, .hero-title, .hero-title .reveal-line span, .contact-actions .btn",
-    { opacity: 1, x: 0, y: 0, yPercent: 0 }
-  );
+  gsap.set(".hero .reveal, .hero-title, .hero-title .reveal-line span", {
+    opacity: 1,
+    x: 0,
+    yPercent: 0,
+  });
 } else {
-  // Hero entrance
   const heroTl = gsap.timeline({ defaults: { ease: EASE } });
   heroTl
     .fromTo(
@@ -28,67 +24,68 @@ if (reduceMotion) {
       0.1
     )
     .to(".hero-title", { opacity: 1, duration: 0.01 }, 0.1)
-    .to(".hero-sub", { opacity: 1, x: 0, duration: 0.45 }, 0.45)
-    .to(".hero-actions", { opacity: 1, x: 0, duration: 0.45 }, 0.55);
+    .to(".hero-sub", { opacity: 1, x: 0, duration: 0.45 }, 0.45);
 
   gsap.set(".hero-title", { opacity: 0 });
-  gsap.set(".hero-sub, .hero-actions", { x: -24 });
+  gsap.set(".hero-sub", { x: -24 });
+}
 
-  // Generic scroll-reveal — lateral slide + opacity, not a vertical fade-up
-  document.querySelectorAll(".section .reveal").forEach((el) => {
-    gsap.fromTo(
-      el,
-      { opacity: 0, x: -24 },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.45,
-        ease: EASE,
-        scrollTrigger: {
-          trigger: el,
-          start: "top 85%",
-        },
-      }
-    );
-  });
+const panels = [...document.querySelectorAll("dialog.panel")];
 
-  // Cards / rows that slide into view, staggered within their group
-  const groups = [".service-list", ".process-grid"];
-  groups.forEach((selector) => {
-    const container = document.querySelector(selector);
-    if (!container) return;
-    const items = container.querySelectorAll(".reveal-up");
-    gsap.fromTo(
-      items,
-      { opacity: 0, x: -32 },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.45,
-        ease: EASE,
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: container,
-          start: "top 80%",
-        },
-      }
-    );
-  });
-
-  // Contact CTAs, staggered
+function animatePanel(panel) {
+  const items = panel.querySelectorAll(".reveal, .reveal-up, .contact-actions .btn");
+  if (reduceMotion) {
+    gsap.set(items, { opacity: 1, x: 0 });
+    return;
+  }
   gsap.fromTo(
-    ".contact-actions .btn",
+    items,
     { opacity: 0, x: -24 },
-    {
-      opacity: 1,
-      x: 0,
-      duration: 0.45,
-      ease: EASE,
-      stagger: 0.1,
-      scrollTrigger: {
-        trigger: ".contact",
-        start: "top 75%",
-      },
-    }
+    { opacity: 1, x: 0, duration: 0.4, ease: EASE, stagger: 0.07 }
   );
 }
+
+function openPanel(id) {
+  const panel = panels.find((p) => p.id === id);
+  if (!panel) return false;
+  panels.forEach((p) => p !== panel && p.open && p.close());
+  if (!panel.open) panel.showModal();
+  if (location.hash !== `#${id}`) history.pushState(null, "", `#${id}`);
+  animatePanel(panel);
+  return true;
+}
+
+function closeAll() {
+  panels.forEach((p) => p.open && p.close());
+}
+
+document.addEventListener("click", (e) => {
+  const link = e.target.closest('a[href^="#"]');
+  if (!link) return;
+  const id = link.getAttribute("href").slice(1);
+  if (!id) {
+    e.preventDefault();
+    closeAll();
+    return;
+  }
+  if (openPanel(id)) e.preventDefault();
+});
+
+panels.forEach((panel) => {
+  panel.querySelector(".panel-close").addEventListener("click", () => panel.close());
+  panel.addEventListener("click", (e) => {
+    if (e.target === panel) panel.close();
+  });
+  panel.addEventListener("close", () => {
+    if (location.hash === `#${panel.id}`) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  });
+});
+
+window.addEventListener("popstate", () => {
+  const id = location.hash.slice(1);
+  if (!openPanel(id)) closeAll();
+});
+
+if (location.hash) openPanel(location.hash.slice(1));

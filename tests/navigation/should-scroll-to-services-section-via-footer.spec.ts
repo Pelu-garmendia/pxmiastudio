@@ -3,9 +3,9 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Navigation', () => {
-  test('should scroll to services section via footer', async ({ page }) => {
-    // 1. Click the "Servicios" footer link
-    await page.locator('.footer-links').getByRole('link', { name: 'Servicios' }).click();
+  test('should scroll to services section via header nav', async ({ page }) => {
+    // 1. Click the "Servicios" nav link
+    await page.locator('.nav').getByRole('link', { name: 'Servicios' }).click();
 
     await expect(page).toHaveURL(/#servicios$/);
     await expect(

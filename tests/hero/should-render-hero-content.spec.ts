@@ -12,7 +12,5 @@ test.describe('Hero', () => {
         name: 'Construimos el motor digital que hace crecer tu negocio.',
       })
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Hablemos' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Ver servicios' })).toBeVisible();
   });
 });

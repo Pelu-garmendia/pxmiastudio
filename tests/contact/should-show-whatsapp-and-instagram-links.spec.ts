@@ -4,8 +4,8 @@ import { test, expect } from '../fixtures';
 
 test.describe('Contact', () => {
   test('should show whatsapp and instagram links', async ({ page }) => {
-    // 1. Navigate to the contact section via the footer
-    await page.locator('.footer-links').getByRole('link', { name: 'Contacto' }).click();
+    // 1. Navigate to the contact section via the header nav
+    await page.locator('.nav').getByRole('link', { name: 'Contacto' }).click();
 
     const whatsappLink = page.getByRole('link', { name: 'Escribinos por WhatsApp' });
     await expect(whatsappLink).toBeVisible();

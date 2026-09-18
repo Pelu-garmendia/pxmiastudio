@@ -4,8 +4,8 @@ import { test, expect } from '../fixtures';
 
 test.describe('Quote form', () => {
   test('should open whatsapp with the quote message', async ({ page }) => {
-    // 1. Navigate to the quote section via the footer
-    await page.locator('.footer-links').getByRole('link', { name: 'Cotizar' }).click();
+    // 1. Navigate to the quote section via the header nav
+    await page.locator('.nav').getByRole('link', { name: 'Cotización' }).click();
 
     // 2. Select "Marketing" as the service type
     await page.getByRole('radio', { name: 'Marketing' }).check();

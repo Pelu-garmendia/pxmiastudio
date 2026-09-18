@@ -95,15 +95,17 @@ a {
   left: 0;
   right: 0;
   z-index: 50;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
 }
 
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  gap: 24px;
 }
 
 .logo {
@@ -113,7 +115,7 @@ a {
 
 .logo img {
   display: block;
-  height: 32px;
+  height: 28px;
   width: auto;
   mix-blend-mode: screen;
 }
@@ -158,6 +160,10 @@ button:focus-visible {
 
 /* Buttons */
 .btn {
+  border: none;
+  font-family: inherit;
+  line-height: 1.2;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -173,13 +179,12 @@ button:focus-visible {
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: #000000;
+  background: rgba(47, 123, 250, 0.16);
+  color: #a9caff;
 }
 
 .btn-primary:hover {
-  background: var(--accent-bright);
-  transform: translateY(-2px);
+  background: rgba(47, 123, 250, 0.28);
 }
 
 .btn-ghost {
@@ -187,8 +192,7 @@ button:focus-visible {
 }
 
 .btn-ghost:hover {
-  color: var(--accent-bright);
-  transform: translateY(-2px);
+  color: var(--text-dim);
 }
 
 .btn:active {
@@ -204,12 +208,12 @@ button:focus-visible {
 /* Hero */
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: calc(100dvh - 120px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: 96px;
-  padding-bottom: 80px;
+  padding-top: 72px;
+  padding-bottom: 32px;
 }
 
 .hero-title {
@@ -241,20 +245,14 @@ button:focus-visible {
   margin: 0 0 40px;
 }
 
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
 /* Sections */
 .section {
-  padding: 120px 0;
+  padding: 44px 0;
   position: relative;
 }
 
 .section-head {
-  margin-bottom: 60px;
+  margin-bottom: 24px;
   max-width: 640px;
 }
 
@@ -270,8 +268,9 @@ button:focus-visible {
 
 /* Services */
 .service-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 48px;
 }
 
 .service-row {
@@ -279,8 +278,8 @@ button:focus-visible {
   display: grid;
   grid-template-columns: 1fr 40px;
   align-items: center;
-  gap: 32px;
-  padding: 36px 0;
+  gap: 24px;
+  padding: 14px 0;
   cursor: default;
 }
 
@@ -296,9 +295,9 @@ button:focus-visible {
 .service-info h3 {
   font-family: var(--ff);
   font-weight: 400;
-  font-size: 27px;
+  font-size: 24px;
   letter-spacing: -0.02em;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   transition: color 280ms var(--ease-snap);
 }
 
@@ -330,7 +329,7 @@ button:focus-visible {
 .process-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 60px 32px;
+  gap: 32px;
 }
 
 .process-step {
@@ -358,7 +357,7 @@ button:focus-visible {
 .process-step p {
   color: var(--text-faint);
   font-weight: 200;
-  font-size: 18px;
+  font-size: 16px;
   margin: 0;
 }
 
@@ -367,7 +366,7 @@ button:focus-visible {
   max-width: 640px;
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 24px;
 }
 
 .quote-field {
@@ -412,21 +411,22 @@ button:focus-visible {
 .type-option span {
   display: inline-flex;
   align-items: center;
-  padding: 11px 20px;
+  padding: 12px 22px;
   border-radius: 999px;
   color: var(--text-dim);
-  font-size: 15px;
-  font-weight: 200;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
   transition: box-shadow 200ms var(--ease-snap), color 200ms var(--ease-snap),
     background 200ms var(--ease-snap);
 }
 
 .type-option input:checked + span {
-  background: var(--accent);
+  background: rgba(47, 123, 250, 0.16);
   box-shadow: none;
-  color: #000000;
-  font-weight: 600;
+  color: #a9caff;
 }
 
 .type-option input:focus-visible + span {
@@ -435,7 +435,7 @@ button:focus-visible {
 }
 
 .type-option:hover span {
-  box-shadow: inset 0 0 0 1px rgba(111, 227, 255, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(47, 123, 250, 0.5);
 }
 
 .quote-field textarea {
@@ -448,7 +448,7 @@ button:focus-visible {
   color: var(--text);
   font-family: var(--ff);
   font-weight: 200;
-  font-size: 18px;
+  font-size: 16px;
   padding: 12px 0;
   transition: border-color 200ms var(--ease-snap);
 }
@@ -492,7 +492,7 @@ button:focus-visible {
   font-weight: 200;
   font-size: 18px;
   max-width: 46ch;
-  margin: 0 0 40px;
+  margin: 0 0 28px;
 }
 
 .contact-actions {
@@ -520,19 +520,6 @@ button:focus-visible {
   color: var(--text-dim);
 }
 
-.footer-links {
-  display: flex;
-  gap: 24px;
-}
-
-.footer-links a {
-  transition: color 200ms var(--ease-snap);
-}
-
-.footer-links a:hover {
-  color: var(--accent-bright);
-}
-
 /* Reveal defaults (animated via GSAP) */
 .reveal,
 .reveal-up {
@@ -544,9 +531,15 @@ button:focus-visible {
 }
 
 @media (max-width: 860px) {
+  .header-inner {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
   .nav {
-    gap: 18px;
-    font-size: 12px;
+    gap: 6px 16px;
+    font-size: 11px;
+    flex-wrap: wrap;
   }
 
   .hero-title {
@@ -564,8 +557,13 @@ button:focus-visible {
     gap: 36px;
   }
 
+  .service-list {
+    grid-template-columns: 1fr;
+  }
+
   .service-row {
     grid-template-columns: 1fr;
+    padding: 14px 0;
   }
 
   .service-arrow {
@@ -573,6 +571,76 @@ button:focus-visible {
   }
 
   .section {
-    padding: 80px 0;
+    padding: 36px 0;
   }
+}
+
+/* Panels (mini modals opened from the nav) */
+.panel {
+  width: min(92vw, 900px);
+  max-height: 86dvh;
+  overflow: auto;
+  margin: auto;
+  padding: 44px 40px 40px;
+  border: none;
+  border-radius: 24px;
+  background: #060606;
+  color: var(--text);
+}
+
+.panel::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.panel-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 200ms var(--ease-snap);
+}
+
+.panel-close:hover {
+  color: var(--accent-bright);
+}
+
+.panel .container {
+  padding: 0;
+  max-width: none;
+}
+
+.panel.contact .contact-inner {
+  padding: 8px 0;
+}
+
+@media (max-width: 860px) {
+  .panel {
+    padding: 40px 22px 28px;
+  }
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+.quote-form .btn {
+  align-self: flex-start;
+}
+
+.process-step h3 {
+  transition: color 280ms var(--ease-snap);
+}
+
+.process-step:hover h3 {
+  color: var(--accent-bright);
 }

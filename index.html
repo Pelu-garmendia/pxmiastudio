@@ -20,6 +20,12 @@
         <a href="#" class="logo">
           <img src="/pxm-studio-logo.png" alt="PXM Studio" width="172" height="34" />
         </a>
+        <nav class="nav" aria-label="Principal">
+          <a href="#servicios">Servicios</a>
+          <a href="#proceso">¿Cómo lo hacemos?</a>
+          <a href="#cotizar">Cotización</a>
+          <a href="#contacto">Contacto</a>
+        </nav>
       </div>
     </header>
 
@@ -34,14 +40,11 @@
             Diseñamos productos, sitios y campañas que convierten. Un solo equipo
             para tu software, tu marca y tu marketing.
           </p>
-          <div class="hero-actions reveal">
-            <a href="#contacto" class="btn btn-primary">Hablemos</a>
-            <a href="#servicios" class="btn btn-ghost">Ver servicios</a>
-          </div>
         </div>
       </section>
 
-      <section id="servicios" class="section services">
+      <dialog id="servicios" class="panel services" aria-label="Servicios">
+        <button type="button" class="panel-close" aria-label="Cerrar">&times;</button>
         <div class="container">
           <div class="section-head">
             <h2 class="reveal">Todo lo que tu negocio necesita para crecer online.</h2>
@@ -94,12 +97,13 @@
             </div>
           </div>
         </div>
-      </section>
+      </dialog>
 
-      <section id="proceso" class="section process">
+      <dialog id="proceso" class="panel process" aria-label="Cómo lo hacemos">
+        <button type="button" class="panel-close" aria-label="Cerrar">&times;</button>
         <div class="container">
           <div class="section-head">
-            <h2 class="reveal">Simple, claro y sin sorpresas.</h2>
+            <h2 class="reveal">¿Cómo lo hacemos?</h2>
           </div>
           <div class="process-grid">
             <div class="process-step reveal-up">
@@ -124,9 +128,10 @@
             </div>
           </div>
         </div>
-      </section>
+      </dialog>
 
-      <section id="cotizar" class="section quote">
+      <dialog id="cotizar" class="panel quote" aria-label="Cotización">
+        <button type="button" class="panel-close" aria-label="Cerrar">&times;</button>
         <div class="container">
           <div class="section-head">
             <h2 class="reveal">Cotizá tu servicio.</h2>
@@ -167,9 +172,10 @@
             <button type="submit" class="btn btn-primary btn-lg">Enviar cotización por WhatsApp</button>
           </form>
         </div>
-      </section>
+      </dialog>
 
-      <section id="contacto" class="section contact">
+      <dialog id="contacto" class="panel contact" aria-label="Contacto">
+        <button type="button" class="panel-close" aria-label="Cerrar">&times;</button>
         <div class="container contact-inner">
           <h2 class="reveal">¿Listo para hacer crecer tu negocio?</h2>
           <p class="contact-sub reveal">
@@ -184,24 +190,18 @@
             >Escribinos por WhatsApp</a>
             <a
               href="https://instagram.com/pxmiastudio"
-              class="btn btn-ghost btn-lg"
+              class="btn btn-primary btn-lg"
               target="_blank"
               rel="noopener"
             >@pxmiastudio</a>
           </div>
         </div>
-      </section>
+      </dialog>
     </main>
 
     <footer class="site-footer">
       <div class="container footer-inner">
         <span>© 2026 PXM Studio. Todos los derechos reservados.</span>
-        <div class="footer-links">
-          <a href="#servicios">Servicios</a>
-          <a href="#proceso">Proceso</a>
-          <a href="#cotizar">Cotizar</a>
-          <a href="#contacto">Contacto</a>
-        </div>
       </div>
     </footer>
 
