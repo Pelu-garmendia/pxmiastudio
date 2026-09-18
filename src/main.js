@@ -17,24 +17,22 @@ if (reduceMotion) {
     ".reveal, .reveal-up, .hero-title, .hero-title .reveal-line span, .contact-actions .btn",
     { opacity: 1, x: 0, y: 0, yPercent: 0 }
   );
-  gsap.set(".service-line", { scaleX: 1 });
 } else {
   // Hero entrance
   const heroTl = gsap.timeline({ defaults: { ease: EASE } });
   heroTl
-    .to(".hero .eyebrow", { opacity: 1, x: 0, duration: 0.28 }, 0.1)
     .fromTo(
       ".hero-title .reveal-line span",
       { yPercent: 110 },
       { yPercent: 0, duration: 0.6, stagger: 0.1 },
-      0.2
+      0.1
     )
-    .to(".hero-title", { opacity: 1, duration: 0.01 }, 0.2)
-    .to(".hero-sub", { opacity: 1, x: 0, duration: 0.45 }, 0.5)
-    .to(".hero-actions", { opacity: 1, x: 0, duration: 0.45 }, 0.6);
+    .to(".hero-title", { opacity: 1, duration: 0.01 }, 0.1)
+    .to(".hero-sub", { opacity: 1, x: 0, duration: 0.45 }, 0.45)
+    .to(".hero-actions", { opacity: 1, x: 0, duration: 0.45 }, 0.55);
 
   gsap.set(".hero-title", { opacity: 0 });
-  gsap.set(".hero .eyebrow, .hero-sub, .hero-actions", { x: -24 });
+  gsap.set(".hero-sub, .hero-actions", { x: -24 });
 
   // Generic scroll-reveal — lateral slide + opacity, not a vertical fade-up
   document.querySelectorAll(".section .reveal").forEach((el) => {
@@ -77,26 +75,6 @@ if (reduceMotion) {
     );
   });
 
-  // Service rows draw their underline in, staggered after the row itself slides in
-  const serviceLines = document.querySelectorAll(".service-line");
-  if (serviceLines.length) {
-    gsap.fromTo(
-      serviceLines,
-      { scaleX: 0 },
-      {
-        scaleX: 1,
-        duration: 0.45,
-        ease: EASE,
-        stagger: 0.1,
-        delay: 0.2,
-        scrollTrigger: {
-          trigger: ".service-list",
-          start: "top 80%",
-        },
-      }
-    );
-  }
-
   // Contact CTAs, staggered
   gsap.fromTo(
     ".contact-actions .btn",
@@ -114,15 +92,3 @@ if (reduceMotion) {
     }
   );
 }
-
-// Subtle header background intensifies on scroll (uses ScrollTrigger, not a scroll listener)
-const header = document.querySelector(".site-header");
-ScrollTrigger.create({
-  start: 40,
-  end: 99999,
-  onUpdate: (self) => {
-    header.style.boxShadow = self.progress > 0
-      ? "0 1px 0 rgba(255,255,255,0.06)"
-      : "none";
-  },
-});
