@@ -5,6 +5,16 @@ export function initQuoteForm() {
   if (!form) return;
 
   const detail = document.getElementById("quote-detail");
+
+  const groups = document.querySelectorAll(".price-ref [data-for]");
+  const showPrices = () => {
+    const tipo = new FormData(form).get("tipo");
+    groups.forEach((g) => {
+      g.hidden = g.dataset.for !== tipo;
+    });
+  };
+  form.addEventListener("change", showPrices);
+  showPrices();
   const error = document.getElementById("quote-error");
 
   form.addEventListener("submit", (e) => {

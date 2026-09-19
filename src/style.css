@@ -644,3 +644,66 @@ textarea {
 .process-step:hover h3 {
   color: var(--accent-bright);
 }
+
+.price-ref {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.price-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+dl.price-list {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+dl.price-list > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+dl.price-list dt {
+  color: var(--text-faint);
+  font-size: 16px;
+}
+
+dl.price-list dd {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: right;
+}
+
+dl.price-list dd span {
+  display: inline;
+  margin-left: 10px;
+  font-size: 13px;
+  font-weight: 200;
+  color: var(--text-dim);
+}
+
+.price-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+p.price-list.price-note {
+  font-size: 16px;
+  color: var(--text-faint);
+}
+
+.price-ref [hidden] {
+  display: none;
+}
