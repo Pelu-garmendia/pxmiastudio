@@ -208,7 +208,7 @@ button:focus-visible {
 /* Hero */
 .hero {
   position: relative;
-  min-height: calc(100dvh - 120px);
+  min-height: calc(100dvh - 58px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -504,8 +504,8 @@ button:focus-visible {
 
 /* Footer */
 .site-footer {
-  padding: 56px 0 28px;
-  background: linear-gradient(to top, #000 35%, transparent);
+  padding: 18px 0;
+  background: #000;
   position: relative;
   z-index: 1;
 }
@@ -600,6 +600,11 @@ button:focus-visible {
 
   .section {
     padding: 36px 0;
+  }
+
+  .footer-inner {
+    font-size: 12px;
+    white-space: nowrap;
   }
 }
 

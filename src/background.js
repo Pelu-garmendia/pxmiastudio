@@ -362,7 +362,7 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
   const placeGlobe = () => {
     const aspect = window.innerWidth / window.innerHeight;
     const mobile = aspect < 0.9;
-    if (mobile) system.position.set(0.4, -4.4, -2);
+    if (mobile) system.position.set(0.4, -5.0, -2);
     else system.position.set(Math.min(2.7 * aspect, 5.13 * aspect - 2.6), -0.6, -2);
     system.scale.setScalar(mobile ? 1 : 1.1);
     ai.badge.scale.setScalar(mobile ? 0.85 : 1.045);
