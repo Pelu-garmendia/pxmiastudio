@@ -50,6 +50,8 @@ function openPanel(id) {
   if (!panel) return false;
   panels.forEach((p) => p !== panel && p.open && p.close());
   if (!panel.open) panel.showModal();
+  panel.setAttribute("tabindex", "-1");
+  panel.focus({ preventScroll: true });
   if (location.hash !== `#${id}`) history.pushState(null, "", `#${id}`);
   animatePanel(panel);
   return true;
