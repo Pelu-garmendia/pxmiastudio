@@ -514,6 +514,11 @@ button:focus-visible {
 }
 
 @media (max-width: 860px) {
+  .hero {
+    justify-content: flex-start;
+    padding-top: 128px;
+  }
+
   .header-inner {
     flex-wrap: wrap;
     gap: 8px 16px;
