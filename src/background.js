@@ -360,14 +360,30 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
   scene.add(system);
 
   const placeGlobe = () => {
-    const aspect = window.innerWidth / window.innerHeight;
-    const mobile = aspect < 0.9;
-    if (mobile) system.position.set(0.4, -5.0, -2);
-    else system.position.set(Math.min(2.7 * aspect, 5.13 * aspect - 2.6), -0.6, -2);
-    system.scale.setScalar(mobile ? 1 : 1.1);
-    ai.badge.scale.setScalar(mobile ? 0.85 : 1.045);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const aspect = w / h;
+    const wide = w >= 1000 && aspect >= 1.3;
+    if (wide) {
+      system.position.set(Math.min(2.7 * aspect, 5.13 * aspect - 2.6), -0.6, -2);
+      system.scale.setScalar(1.1);
+      ai.badge.scale.setScalar(1.045);
+      return;
+    }
+    // Stacked layout: hang the AI badge just below the hero copy, wherever it ends.
+    const halfH = Math.tan(THREE.MathUtils.degToRad(25)) * 11;
+    const halfW = halfH * aspect;
+    const sub = document.querySelector(".hero-sub");
+    const subBottom = sub ? sub.getBoundingClientRect().bottom : h * 0.55;
+    const badgeY = halfH - ((subBottom + 64) / h) * 2 * halfH;
+    const badgeX = 0.44 * halfW;
+    system.scale.setScalar(1);
+    ai.badge.scale.setScalar(0.85);
+    system.position.set(badgeX - ai.pos.x, badgeY - ai.pos.y, -2);
   };
   placeGlobe();
+  window.addEventListener("load", placeGlobe);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeGlobe);
 
   const tmpA = new THREE.Vector3();
   const tmpB = new THREE.Vector3();
