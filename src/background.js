@@ -375,7 +375,7 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
     const halfW = halfH * aspect;
     const sub = document.querySelector(".hero-sub");
     const subBottom = sub ? sub.getBoundingClientRect().bottom : h * 0.55;
-    const badgeY = halfH - ((subBottom + 64) / h) * 2 * halfH;
+    const badgeY = halfH - ((subBottom + 34) / h) * 2 * halfH;
     const badgeX = 0.44 * halfW;
     system.scale.setScalar(1);
     ai.badge.scale.setScalar(0.85);
