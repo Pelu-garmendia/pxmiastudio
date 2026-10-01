@@ -6,7 +6,7 @@ import landTopo from "world-atlas/land-110m.json";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ACCENT = new THREE.Color(0x6fe3ff);
+const ACCENT = new THREE.Color(0x5b9bff);
 const DIM = new THREE.Color(0x2a3550);
 
 // [name, lon, lat]. Index 0 is the studio hub; the rest span every continent.
@@ -176,7 +176,7 @@ function buildAiIconTexture() {
   c.fillStyle = "rgba(4,10,20,0.88)";
   c.fill();
   c.lineWidth = 6;
-  c.strokeStyle = "#6fe3ff";
+  c.strokeStyle = "#5b9bff";
   c.stroke();
 
   const sparkle = (cx, cy, r) => {
@@ -189,12 +189,12 @@ function buildAiIconTexture() {
     c.closePath();
     c.fill();
   };
-  c.fillStyle = "#e8fbff";
+  c.fillStyle = "#eaf1ff";
   sparkle(116, 108, 58);
-  c.fillStyle = "#6fe3ff";
+  c.fillStyle = "#5b9bff";
   sparkle(176, 68, 24);
   sparkle(180, 136, 16);
-  c.fillStyle = "#e8fbff";
+  c.fillStyle = "#eaf1ff";
   c.font = "700 44px Inter, system-ui, sans-serif";
   c.textAlign = "center";
   c.fillText("IA", 128, 216);

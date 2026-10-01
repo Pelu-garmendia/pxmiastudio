@@ -34,7 +34,14 @@ export function initQuoteForm() {
       `Detalle: ${detailValue}`;
 
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank", "noopener");
+    // Some browsers (Instagram's in-app browser, several mobile ones) block
+    // the new tab; fall back to opening WhatsApp from this same tab.
+    const win = window.open(url, "_blank");
+    if (win) {
+      win.opener = null;
+    } else {
+      window.location.href = url;
+    }
   });
 
   detail.addEventListener("input", () => {

@@ -4,6 +4,12 @@ import { test, expect } from '../fixtures';
 
 test.describe('Quote form', () => {
   test('should open whatsapp with the quote message', async ({ page }) => {
+    // Answer wa.me locally so the test checks our URL without depending on
+    // WhatsApp being reachable from the test machine.
+    await page.context().route('https://wa.me/**', (route) =>
+      route.fulfill({ contentType: 'text/html', body: '<p>WhatsApp</p>' })
+    );
+
     // 1. Navigate to the quote section via the header nav
     await page.locator('.nav').getByRole('link', { name: 'Cotización' }).click();
 
@@ -18,11 +24,7 @@ test.describe('Quote form', () => {
     await page.getByRole('button', { name: 'Enviar cotización por WhatsApp' }).click();
     const popup = await popupPromise;
 
-    // wa.me redirects to api.whatsapp.com in a real browser, so match on the
-    // phone number + prefilled text rather than the wa.me host. Use
-    // URLSearchParams (not decodeURIComponent) since the redirect re-encodes
-    // spaces as "+".
-    await expect.poll(() => popup.url()).toContain('5491135943909');
+    await expect.poll(() => popup.url()).toContain('https://wa.me/5491135943909');
     const text = new URL(popup.url()).searchParams.get('text');
     expect(text).toContain('Marketing');
     expect(text).toContain('Necesito campañas de Instagram y Google Ads.');
