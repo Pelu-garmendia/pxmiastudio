@@ -6,14 +6,13 @@ the site (`index.html` + `src/style.css`) and the Diagnóstico Digital page
 listed here.
 
 Matches the look of PXM's Instagram carousels ("Caso real", "Software por
-rubro"): deep navy canvas with a faint blueprint grid, heavy rounded display
+rubro"): deep navy canvas, heavy rounded display
 type with one or two words picked out in blue, glossy blue gradient pills
 and soft-bordered navy cards.
 
 ## Visual thesis
 
-A deep navy canvas (`#070d1f`) with a 44px grid that fades out toward the
-edges. Headlines are big and heavy (Plus Jakarta Sans 800) with tight
+A plain deep navy canvas (`#070d1f`), no grid or pattern. Headlines are big and heavy (Plus Jakarta Sans 800) with tight
 tracking; the key words of each headline — and often the closing period —
 are colored `--accent-bright`. Small uppercase "eyebrow" pills in a glossy
 blue gradient label each view. Content sits on navy cards with a 1px
@@ -26,7 +25,7 @@ blue gradient label each view. Content sits on navy cards with a 1px
 | `--bg` | `#070d1f` | Page canvas |
 | `--surface` | `#0e1830` | Cards, panels |
 | `--surface-2` | `#142243` | Inputs, raised surfaces, panel gradient start |
-| `--line` | `#1c2b4f` | Grid lines, card and input borders, ghost button outline |
+| `--line` | `#1c2b4f` | Card and input borders, ghost button outline |
 | `--text` | `#eef2fb` | Headlines and body text |
 | `--text-dim` | `#93a1c3` | Secondary copy, labels, nav |
 | `--text-faint` | `#c3cde4` | Values in lists (prices) |
@@ -84,7 +83,7 @@ colored closing period in `<span class="dot">`.
 **Do**
 - Highlight one or two key words per headline in `--accent-bright`.
 - Keep gradients to the blue accent family, on pills and buttons only.
-- Keep the grid subtle; it should read as texture, not lines.
+- Keep the canvas plain navy: no grid lines or patterns behind content.
 
 **Don't**
 - No italic headlines.

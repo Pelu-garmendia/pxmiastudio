@@ -72,6 +72,15 @@ Instagram CTAs. A footer repeats anchor links to each section.
     - expect: a new tab opens to a `https://wa.me/5491135943909` URL
     - expect: the URL's prefilled text contains the selected type and the detail
 
+#### 3.1b. should-fall-back-when-new-tab-is-blocked
+
+**File:** `tests/quote/should-fall-back-when-new-tab-is-blocked.spec.ts`
+
+**Steps:**
+  1. Make `window.open` return null (popup blocked, as in in-app browsers)
+  2. Fill and submit the quote form
+    - expect: the same tab navigates to `https://wa.me/5491135943909` with the type and detail in the text
+
 #### 3.2. should-show-error-when-detail-empty
 
 **File:** `tests/quote/should-show-error-when-detail-empty.spec.ts`

@@ -33,27 +33,11 @@ html {
 body {
   margin: 0;
   background-color: var(--bg);
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 44px 44px;
-  background-position: -1px -1px;
   color: var(--text);
   font-family: var(--ff);
   font-weight: 400;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Fades the grid out toward the edges, like the carousel backgrounds */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background: radial-gradient(ellipse 85% 70% at 50% 30%, transparent 0%, var(--bg) 80%);
-  opacity: 0.9;
 }
 
 h1 em,
