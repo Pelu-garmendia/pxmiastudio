@@ -115,7 +115,7 @@ Instagram CTAs. A footer repeats anchor links to each section.
   1. Click the "Casos" nav link
     - expect: URL hash becomes "#casos"
     - expect: the "Cómo digitalizamos una farmacia de barrio." heading and the 5 deliverables are visible
-    - expect: the first 4 deliverables show their illustration and every image loads
+    - expect: each of the 5 deliverables shows its illustration and every image loads
     - expect: "Ver la web de la farmacia" links to https://farmagarmendia.netlify.app/
   2. Click "Quiero lo mismo para mi negocio"
     - expect: the quote panel opens and the Casos panel closes
