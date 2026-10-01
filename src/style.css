@@ -796,7 +796,7 @@ p.price-list.price-note {
 }
 
 .panel.services { width: min(92vw, 860px); }
-.panel.cases { width: min(92vw, 760px); }
+.panel.cases { width: min(92vw, 940px); }
 .panel.process { width: min(92vw, 980px); }
 .panel.quote { width: min(92vw, 720px); }
 .panel.contact { width: min(92vw, 600px); }
@@ -850,28 +850,56 @@ h2 em.em-green {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
-.case-list li {
+.case-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 14px 18px;
   border-radius: 18px;
   background: var(--surface);
   border: 1px solid var(--line);
-  font-weight: 500;
 }
 
-.case-list svg {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  padding: 4px;
-  border-radius: 50%;
-  background: var(--green);
-  color: var(--bg);
+.case-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 470 / 215;
+  object-fit: contain;
+  background: var(--bg);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.case-tag {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+}
+
+.case-item h3 {
+  margin: 0;
+  font-family: var(--ff-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.case-item p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.case-item-text {
+  justify-content: center;
+  padding: 22px 20px;
+  grid-column: 1 / -1;
 }
 
 .case-note {
