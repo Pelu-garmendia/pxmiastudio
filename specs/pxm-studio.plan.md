@@ -94,6 +94,22 @@ Instagram CTAs. A footer repeats anchor links to each section.
     - expect: a link "Escribinos por WhatsApp" is visible with href "https://wa.me/5491135943909"
     - expect: a link "@pxmiastudio" is visible with href "https://instagram.com/pxmiastudio"
 
+### 4b. Casos
+
+**Seed:** `tests/seed.spec.ts`
+
+#### 4b.1. should-show-the-farmacia-case
+
+**File:** `tests/cases/should-show-the-farmacia-case.spec.ts`
+
+**Steps:**
+  1. Click the "Casos" nav link
+    - expect: URL hash becomes "#casos"
+    - expect: the "Cómo digitalizamos una farmacia de barrio." heading and the 5 deliverables are visible
+    - expect: "Ver la web de la farmacia" links to https://farmagarmendia.netlify.app/
+  2. Click "Quiero lo mismo para mi negocio"
+    - expect: the quote panel opens and the Casos panel closes
+
 ### 5. Diagnóstico digital (`/diagnostico/`)
 
 **Helpers:** `tests/diagnostico/helpers.ts` (the page is standalone, so these
