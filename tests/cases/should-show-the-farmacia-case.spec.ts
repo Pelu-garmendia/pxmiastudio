@@ -10,10 +10,10 @@ test.describe('Casos', () => {
     await expect(page).toHaveURL(/#casos$/);
     const panel = page.getByRole('dialog', { name: 'Casos' });
     await expect(panel.getByRole('heading', { name: 'Cómo digitalizamos una farmacia de barrio.' })).toBeVisible();
-    await expect(panel.getByRole('listitem')).toHaveCount(5);
-    // Each of the first four items is illustrated with its slide image.
+    await expect(panel.locator('.case-item')).toHaveCount(5);
+    // Every item is illustrated with its slide image.
     const images = panel.getByRole('img');
-    await expect(images).toHaveCount(4);
+    await expect(images).toHaveCount(5);
     for (const img of await images.all()) {
       await img.scrollIntoViewIfNeeded();
       await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);

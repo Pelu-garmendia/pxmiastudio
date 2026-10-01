@@ -896,10 +896,50 @@ h2 em.em-green {
   font-size: 15px;
 }
 
-.case-item-text {
-  justify-content: center;
-  padding: 22px 20px;
+.case-item-wide {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 300px);
+  align-items: center;
+  gap: 20px;
+  padding: 18px 18px 18px 22px;
+}
+
+.case-item-wide img {
+  aspect-ratio: auto;
+  margin: 0;
+}
+
+.case-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.case-points {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.case-points li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 15px;
+  color: var(--text-faint);
+}
+
+.case-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-bright);
 }
 
 .case-note {
@@ -916,5 +956,16 @@ h2 em.em-green {
 @media (max-width: 860px) {
   .case-list {
     grid-template-columns: 1fr;
+  }
+
+  .case-item-wide {
+    grid-template-columns: 1fr;
+    padding: 14px 14px 18px;
+  }
+
+  .case-item-wide img {
+    order: -1;
+    max-width: 320px;
+    margin: 0 auto 10px;
   }
 }
