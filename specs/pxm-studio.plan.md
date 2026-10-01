@@ -24,6 +24,16 @@ Instagram CTAs. A footer repeats anchor links to each section.
     - expect: the "Hablemos" primary CTA link is visible
     - expect: the "Ver servicios" secondary CTA link is visible
 
+#### 1.2. should-link-to-diagnostico
+
+**File:** `tests/hero/should-link-to-diagnostico.spec.ts`
+
+**Steps:**
+  1. Click "Hacé el diagnóstico gratis"
+    - expect: the URL becomes `/diagnostico/` and the quiz intro heading is visible
+  2. Click "Pedí tu cotización" in the hero
+    - expect: the quote panel opens ("Cotizá tu servicio.")
+
 ### 2. Navigation
 
 **Seed:** `tests/seed.spec.ts`

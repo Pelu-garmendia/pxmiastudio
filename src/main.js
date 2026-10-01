@@ -9,7 +9,7 @@ initBackground(document.getElementById("bg-canvas"), { reduceMotion });
 initQuoteForm();
 
 if (reduceMotion) {
-  gsap.set(".hero .reveal, .hero-title, .hero-title .reveal-line span", {
+  gsap.set(".hero .reveal, .hero-title, .hero-title .reveal-line > span", {
     opacity: 1,
     x: 0,
     yPercent: 0,
@@ -18,16 +18,16 @@ if (reduceMotion) {
   const heroTl = gsap.timeline({ defaults: { ease: EASE } });
   heroTl
     .fromTo(
-      ".hero-title .reveal-line span",
+      ".hero-title .reveal-line > span",
       { yPercent: 110 },
       { yPercent: 0, duration: 0.6, stagger: 0.1 },
       0.1
     )
     .to(".hero-title", { opacity: 1, duration: 0.01 }, 0.1)
-    .to(".hero-sub", { opacity: 1, x: 0, duration: 0.45 }, 0.45);
+    .to(".hero .reveal", { opacity: 1, x: 0, duration: 0.45, stagger: 0.08 }, 0.3);
 
   gsap.set(".hero-title", { opacity: 0 });
-  gsap.set(".hero-sub", { x: -24 });
+  gsap.set(".hero .reveal", { x: -24 });
 }
 
 const panels = [...document.querySelectorAll("dialog.panel")];
