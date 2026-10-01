@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Test gratis de 2 minutos: descubrí qué tan digital es tu negocio y qué te conviene mejorar primero.">
+<link rel="icon" type="image/png" href="/pxm-studio-logo.png">
+<title>Diagnóstico Digital PXM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,700;0,800;1,800;1,900&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: una columna estilo app, fondo navy con grilla sutil (carruseles PXM), una pregunta por pantalla */
+:root{
+  --bg:#070d1f;
+  --surface:#0e1830;
+  --surface-2:#142243;
+  --line:#22335c;
+  --fg:#eef2fb;
+  --muted:#93a1c3;
+  --accent:#3d7bff;
+  --accent-soft:#3d7bff26;
+  --good:#2fd17c;
+  --warn:#ffb547;
+  --bad:#ff5d6c;
+  --wa:#25d366;
+  --wa-ink:#05230f;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--fg)}
+body{
+  font-family:var(--body);font-size:16px;line-height:1.5;
+  background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:44px 44px;background-position:-1px -1px;
+  background-color:var(--bg);
+  min-height:100%;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,transparent 0%,var(--bg) 75%);opacity:.92}
+.wrap{position:relative;max-width:560px;margin:0 auto;padding-inline:18px;padding-block:20px 48px;display:flex;flex-direction:column;gap:22px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:var(--display);font-weight:900;font-style:italic;font-size:22px;letter-spacing:-.02em;line-height:1;display:flex;align-items:baseline;gap:6px}
+.logo .x{color:var(--accent)}
+.logo small{font-style:normal;font-weight:700;font-size:11px;letter-spacing:.22em}
+.counter{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+
+.pill{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
+  background:linear-gradient(180deg,#5a90ff,#2f63e6);color:#fff;font-weight:700;font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:999px;
+  box-shadow:inset 0 1px 0 #ffffff55,0 6px 18px -6px var(--accent)}
+
+h1,h2{font-family:var(--display);font-weight:800;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,8.5vw,46px);line-height:1.02}
+h2{font-size:clamp(23px,5.8vw,29px);line-height:1.12}
+h1 em,h2 em{font-style:italic;color:var(--accent)}
+.lead{color:var(--muted);font-size:17px;margin:0;max-width:46ch}
+
+/* botones */
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:14px;
+  padding:16px 22px;font-weight:700;font-size:17px;text-decoration:none;transition:transform .15s,filter .15s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 10px 30px -10px var(--accent)}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-wa{background:var(--wa);color:var(--wa-ink);width:100%;font-size:18px;box-shadow:0 10px 30px -12px var(--wa)}
+.btn-wa:hover{filter:brightness(1.06)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
+.btn-ghost:hover{border-color:var(--muted)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* intro */
+.facts{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:14px;margin:0;padding:0;list-style:none}
+.facts li{display:flex;align-items:center;gap:7px}
+.facts li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.sample{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.sample-tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.sample b{display:block;font-family:var(--display);font-size:18px;margin:2px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--fg)}
+.chip.bad{border-color:#ff5d6c66;color:#ffb3ba}
+.chip.warn{border-color:#ffb54766;color:#ffd79a}
+
+/* form datos */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:600;font-size:14px}
+.field input,.field select{background:var(--surface);border:1px solid var(--line);color:var(--fg);border-radius:12px;padding:14px;font:inherit;font-size:16px;width:100%}
+.field input::placeholder{color:#64739a}
+.hint{font-size:13px;color:var(--muted)}
+
+/* progreso */
+.progress{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .35s ease}
+
+/* opciones */
+.area-tag{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;font-size:16px;font-weight:500;transition:border-color .15s,background .15s,transform .15s}
+.opt:hover{border-color:var(--accent);background:var(--surface-2)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .k{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.opt.sel .k{background:var(--accent);color:#fff;border-color:var(--accent)}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.linkbtn{background:none;border:0;color:var(--muted);font-weight:600;padding:8px 0}
+.linkbtn:hover{color:var(--fg)}
+
+/* resultado */
+.result-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px 20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.gauge{width:100%;max-width:280px}
+.score-num{font-family:var(--mono);font-weight:700;font-size:54px;line-height:1;margin-top:-62px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.score-num small{font-size:20px;color:var(--muted)}
+.level{font-family:var(--display);font-weight:800;font-style:italic;font-size:22px;margin-top:8px}
+.level-sub{color:var(--muted);font-size:15px;max-width:40ch;margin:0}
+
+.bars{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px}
+.bar-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:14px}
+.bar-row .name{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar-track span{display:block;height:100%;border-radius:99px}
+.bar-row .st{font-family:var(--mono);font-size:12px;text-align:right;font-weight:700}
+
+.recs{display:flex;flex-direction:column;gap:12px}
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 16px 16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px}
+.rec .n{grid-row:span 3;font-family:var(--display);font-weight:900;font-style:italic;font-size:28px;color:var(--accent);line-height:1}
+.rec h3{margin:0;font-family:var(--display);font-size:18px;font-weight:700}
+.rec p{margin:0;color:var(--muted);font-size:15px}
+.rec .sol{font-size:13px;font-weight:700;color:var(--fg);margin-top:4px}
+.rec .sol::before{content:"Solución PXM · ";color:var(--accent)}
+
+.cta{background:linear-gradient(160deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:24px;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
+.cta p{margin:0;color:var(--muted)}
+.contact{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;font-size:14px;color:var(--muted)}
+.contact b{color:var(--fg);font-family:var(--mono);font-weight:500;user-select:all}
+.row-btns{display:flex;gap:10px;flex-wrap:wrap}
+.row-btns .btn{flex:1 1 180px;font-size:15px;padding:13px 16px}
+.toast{font-size:13px;color:var(--good);text-align:center;min-height:1.2em;margin:0}
+.foot{text-align:center;color:var(--muted);font-size:13px}
+.foot a{color:var(--fg)}
+
+.screen{display:flex;flex-direction:column;gap:20px;animation:in .35s ease both}
+@keyframes in{from{opacity:.0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}.progress span,.opt{transition:none}}
+@media (max-width:420px){.bar-row{grid-template-columns:minmax(0,1fr) 80px 40px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="logo">P<span class="x">X</span>M <small>STUDIO</small></div>
+    <div class="counter" id="counter">DIAGNÓSTICO GRATIS</div>
+  </header>
+
+  <!-- INTRO -->
+  <section class="screen" id="s-intro">
+    <span class="pill">Test gratis · 2 minutos</span>
+    <h1>¿Qué tan <em>digital</em> es tu negocio?</h1>
+    <p class="lead">Respondé unas 10 preguntas pensadas para tu rubro y recibí tu puntaje del 1 al 10, con lo que más te conviene mejorar primero.</p>
+    <ul class="facts">
+      <li>Sin registrarte</li><li>Resultado al instante</li><li>Comercios, servicios, gastronomía, gimnasios y artistas</li>
+    </ul>
+    <div class="sample" aria-label="Ejemplo de resultado">
+      <svg width="86" height="56" viewBox="0 0 86 56" aria-hidden="true">
+        <path d="M8 50 A35 35 0 0 1 78 50" fill="none" stroke="var(--surface-2)" stroke-width="9" stroke-linecap="round"/>
+        <path d="M8 50 A35 35 0 0 1 78 50" fill="none" stroke="var(--warn)" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="44 100"/>
+        <text x="43" y="49" text-anchor="middle" fill="var(--fg)" font-family="JetBrains Mono,monospace" font-size="17" font-weight="700">4.4</text>
+      </svg>
+      <div>
+        <span class="sample-tag">Ejemplo de resultado</span>
+        <b>Almacén Don Luis</b>
+        <div class="chips"><span class="chip bad">Sin catálogo online</span><span class="chip warn">Pedidos desordenados</span><span class="chip bad">Sin fidelización</span></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="go-start">Empezar el diagnóstico →</button>
+  </section>
+
+  <!-- DATOS -->
+  <section class="screen" id="s-data" hidden>
+    <div class="progress"><span style="width:4%"></span></div>
+    <span class="area-tag">Antes de empezar</span>
+    <h2>Contanos de tu <em>negocio</em></h2>
+    <div class="field">
+      <label for="biz-name">Nombre del negocio</label>
+      <input id="biz-name" type="text" maxlength="60" placeholder="Ej: Blanquería Sofía" autocomplete="organization">
+      <span class="hint">Opcional. Lo usamos solo para armar tu resultado.</span>
+    </div>
+    <div class="field">
+      <label for="biz-type">Rubro</label>
+      <select id="biz-type" aria-describedby="type-hint">
+        <option value="">Elegí tu rubro</option>
+        <optgroup label="Comercios">
+          <option value="productos">Ropa o accesorios</option>
+          <option value="productos">Bijou</option>
+          <option value="productos">Blanquería o deco</option>
+          <option value="productos">Almacén o kiosco</option>
+          <option value="productos">Farmacia o perfumería</option>
+          <option value="mayorista">Mayorista o distribuidora</option>
+        </optgroup>
+        <optgroup label="Gastronomía">
+          <option value="comidas">Comidas, rotisería o bar</option>
+        </optgroup>
+        <optgroup label="Servicios con turnos">
+          <option value="turnos">Peluquería o barbería</option>
+          <option value="turnos">Estética, spa o masajes</option>
+          <option value="turnos">Consultorio o profesional de salud</option>
+          <option value="gimnasio">Gimnasio o estudio de entrenamiento</option>
+        </optgroup>
+        <optgroup label="Proyectos y comunidades">
+          <option value="presencia">Artista o banda</option>
+          <option value="presencia">Comunidad u organización</option>
+          <option value="presencia">Centro de capacitación</option>
+          <option value="presencia">Profesional o freelance</option>
+        </optgroup>
+        <option value="general">Otro</option>
+      </select>
+      <span class="hint" id="type-hint">Con esto elegimos las preguntas que aplican a tu negocio.</span>
+    </div>
+    <div class="nav">
+      <button class="linkbtn" id="data-back">← Volver</button>
+      <button class="btn btn-primary" id="data-next">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- PREGUNTA -->
+  <section class="screen" id="s-q" hidden>
+    <div class="progress"><span id="prog"></span></div>
+    <span class="area-tag" id="q-area"></span>
+    <h2 id="q-text"></h2>
+    <div class="options" id="q-opts" role="radiogroup"></div>
+    <div class="nav">
+      <button class="linkbtn" id="q-back">← Anterior</button>
+      <span class="counter" id="q-count"></span>
+    </div>
+  </section>
+
+  <!-- RESULTADO -->
+  <section class="screen" id="s-res" hidden>
+    <span class="pill" id="res-pill">Tu resultado</span>
+    <div class="result-card">
+      <svg class="gauge" viewBox="0 0 220 128" aria-hidden="true">
+        <path d="M20 112 A90 90 0 0 1 200 112" fill="none" stroke="var(--surface-2)" stroke-width="16" stroke-linecap="round"/>
+        <path id="g-arc" d="M20 112 A90 90 0 0 1 200 112" fill="none" stroke="var(--accent)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" style="transition:stroke-dasharray 1s ease"/>
+        <text x="20" y="127" text-anchor="middle" fill="var(--muted)" font-family="JetBrains Mono,monospace" font-size="10">0</text>
+        <text x="200" y="127" text-anchor="middle" fill="var(--muted)" font-family="JetBrains Mono,monospace" font-size="10">10</text>
+      </svg>
+      <div class="score-num"><span id="score">0</span><small>/10</small></div>
+      <div class="level" id="level"></div>
+      <p class="level-sub" id="level-sub"></p>
+    </div>
+
+    <h2>Cómo estás en <em>cada área</em></h2>
+    <div class="bars" id="bars"></div>
+
+    <h2 id="recs-title">Lo que <em>más te conviene</em> mejorar</h2>
+    <div class="recs" id="recs"></div>
+
+    <div class="cta">
+      <h2>¿Querés subir tu <em>puntaje</em>?</h2>
+      <p>Mandanos tu resultado por WhatsApp y te decimos cómo resolverlo, con precios claros y sin compromiso.</p>
+      <a class="btn btn-wa" id="wa-link" href="#" target="_blank" rel="noopener">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+        Quiero mejorar mi puntaje
+      </a>
+      <div class="contact"><span>WhatsApp <b>11 3594-3909</b></span><span>Instagram <b>@pxmiastudio</b></span></div>
+    </div>
+
+    <div class="row-btns">
+      <button class="btn btn-ghost" id="share">Copiar resultado para compartir</button>
+      <button class="btn btn-ghost" id="restart">Hacer el test de nuevo</button>
+    </div>
+    <p class="toast" id="toast" aria-live="polite"></p>
+  </section>
+
+  <p class="foot">Hecho por <b>PXM Studio</b> · Software y marketing para pymes · <a href="https://pxmiastudio.netlify.app/" target="_blank" rel="noopener">pxmiastudio.netlify.app</a></p>
+</div>
+
+<script>
+(function(){
+  const WA_NUMBER = "5491135943909";
+  // Cuando lo subas a Netlify, este link se reemplaza solo por la dirección real de la página.
+  const FALLBACK_URL = "https://pxmiastudio.netlify.app/diagnostico/";
+
+  // Cada pregunta: área, texto, opciones [texto, puntos 0-2 o null = no aplica], recomendación y solución PXM si sale baja.
+  const B = {
+    catalogo:{area:"Catálogo online", q:"¿Tus clientes pueden ver tus productos y precios sin tener que preguntarte?",
+      o:[["Sí, tengo catálogo o tienda online propia",2],["Solo con fotos en Instagram o estados",1],["No, siempre me preguntan por privado",0]],
+      rec:"Cada \"¿precio?\" que respondés a mano es tiempo perdido y ventas que se enfrían. Un catálogo con link propio responde solo, las 24 horas.",
+      sol:"Catálogo online con pedido por WhatsApp"},
+    pedidos:{area:"Pedidos", q:"¿Cómo te llegan los pedidos?",
+      o:[["Ordenados, con carrito o formulario",2],["Por WhatsApp, cada uno a su manera",1],["En persona o anotados en papel",0]],
+      rec:"Los pedidos sueltos por chat generan errores y olvidos. Si el cliente arma el pedido solo, a vos te llega listo para preparar.",
+      sol:"Tienda con carrito que envía el pedido armado"},
+    precios:{area:"Precios", q:"Cuando aumentan los costos, ¿cuánto tardás en actualizar tus precios?",
+      o:[["Minutos, desde un panel",2],["Un buen rato, a mano en varios lados",1],["Muchas veces quedan desactualizados",0]],
+      rec:"Con aumentos frecuentes, un precio viejo publicado es plata que perdés. Cambiarlo desde un solo panel te ahorra horas por mes.",
+      sol:"Panel para editar precios vos mismo"},
+    stock:{area:"Stock", q:"¿Sabés qué mercadería tenés sin ir a mirar?",
+      o:[["Sí, lo llevo en un sistema",2],["Más o menos, con una planilla",1],["No, me entero cuando se termina",0]],
+      rec:"Quedarte sin lo que más se vende o acumular lo que no sale te come la ganancia. Saber tu stock real te deja comprar mejor.",
+      sol:"Control de stock con alertas de faltantes"},
+    caja:{area:"Ventas y caja", q:"¿Cómo registrás tus ventas del día?",
+      o:[["Con un sistema que hace tickets",2],["En un cuaderno o planilla",1],["No las registro",0]],
+      rec:"Si no sabés cuánto vendiste y qué se vendió más, decidís a ciegas. Un registro simple te da números claros cada noche.",
+      sol:"Sistema de caja y tickets"},
+    fidelidad:{area:"Fidelización", q:"¿Tenés algo para que tus clientes vuelvan?",
+      o:[["Sí, tarjeta de puntos o sellos digital",2],["Algún descuento suelto de vez en cuando",1],["No, nada en especial",0]],
+      rec:"Venderle de nuevo a un cliente que ya te conoce cuesta mucho menos que conseguir uno nuevo. Una tarjeta de sellos digital lo hace fácil.",
+      sol:"Tarjeta de fidelidad digital"},
+
+    // Mayorista
+    listaMay:{area:"Lista de precios", q:"¿Cómo les pasás la lista de precios a tus clientes?",
+      o:[["Catálogo mayorista online, siempre al día",2],["Un PDF o Excel que mando por WhatsApp",1],["Les paso los precios uno por uno",0]],
+      rec:"Un PDF que circula queda viejo con el primer aumento y genera reclamos. Un catálogo mayorista online muestra siempre el precio correcto.",
+      sol:"Catálogo mayorista con precios por cantidad"},
+    pedidosMay:{area:"Pedidos mayoristas", q:"¿Cómo te hacen los pedidos tus clientes?",
+      o:[["Arman el pedido solos en un sistema",2],["Me mandan la lista por WhatsApp y la paso a mano",1],["Por teléfono o audio, y lo anoto",0]],
+      rec:"Pasar pedidos de audios y listas a mano es donde aparecen los errores. Si el cliente lo arma solo, te llega ordenado y con el mínimo de compra cumplido.",
+      sol:"Pedidos mayoristas online con mínimo de compra"},
+    ctaCte:{area:"Cuentas corrientes", q:"¿Llevás control de lo que te debe cada cliente?",
+      o:[["Sí, en un sistema con saldos al día",2],["En una planilla o cuaderno",1],["De memoria o no lo controlo",0]],
+      rec:"Las deudas sin control son plata que no vuelve. Ver el saldo de cada cliente al instante te deja cobrar a tiempo.",
+      sol:"Cuentas corrientes de clientes"},
+
+    // Comidas
+    menu:{area:"Menú digital", q:"¿Tus clientes pueden ver el menú con precios desde el celular?",
+      o:[["Sí, menú digital con QR o link",2],["Con fotos en Instagram o un PDF",1],["No, preguntan o lo ven en el local",0]],
+      rec:"Un menú fácil de ver desde el celular hace que pidan más rápido y más seguido. Y cambiar un precio te lleva segundos.",
+      sol:"Menú digital con QR"},
+    delivery:{area:"Pedidos y delivery", q:"¿Cómo te llegan los pedidos para llevar o delivery?",
+      o:[["Por una tienda propia, sin comisiones",2],["Por WhatsApp o apps que me cobran comisión",1],["Por teléfono y los anoto",0]],
+      rec:"Las apps de delivery se quedan con una buena parte de cada venta. Con tus propios pedidos online, esa plata queda para vos.",
+      sol:"Tienda de pedidos propia, sin comisión de apps"},
+    comandas:{area:"Comandas", q:"¿Cómo llega el pedido a la cocina o la barra?",
+      o:[["Se imprime o aparece en pantalla solo",2],["Lo escribimos en una comanda a mano",1],["Lo decimos de palabra",0]],
+      rec:"Cuando el pedido pasa de boca en boca se pierden platos y se demoran las entregas. Las comandas automáticas llegan completas a cada sector.",
+      sol:"Sistema de comandas con impresoras por sector"},
+
+    // Turnos
+    turnos:{area:"Turnos", q:"¿Cómo manejás los turnos?",
+      o:[["El cliente reserva solo, online",2],["Por WhatsApp y los anoto",1],["Por teléfono o en el momento",0]],
+      rec:"Coordinar turnos por chat te interrumpe todo el día. Con reservas online el cliente elige solo y vos solo atendés.",
+      sol:"Sistema de turnos online"},
+    recordatorios:{area:"Ausencias", q:"¿Les recordás el turno a tus clientes?",
+      o:[["Sí, les llega un recordatorio automático",2],["Les escribo yo, a mano",1],["No, y a veces faltan",0]],
+      rec:"Cada turno que se pierde es plata que no vuelve. Un recordatorio automático el día anterior baja mucho las ausencias.",
+      sol:"Recordatorios automáticos de turnos"},
+    ficha:{area:"Ficha de clientes", q:"¿Guardás el historial de cada cliente (servicios, productos, preferencias)?",
+      o:[["Sí, en una ficha digital",2],["Lo anoto en un cuaderno",1],["Me lo acuerdo o no lo guardo",0]],
+      rec:"Acordarte de lo que se hizo cada cliente la última vez da confianza y vende servicios extra. Una ficha digital lo guarda por vos.",
+      sol:"Fichas de clientes con historial"},
+
+    // Gimnasio
+    cuotas:{area:"Socios y cuotas", q:"¿Sabés al instante quién tiene la cuota vencida?",
+      o:[["Sí, el sistema me avisa",2],["Lo reviso en una planilla",1],["Me entero cuando le pregunto",0]],
+      rec:"Las cuotas vencidas que nadie reclama son la fuga de plata más común en un gimnasio. Verlas al instante te deja cobrar a tiempo.",
+      sol:"Gestión de socios y cuotas"},
+    acceso:{area:"Ingreso de socios", q:"¿Cómo registrás el ingreso de los socios?",
+      o:[["Con un sistema (DNI, QR o app)",2],["En una planilla o cuaderno",1],["No lo registro",0]],
+      rec:"Sin registro de ingreso entra gente con la cuota vencida y no sabés quién dejó de venir. Un control con QR o DNI lo resuelve solo.",
+      sol:"Control de acceso con QR o DNI"},
+    clases:{area:"Clases con cupo", q:"Si tenés clases con cupo, ¿cómo se anotan?",
+      o:[["Reservan online",2],["Por WhatsApp y los anoto",1],["Llegan y vemos si hay lugar",0],["No tengo clases con cupo",null]],
+      rec:"Anotar clases por chat genera sobrecupos y lugares vacíos. Con reservas online cada socio ve el cupo y se anota solo.",
+      sol:"Reservas de clases con cupo"},
+    retencion:{area:"Retención", q:"¿Hacés algo para que los socios no abandonen?",
+      o:[["Sí, seguimiento y beneficios por permanencia",2],["Alguna promo cada tanto",1],["No, nada especial",0]],
+      rec:"La mayoría de los socios deja en los primeros meses sin avisar. Detectar a quién dejó de venir y premiar la permanencia te los retiene.",
+      sol:"Programa de retención y beneficios"},
+
+    // Presencia (artistas, comunidades, capacitación, freelance)
+    web:{area:"Web propia", q:"¿Tenés una web propia que muestre lo que hacés?",
+      o:[["Sí, propia y actualizada",2],["Solo un Linktree, o la web está vieja",1],["No, solo tengo redes",0]],
+      rec:"Las redes no son tuyas y cambian todo el tiempo. Una web propia ordena tu propuesta y te da seriedad frente a clientes, organizadores o alumnos.",
+      sol:"Web propia con portfolio"},
+    agenda:{area:"Agenda", q:"¿Dónde se ve tu agenda de fechas, cursos o actividades?",
+      o:[["En mi web, siempre al día",2],["En publicaciones o historias sueltas",1],["En ningún lugar fijo",0]],
+      rec:"Si la agenda está perdida entre historias, la gente se entera tarde. Un lugar fijo y al día es lo que se comparte y se guarda.",
+      sol:"Agenda online de fechas y actividades"},
+    inscripciones:{area:"Inscripciones y entradas", q:"¿Cómo se anotan o compran entradas para lo que hacés?",
+      o:[["Online, con el pago incluido",2],["Por WhatsApp y los anoto",1],["En el momento, en la puerta",0],["No aplica a lo que hago",null]],
+      rec:"Anotar a mano y cobrar en la puerta trae ausentes y cuentas que no cierran. Con inscripción y pago online sabés de antemano cuántos van.",
+      sol:"Inscripciones y entradas online"},
+    portfolio:{area:"Presentación", q:"¿Tenés tu trabajo presentado de forma profesional (portfolio, dossier o programa)?",
+      o:[["Sí, en la web o en un PDF prolijo",2],["Algo armado pero desactualizado",1],["No, lo cuento cuando me preguntan",0]],
+      rec:"Una buena presentación abre puertas: fechas, alumnos, clientes o aliados. Tenerla lista te deja responder en un minuto con un link.",
+      sol:"Portfolio o dossier profesional"},
+
+    // Generales (todos los rubros)
+    google:{area:"Google Maps", q:"Si alguien busca tu rubro en Google Maps, ¿aparecés?",
+      o:[["Sí, con fotos, horarios y reseñas",2],["Aparezco, pero la ficha está incompleta",1],["No aparezco o no sé",0]],
+      rec:"La mayoría de la gente busca en Google antes de elegir. Una ficha completa con fotos y reseñas te trae clientes nuevos sin pagar publicidad.",
+      sol:"Ficha de Google optimizada y estrategia de reseñas"},
+    redes:{area:"Redes sociales", q:"¿Cada cuánto publicás en tus redes?",
+      o:[["3 o más veces por semana, con un plan",2],["Cuando me acuerdo o tengo tiempo",1],["Casi nunca",0]],
+      rec:"Si no aparecés seguido, la gente se olvida y elige a otro. Un plan de contenido simple te mantiene presente.",
+      sol:"Plan de contenido y diseño para redes"},
+    whatsapp:{area:"Atención por WhatsApp", q:"¿Cómo respondés las consultas por WhatsApp?",
+      o:[["WhatsApp Business con respuestas rápidas",2],["Desde mi WhatsApp personal, cuando puedo",1],["Tardo horas o se me pasan mensajes",0]],
+      rec:"El que contesta primero se queda con el cliente. Con respuestas rápidas y mensajes automáticos nadie queda esperando.",
+      sol:"WhatsApp Business con respuestas automáticas"},
+    cobros:{area:"Cobros", q:"¿Cómo te pueden pagar?",
+      o:[["Efectivo, transferencia, QR y link de pago",2],["Efectivo y transferencia",1],["Solo efectivo",0]],
+      rec:"Cada medio de pago que no aceptás es una venta que se va. Un link de pago también te sirve para cobrar señas y pedidos a distancia.",
+      sol:"Cobros online integrados a tu web o sistema"},
+    contactos:{area:"Base de contactos", q:"¿Tenés los datos de tus clientes o seguidores guardados para avisarles novedades?",
+      o:[["Sí, en una lista o sistema ordenado",2],["Algunos, en los contactos del celular",1],["No, no guardo nada",0]],
+      rec:"Tu gente es tu activo más valioso. Con una base ordenada podés avisar novedades y llenar los días flojos.",
+      sol:"Base de contactos con difusión por WhatsApp"}
+  };
+
+  const FAM = {
+    productos:{keys:["catalogo","pedidos","precios","stock","caja","fidelidad"], next:"Tienda online, caja y stock conectados en un solo sistema"},
+    mayorista:{keys:["listaMay","pedidosMay","precios","stock","ctaCte"], next:"Sistema mayorista con pedidos, stock y cuentas corrientes"},
+    comidas:{keys:["menu","delivery","comandas","caja","fidelidad"], next:"Menú, pedidos, comandas y caja en un solo sistema"},
+    turnos:{keys:["turnos","recordatorios","ficha","caja","fidelidad"], next:"Turnos, fichas de clientes y caja en un solo sistema"},
+    gimnasio:{keys:["cuotas","acceso","clases","retencion"], next:"Sistema de socios con cuotas, ingresos y reservas"},
+    presencia:{keys:["web","agenda","inscripciones","portfolio"], next:"Web propia con agenda, inscripciones y pagos online"},
+    general:{keys:["catalogo","pedidos","caja","fidelidad"], next:"Software a medida para tu negocio"}
+  };
+  const COMMON = ["google","redes","whatsapp","cobros","contactos"];
+
+  let Q = [], fam = "general", rubroLabel = "";
+
+  const $ = id => document.getElementById(id);
+  const screens = ["s-intro","s-data","s-q","s-res"];
+  let idx = 0, answers = [], advanceTimer = null;
+
+  function show(id){
+    screens.forEach(s => $(s).hidden = (s !== id));
+    window.scrollTo({top:0,behavior:"auto"});
+  }
+
+  function renderQ(){
+    clearTimeout(advanceTimer);
+    const q = Q[idx];
+    $("q-area").textContent = (q.common ? "General" : rubroLabel) + " · " + q.area;
+    $("q-text").textContent = q.q;
+    $("q-count").textContent = String(idx+1).padStart(2,"0")+" / "+String(Q.length).padStart(2,"0");
+    $("counter").textContent = "PREGUNTA "+(idx+1)+" DE "+Q.length;
+    $("prog").style.width = ((idx+1)/(Q.length+1)*100)+"%";
+    const box = $("q-opts"); box.innerHTML = "";
+    q.o.forEach((opt,i) => {
+      const b = document.createElement("button");
+      b.className = "opt" + (answers[idx]===i ? " sel":"");
+      b.setAttribute("role","radio");
+      b.setAttribute("aria-checked", answers[idx]===i ? "true":"false");
+      b.innerHTML = '<span class="k">'+"ABCD"[i]+'</span><span></span>';
+      b.lastChild.textContent = opt[0];
+      b.addEventListener("click", () => {
+        answers[idx] = i;
+        box.querySelectorAll(".opt").forEach(x=>{x.classList.remove("sel");x.setAttribute("aria-checked","false")});
+        b.classList.add("sel"); b.setAttribute("aria-checked","true");
+        clearTimeout(advanceTimer);
+        advanceTimer = setTimeout(next, 220);
+      });
+      box.appendChild(b);
+    });
+  }
+  function next(){ if(idx < Q.length-1){ idx++; renderQ(); } else { showResult(); } }
+
+  function compute(){
+    let got=0,max=0; const areas=[];
+    Q.forEach((q,i)=>{
+      const pts = q.o[answers[i]][1];
+      if(pts===null) return;
+      got+=pts; max+=2; areas.push({q,pts});
+    });
+    const score = max ? Math.round(got/max*100)/10 : 0;
+    return {score, areas};
+  }
+
+  function levelFor(s){
+    if(s < 4) return ["Negocio offline","Hoy dependés casi todo de vos y del boca en boca. La buena noticia: con pocos cambios se nota mucho la diferencia.", "var(--bad)"];
+    if(s < 7) return ["A mitad de camino","Tenés algunas bases, pero todavía perdés tiempo y ventas en tareas que se pueden resolver solas.", "var(--warn)"];
+    if(s < 9) return ["Bien encaminado","Estás por encima de la mayoría de los comercios del barrio. Te quedan ajustes puntuales para dar el salto.", "var(--accent)"];
+    return ["Negocio digital","Tu negocio ya trabaja con herramientas digitales. El próximo paso es que todo esté conectado en un solo lugar.", "var(--good)"];
+  }
+
+  function bizLabel(){
+    const n = $("biz-name").value.trim();
+    return n || "tu negocio";
+  }
+
+  function showResult(){
+    const {score, areas} = compute();
+    const [lvl, sub, color] = levelFor(score);
+    show("s-res");
+    $("counter").textContent = "RESULTADO";
+    $("res-pill").textContent = "Resultado de " + bizLabel();
+    $("level").textContent = lvl; $("level").style.color = color;
+    $("level-sub").textContent = sub;
+
+    const arc = $("g-arc"); arc.style.stroke = color;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ arc.setAttribute("stroke-dasharray", (score*10)+" 100"); }));
+    animateNum(score);
+
+    // barras por área
+    const bars = $("bars"); bars.innerHTML="";
+    areas.forEach(a=>{
+      const c = a.pts===2?"var(--good)":a.pts===1?"var(--warn)":"var(--bad)";
+      const lbl = a.pts===2?"BIEN":a.pts===1?"MEDIO":"BAJO";
+      const row = document.createElement("div"); row.className="bar-row";
+      row.innerHTML = '<span class="name"></span><span class="bar-track"><span style="width:'+(a.pts===0?8:a.pts*50)+'%;background:'+c+'"></span></span><span class="st" style="color:'+c+'">'+lbl+'</span>';
+      row.firstChild.textContent = a.q.area;
+      bars.appendChild(row);
+    });
+
+    // recomendaciones: primero las bajas, después las medias; máximo 3
+    const weak = areas.filter(a=>a.pts<2).sort((x,y)=>x.pts-y.pts).slice(0,3);
+    const recs = $("recs"); recs.innerHTML="";
+    if(!weak.length){
+      $("recs-title").innerHTML = "Tu próximo <em>paso</em>";
+      const d=document.createElement("div"); d.className="rec";
+      d.innerHTML='<span class="n">1</span><h3>Conectar todo en un solo lugar</h3><p>Ya hacés casi todo bien. El salto siguiente es que todas tus herramientas estén conectadas y las manejes desde el celular.</p><span class="sol"></span>';
+      d.querySelector(".sol").textContent = FAM[fam].next;
+      recs.appendChild(d);
+    } else {
+      $("recs-title").innerHTML = "Lo que <em>más te conviene</em> mejorar";
+      weak.forEach((a,i)=>{
+        const d=document.createElement("div"); d.className="rec";
+        d.innerHTML='<span class="n">'+(i+1)+'</span><h3></h3><p></p><span class="sol"></span>';
+        d.querySelector("h3").textContent=a.q.area;
+        d.querySelector("p").textContent=a.q.rec;
+        d.querySelector(".sol").textContent=a.q.sol;
+        recs.appendChild(d);
+      });
+    }
+
+    // mensaje de WhatsApp precargado
+    const rubro = rubroLabel;
+    const n = $("biz-name").value.trim();
+    let msg = "Hola PXM! Hice el Diagnóstico Digital y saqué "+fmt(score)+"/10 ("+lvl+").";
+    if(n) msg += "\nNegocio: "+n+(rubro?" ("+rubro+")":"");
+    else if(rubro) msg += "\nRubro: "+rubro;
+    if(weak.length) msg += "\nQuiero mejorar: "+weak.map(a=>a.q.area.toLowerCase()).join(", ")+".";
+    msg += "\n¿Me cuentan cómo me pueden ayudar?";
+    $("wa-link").href = "https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg);
+
+    $("share").onclick = () => {
+      const url = /netlify\.app|pxm/i.test(location.hostname) ? location.origin+location.pathname : FALLBACK_URL;
+      const txt = "Saqué "+fmt(score)+"/10 en el Diagnóstico Digital de PXM Studio 📊 ¿Qué tan digital es tu negocio? Hacelo gratis acá: "+url;
+      copy(txt);
+    };
+  }
+
+  function fmt(s){ return String(s).replace(".",","); }
+  function animateNum(target){
+    const el=$("score");
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){ el.textContent=fmt(target); return; }
+    const t0=performance.now(), dur=900;
+    function step(t){ const p=Math.min(1,(t-t0)/dur); const v=Math.round(target*(1-Math.pow(1-p,3))*10)/10; el.textContent=fmt(v); if(p<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  function copy(txt){
+    const done = () => { $("toast").textContent = "Resultado copiado. Pegalo en tus historias o en un grupo."; };
+    const fallback = () => {
+      const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); done(); }catch(e){ $("toast").textContent = txt; }
+      ta.remove();
+    };
+    try{ navigator.clipboard.writeText(txt).then(done, fallback); }catch(e){ fallback(); }
+  }
+
+  $("go-start").onclick = () => { show("s-data"); $("counter").textContent="PASO INICIAL"; };
+  $("data-back").onclick = () => { show("s-intro"); $("counter").textContent="DIAGNÓSTICO GRATIS"; };
+  $("data-next").onclick = () => {
+    const sel = $("biz-type");
+    if(!sel.value){
+      $("type-hint").textContent = "Elegí tu rubro para seguir. Si no está, elegí Otro.";
+      $("type-hint").style.color = "var(--warn)"; sel.focus(); return;
+    }
+    $("type-hint").textContent = "Con esto elegimos las preguntas que aplican a tu negocio.";
+    $("type-hint").style.color = "";
+    const newFam = sel.value, newLabel = sel.selectedOptions[0].textContent;
+    if(newFam !== fam || !Q.length){ answers = []; }
+    fam = newFam; rubroLabel = newLabel;
+    Q = FAM[fam].keys.map(k => B[k]).concat(COMMON.map(k => Object.assign({common:true}, B[k])));
+    idx = 0; show("s-q"); renderQ();
+  };
+  $("q-back").onclick = () => { if(idx>0){ idx--; renderQ(); } else { show("s-data"); $("counter").textContent="PASO INICIAL"; } };
+  $("restart").onclick = () => { answers=[]; idx=0; $("toast").textContent=""; show("s-intro"); $("counter").textContent="DIAGNÓSTICO GRATIS"; };
+})();
+</script>
+</body>
+</html>

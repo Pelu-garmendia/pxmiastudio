@@ -83,3 +83,31 @@ Instagram CTAs. A footer repeats anchor links to each section.
   1. Navigate to the contact section via the footer
     - expect: a link "Escribinos por WhatsApp" is visible with href "https://wa.me/5491135943909"
     - expect: a link "@pxmiastudio" is visible with href "https://instagram.com/pxmiastudio"
+
+### 5. Diagnóstico digital (`/diagnostico/`)
+
+**Helpers:** `tests/diagnostico/helpers.ts` (the page is standalone, so these
+tests navigate to `/diagnostico/` instead of using the homepage seed)
+
+- **should-show-only-the-intro-screen** — on load only the intro is visible;
+  the data, question and result screens stay hidden.
+- **should-require-a-rubro** — "Siguiente" without a rubro shows
+  "Elegí tu rubro para seguir. Si no está, elegí Otro." and focuses the select;
+  "Volver" returns to the intro.
+- **should-ask-questions-for-each-rubro** — each rubro family gets its own
+  questions plus the 5 common ones (11 for comercios, 10 for mayorista,
+  gastronomía and turnos, 9 for gimnasio, proyectos and "Otro").
+- **should-score-a-fully-digital-business** — all best answers → 10/10,
+  "Negocio digital", one "next step" recommendation, WhatsApp text with the
+  business name and rubro.
+- **should-score-an-offline-business** — all worst answers → 0/10,
+  "Negocio offline", top 3 recommendations listed in the WhatsApp text;
+  decimal scores use a comma (9,5) and all middle answers give 5/10.
+- **should-skip-not-applicable-answers** — "No tengo clases con cupo" is left
+  out of the score and the per-area bars.
+- **should-navigate-between-questions** — going back keeps the answer,
+  changing the rubro resets the answers, and a quick double tap does not skip
+  a question.
+- **should-share-and-restart** — "Copiar resultado" copies the score and the
+  page link; "Hacer el test de nuevo" returns to the intro.
+- **should-fit-a-phone-screen** — no horizontal scroll at 360px wide.
