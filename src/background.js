@@ -370,13 +370,20 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
       ai.badge.scale.setScalar(1.045);
       return;
     }
-    // Stacked layout: hang the AI badge just below the hero copy, wherever it ends.
+    // Stacked layout: hang the AI badge just below the hero copy and its
+    // buttons. On short screens there is no room below them (the canvas is
+    // fixed, so it would never scroll into view): sit it beside the buttons.
     const halfH = Math.tan(THREE.MathUtils.degToRad(25)) * 11;
     const halfW = halfH * aspect;
-    const sub = document.querySelector(".hero-sub");
-    const subBottom = sub ? sub.getBoundingClientRect().bottom : h * 0.55;
-    const badgeY = halfH - ((subBottom + 34) / h) * 2 * halfH;
-    const badgeX = 0.44 * halfW;
+    const anchor = document.querySelector(".hero-actions") || document.querySelector(".hero-sub");
+    const box = anchor ? anchor.getBoundingClientRect() : { top: h * 0.45, bottom: h * 0.55 };
+    let badgeX = 0.44 * halfW;
+    let badgeY = halfH - ((box.bottom + 34) / h) * 2 * halfH;
+    if (h - box.bottom < 150) {
+      const centerY = (box.top + box.bottom) / 2;
+      badgeY = halfH - (centerY / h) * 2 * halfH;
+      badgeX = ((w - 64) / w) * 2 * halfW - halfW;
+    }
     system.scale.setScalar(1);
     ai.badge.scale.setScalar(0.85);
     system.position.set(badgeX - ai.pos.x, badgeY - ai.pos.y, -2);
