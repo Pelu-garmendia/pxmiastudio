@@ -56,6 +56,16 @@ Instagram CTAs. A footer repeats anchor links to each section.
     - expect: URL hash becomes "#contacto"
     - expect: the "¿Listo para hacer crecer tu negocio?" heading is visible
 
+#### 2.3. should-open-diagnostico-from-header-nav
+
+**File:** `tests/navigation/should-open-diagnostico-from-header-nav.spec.ts`
+
+**Steps:**
+  1. Click the "Diagnóstico" nav link
+    - expect: the URL becomes `/diagnostico/` and the quiz intro heading is visible
+  2. Resize to 320, 390, 480, 560 and 700px wide
+    - expect: the nav never overflows the screen
+
 ### 3. Quote form
 
 **Seed:** `tests/seed.spec.ts`
