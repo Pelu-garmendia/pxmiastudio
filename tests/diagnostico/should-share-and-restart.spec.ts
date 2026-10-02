@@ -11,7 +11,7 @@ test.describe('Diagnóstico', () => {
     await page.getByRole('button', { name: 'Copiar resultado para compartir' }).click();
     await expect(page.locator('#toast')).toHaveText('Resultado copiado. Pegalo en tus historias o en un grupo.');
     const copied = await page.evaluate(() => navigator.clipboard.readText());
-    expect(copied).toContain('Saqué 5/10 en el Diagnóstico Digital de PXM Studio');
+    expect(copied).toContain('Saqué 5/10 en el Chequeo Digital de PXM Studio');
     expect(copied).toContain('https://pxmiastudio.netlify.app/diagnostico/');
 
     await page.getByRole('button', { name: 'Hacer el test de nuevo' }).click();

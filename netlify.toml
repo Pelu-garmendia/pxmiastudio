@@ -7,3 +7,14 @@
   for = "/vitrina/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
+
+# El Chequeo Digital vive en /diagnostico/ (links ya compartidos); /chequeo/ es su alias
+[[redirects]]
+  from = "/chequeo"
+  to = "/diagnostico/"
+  status = 301
+
+[[redirects]]
+  from = "/chequeo/*"
+  to = "/diagnostico/"
+  status = 301

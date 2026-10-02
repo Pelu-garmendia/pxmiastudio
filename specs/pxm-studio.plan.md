@@ -29,7 +29,7 @@ Instagram CTAs. A footer repeats anchor links to each section.
 **File:** `tests/hero/should-link-to-diagnostico.spec.ts`
 
 **Steps:**
-  1. Click "Hacé el diagnóstico gratis"
+  1. Click "Hacé tu chequeo gratis"
     - expect: the URL becomes `/diagnostico/` and the quiz intro heading is visible
   2. Click "Pedí tu cotización" in the hero
     - expect: the quote panel opens ("Cotizá tu servicio.")
@@ -61,7 +61,7 @@ Instagram CTAs. A footer repeats anchor links to each section.
 **File:** `tests/navigation/should-open-diagnostico-from-header-nav.spec.ts`
 
 **Steps:**
-  1. Click the "Diagnóstico" nav link
+  1. Click the "Chequeo" nav link
     - expect: the URL becomes `/diagnostico/` and the quiz intro heading is visible
   2. Resize to 320, 390, 480, 560 and 700px wide
     - expect: the nav never overflows the screen
@@ -130,7 +130,7 @@ Instagram CTAs. A footer repeats anchor links to each section.
   2. Click "Quiero lo mismo para mi negocio"
     - expect: the quote panel opens and the Casos panel closes
 
-### 5. Diagnóstico digital (`/diagnostico/`)
+### 5. Chequeo Digital (`/diagnostico/`, alias `/chequeo/`)
 
 **Helpers:** `tests/diagnostico/helpers.ts` (the page is standalone, so these
 tests navigate to `/diagnostico/` instead of using the homepage seed)

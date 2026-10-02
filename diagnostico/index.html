@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Test gratis de 2 minutos: descubrí qué tan digital es tu negocio y qué te conviene mejorar primero.">
 <link rel="icon" type="image/png" href="/pxm-studio-logo.png">
-<title>Diagnóstico Digital PXM</title>
+<title>Chequeo Digital PXM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600;700&display=swap">
 <style>
@@ -155,12 +155,12 @@ button{font:inherit;color:inherit;cursor:pointer}
 <div class="wrap">
   <header class="top">
     <a class="logo" href="/"><img src="/pxm-studio-logo.png" alt="PXM Studio" width="172" height="34"></a>
-    <div class="counter" id="counter">DIAGNÓSTICO GRATIS</div>
+    <div class="counter" id="counter">CHEQUEO GRATIS</div>
   </header>
 
   <!-- INTRO -->
   <section class="screen" id="s-intro">
-    <span class="pill">Test gratis · 2 minutos</span>
+    <span class="pill">Chequeo Digital · 2 minutos</span>
     <h1>¿Qué tan <em>digital</em> es tu negocio?</h1>
     <p class="lead">Respondé unas 10 preguntas pensadas para tu rubro y recibí tu puntaje del 1 al 10, con lo que más te conviene mejorar primero.</p>
     <ul class="facts">
@@ -178,7 +178,7 @@ button{font:inherit;color:inherit;cursor:pointer}
         <div class="chips"><span class="chip bad">Sin catálogo online</span><span class="chip warn">Pedidos desordenados</span><span class="chip bad">Sin fidelización</span></div>
       </div>
     </div>
-    <button class="btn btn-primary" id="go-start">Empezar el diagnóstico →</button>
+    <button class="btn btn-primary" id="go-start">Empezar el chequeo →</button>
   </section>
 
   <!-- DATOS -->
@@ -230,7 +230,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
   <!-- PREGUNTA -->
   <section class="screen" id="s-q" hidden>
-    <div class="segbar" id="prog" role="progressbar" aria-label="Progreso del diagnóstico"></div>
+    <div class="segbar" id="prog" role="progressbar" aria-label="Progreso del chequeo"></div>
     <span class="area-tag" id="q-area"></span>
     <h2 id="q-text"></h2>
     <div class="options" id="q-opts" role="radiogroup"></div>
@@ -544,7 +544,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     // mensaje de WhatsApp precargado
     const rubro = rubroLabel;
     const n = $("biz-name").value.trim();
-    let msg = "Hola PXM! Hice el Diagnóstico Digital y saqué "+fmt(score)+"/10 ("+lvl+").";
+    let msg = "Hola PXM! Hice el Chequeo Digital y saqué "+fmt(score)+"/10 ("+lvl+").";
     if(n) msg += "\nNegocio: "+n+(rubro?" ("+rubro+")":"");
     else if(rubro) msg += "\nRubro: "+rubro;
     if(weak.length) msg += "\nQuiero mejorar: "+weak.map(a=>a.q.area.toLowerCase()).join(", ")+".";
@@ -553,7 +553,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
     $("share").onclick = () => {
       const url = /netlify\.app|pxm/i.test(location.hostname) ? location.origin+location.pathname : FALLBACK_URL;
-      const txt = "Saqué "+fmt(score)+"/10 en el Diagnóstico Digital de PXM Studio 📊 ¿Qué tan digital es tu negocio? Hacelo gratis acá: "+url;
+      const txt = "Saqué "+fmt(score)+"/10 en el Chequeo Digital de PXM Studio ✅ ¿Qué tan digital es tu negocio? Hacelo gratis acá: "+url;
       copy(txt);
     };
   }
@@ -578,7 +578,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   }
 
   $("go-start").onclick = () => { show("s-data"); $("counter").textContent="PASO INICIAL"; };
-  $("data-back").onclick = () => { show("s-intro"); $("counter").textContent="DIAGNÓSTICO GRATIS"; };
+  $("data-back").onclick = () => { show("s-intro"); $("counter").textContent="CHEQUEO GRATIS"; };
   $("data-next").onclick = () => {
     const sel = $("biz-type");
     if(!sel.value){
@@ -594,7 +594,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     idx = 0; show("s-q"); renderQ();
   };
   $("q-back").onclick = () => { if(idx>0){ idx--; renderQ(); } else { show("s-data"); $("counter").textContent="PASO INICIAL"; } };
-  $("restart").onclick = () => { answers=[]; idx=0; $("toast").textContent=""; show("s-intro"); $("counter").textContent="DIAGNÓSTICO GRATIS"; };
+  $("restart").onclick = () => { answers=[]; idx=0; $("toast").textContent=""; show("s-intro"); $("counter").textContent="CHEQUEO GRATIS"; };
 })();
 </script>
 </body>

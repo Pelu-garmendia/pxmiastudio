@@ -3,8 +3,8 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Navigation', () => {
-  test('should open the diagnóstico from the header nav', async ({ page }) => {
-    await page.locator('.nav').getByRole('link', { name: 'Diagnóstico' }).click();
+  test('should open the Chequeo Digital from the header nav', async ({ page }) => {
+    await page.locator('.nav').getByRole('link', { name: 'Chequeo' }).click();
 
     await expect(page).toHaveURL(/\/diagnostico\/$/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('¿Qué tan digital es tu negocio?');
