@@ -3,8 +3,8 @@
 import { test, expect } from '../fixtures';
 
 test.describe('Hero', () => {
-  test('should link to the diagnóstico from the hero', async ({ page }) => {
-    await page.getByRole('link', { name: 'Hacé el diagnóstico gratis' }).click();
+  test('should link to the Chequeo Digital from the hero', async ({ page }) => {
+    await page.getByRole('link', { name: 'Hacé tu chequeo gratis' }).click();
 
     await expect(page).toHaveURL(/\/diagnostico\/$/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('¿Qué tan digital es tu negocio?');

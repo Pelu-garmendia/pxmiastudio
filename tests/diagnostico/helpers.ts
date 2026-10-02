@@ -5,7 +5,7 @@ export const DIAG_URL = '/diagnostico/';
 /** Goes from the intro screen to the first question for the given rubro. */
 export async function startDiagnostico(page: Page, rubro: string, nombre = '') {
   await page.goto(DIAG_URL);
-  await page.getByRole('button', { name: 'Empezar el diagnóstico →' }).click();
+  await page.getByRole('button', { name: 'Empezar el chequeo →' }).click();
   if (nombre) await page.getByLabel('Nombre del negocio').fill(nombre);
   await page.getByLabel('Rubro').selectOption({ label: rubro });
   await page.getByRole('button', { name: 'Siguiente →' }).click();

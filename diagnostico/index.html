@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Test gratis de 2 minutos: descubrí qué tan digital es tu negocio y qué te conviene mejorar primero.">
 <link rel="icon" type="image/png" href="/pxm-studio-logo.png">
-<title>Diagnóstico Digital PXM</title>
+<title>Chequeo Digital PXM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: una columna estilo app, fondo navy con grilla sutil (carruseles PXM), una pregunta por pantalla */
 :root{
@@ -26,7 +26,6 @@
   --wa-ink:#05230f;
   --display:"Plus Jakarta Sans","Inter",system-ui,sans-serif;
   --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -43,7 +42,7 @@ body{
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .logo{display:inline-flex;align-items:center}
 .logo img{display:block;height:26px;width:auto;mix-blend-mode:screen}
-.counter{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.counter{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;font-variant-numeric:tabular-nums}
 
 .pill{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
   background:linear-gradient(180deg,#5a90ff,#2f63e6);color:#fff;font-weight:700;font-size:12px;
@@ -73,8 +72,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .facts{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:14px;margin:0;padding:0;list-style:none}
 .facts li{display:flex;align-items:center;gap:7px}
 .facts li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
-.sample{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
-.sample-tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.sample{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.sample-tag{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .sample b{display:block;font-family:var(--display);font-size:18px;margin:2px 0 6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--fg)}
@@ -89,16 +88,22 @@ button{font:inherit;color:inherit;cursor:pointer}
 .hint{font-size:13px;color:var(--muted)}
 
 /* progreso */
-.progress{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
-.progress span{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .35s ease}
+/* Barra segmentada: cápsula con bloques que se llenan */
+.segbar{display:flex;gap:4px;padding:4px;border-radius:999px;background:#0a1328;border:2px solid var(--line);height:24px}
+.segbar i{flex:1;border-radius:3px;background:transparent;transition:background .3s ease,box-shadow .3s ease}
+.segbar i:first-child{border-radius:999px 3px 3px 999px}
+.segbar i.on{background:var(--seg,var(--accent));box-shadow:0 0 10px -3px var(--seg,var(--accent))}
+.segbar.sm{height:20px;padding:3px;gap:3px;border-width:1.5px}
+.segbar.grow i.on{animation:seg .35s ease both;animation-delay:calc(var(--i) * 70ms)}
+@keyframes seg{from{background:transparent;box-shadow:none}}
 
 /* opciones */
-.area-tag{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+.area-tag{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--accent-soft);border:1px solid #3d7bff55;color:#9dbdff;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 .options{display:flex;flex-direction:column;gap:10px}
 .opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;font-size:16px;font-weight:500;transition:border-color .15s,background .15s,transform .15s}
 .opt:hover{border-color:var(--accent);background:var(--surface-2)}
 .opt.sel{border-color:var(--accent);background:var(--accent-soft)}
-.opt .k{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.opt .k{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-family:var(--display);font-size:14px;font-weight:800;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
 .opt.sel .k{background:var(--accent);color:#fff;border-color:var(--accent)}
 .nav{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .linkbtn{background:none;border:0;color:var(--muted);font-weight:600;padding:8px 0}
@@ -106,18 +111,20 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* resultado */
 .result-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px 20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-.gauge{width:100%;max-width:280px}
-.score-num{font-family:var(--mono);font-weight:700;font-size:54px;line-height:1;margin-top:-62px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.score-num small{font-size:20px;color:var(--muted)}
+/* Anillo de puntaje */
+.ring{position:relative;width:210px;height:210px;display:grid;place-items:center;margin:4px 0 6px}
+.ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{fill:none;stroke-width:18;opacity:.22}
+.ring .arc{fill:none;stroke-width:18;stroke-linecap:round;transition:stroke-dasharray 1.1s cubic-bezier(.16,1,.3,1);filter:drop-shadow(0 0 10px var(--ring-glow,transparent))}
+.score-num{position:relative;font-family:var(--display);font-weight:800;font-size:60px;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.score-num small{font-size:20px;font-weight:700;color:var(--muted);letter-spacing:0;margin-left:2px}
 .level{font-family:var(--display);font-weight:800;font-size:22px;margin-top:8px}
 .level-sub{color:var(--muted);font-size:15px;max-width:40ch;margin:0}
 
 .bars{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px}
-.bar-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 44px;gap:10px;align-items:center;font-size:14px}
+.bar-row{display:grid;grid-template-columns:minmax(0,1fr) 132px 62px;gap:12px;align-items:center;font-size:15px;font-weight:500}
 .bar-row .name{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
-.bar-track span{display:block;height:100%;border-radius:99px}
-.bar-row .st{font-family:var(--mono);font-size:12px;text-align:right;font-weight:700}
+.bar-row .st{justify-self:end;font-size:11px;font-weight:700;letter-spacing:.08em;padding:4px 8px;border-radius:999px;background:color-mix(in srgb,currentColor 14%,transparent)}
 
 .recs{display:flex;flex-direction:column;gap:12px}
 .rec{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 16px 16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px}
@@ -130,7 +137,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cta{background:linear-gradient(160deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:24px;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
 .cta p{margin:0;color:var(--muted)}
 .contact{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;font-size:14px;color:var(--muted)}
-.contact b{color:var(--fg);font-family:var(--mono);font-weight:500;user-select:all}
+.contact b{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums;user-select:all}
 .row-btns{display:flex;gap:10px;flex-wrap:wrap}
 .row-btns .btn{flex:1 1 180px;font-size:15px;padding:13px 16px}
 .toast{font-size:13px;color:var(--good);text-align:center;min-height:1.2em;margin:0}
@@ -139,8 +146,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .screen{display:flex;flex-direction:column;gap:20px;animation:in .35s ease both}
 @keyframes in{from{opacity:.0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.screen{animation:none}.progress span,.opt{transition:none}}
-@media (max-width:420px){.bar-row{grid-template-columns:minmax(0,1fr) 80px 40px}}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}.segbar i,.opt,.ring .arc{transition:none}.segbar.grow i.on{animation:none}}
+@media (max-width:420px){.bar-row{grid-template-columns:minmax(0,1fr) 92px 58px;gap:8px;font-size:14px}.ring{width:190px;height:190px}.score-num{font-size:54px}}
 </style>
 </head>
 <body>
@@ -148,22 +155,22 @@ button{font:inherit;color:inherit;cursor:pointer}
 <div class="wrap">
   <header class="top">
     <a class="logo" href="/"><img src="/pxm-studio-logo.png" alt="PXM Studio" width="172" height="34"></a>
-    <div class="counter" id="counter">DIAGNÓSTICO GRATIS</div>
+    <div class="counter" id="counter">CHEQUEO GRATIS</div>
   </header>
 
   <!-- INTRO -->
   <section class="screen" id="s-intro">
-    <span class="pill">Test gratis · 2 minutos</span>
+    <span class="pill">Chequeo Digital · 2 minutos</span>
     <h1>¿Qué tan <em>digital</em> es tu negocio?</h1>
     <p class="lead">Respondé unas 10 preguntas pensadas para tu rubro y recibí tu puntaje del 1 al 10, con lo que más te conviene mejorar primero.</p>
     <ul class="facts">
       <li>Sin registrarte</li><li>Resultado al instante</li><li>Comercios, servicios, gastronomía, gimnasios y artistas</li>
     </ul>
     <div class="sample" aria-label="Ejemplo de resultado">
-      <svg width="86" height="56" viewBox="0 0 86 56" aria-hidden="true">
-        <path d="M8 50 A35 35 0 0 1 78 50" fill="none" stroke="var(--surface-2)" stroke-width="9" stroke-linecap="round"/>
-        <path d="M8 50 A35 35 0 0 1 78 50" fill="none" stroke="var(--warn)" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="44 100"/>
-        <text x="43" y="49" text-anchor="middle" fill="var(--fg)" font-family="JetBrains Mono,monospace" font-size="17" font-weight="700">4.4</text>
+      <svg width="84" height="84" viewBox="0 0 84 84" aria-hidden="true">
+        <circle cx="42" cy="42" r="34" fill="none" stroke="var(--warn)" stroke-opacity=".22" stroke-width="9"/>
+        <circle cx="42" cy="42" r="34" fill="none" stroke="var(--warn)" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="44 100" transform="rotate(-90 42 42)"/>
+        <text x="42" y="49" text-anchor="middle" fill="var(--fg)" font-family="Plus Jakarta Sans,Inter,sans-serif" font-size="20" font-weight="800">4,4</text>
       </svg>
       <div>
         <span class="sample-tag">Ejemplo de resultado</span>
@@ -171,12 +178,12 @@ button{font:inherit;color:inherit;cursor:pointer}
         <div class="chips"><span class="chip bad">Sin catálogo online</span><span class="chip warn">Pedidos desordenados</span><span class="chip bad">Sin fidelización</span></div>
       </div>
     </div>
-    <button class="btn btn-primary" id="go-start">Empezar el diagnóstico →</button>
+    <button class="btn btn-primary" id="go-start">Empezar el chequeo →</button>
   </section>
 
   <!-- DATOS -->
   <section class="screen" id="s-data" hidden>
-    <div class="progress"><span style="width:4%"></span></div>
+    <div class="segbar" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <span class="area-tag">Antes de empezar</span>
     <h2>Contanos de tu <em>negocio</em></h2>
     <div class="field">
@@ -223,7 +230,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
   <!-- PREGUNTA -->
   <section class="screen" id="s-q" hidden>
-    <div class="progress"><span id="prog"></span></div>
+    <div class="segbar" id="prog" role="progressbar" aria-label="Progreso del chequeo"></div>
     <span class="area-tag" id="q-area"></span>
     <h2 id="q-text"></h2>
     <div class="options" id="q-opts" role="radiogroup"></div>
@@ -237,13 +244,13 @@ button{font:inherit;color:inherit;cursor:pointer}
   <section class="screen" id="s-res" hidden>
     <span class="pill" id="res-pill">Tu resultado</span>
     <div class="result-card">
-      <svg class="gauge" viewBox="0 0 220 128" aria-hidden="true">
-        <path d="M20 112 A90 90 0 0 1 200 112" fill="none" stroke="var(--surface-2)" stroke-width="16" stroke-linecap="round"/>
-        <path id="g-arc" d="M20 112 A90 90 0 0 1 200 112" fill="none" stroke="var(--accent)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" style="transition:stroke-dasharray 1s ease"/>
-        <text x="20" y="127" text-anchor="middle" fill="var(--muted)" font-family="JetBrains Mono,monospace" font-size="10">0</text>
-        <text x="200" y="127" text-anchor="middle" fill="var(--muted)" font-family="JetBrains Mono,monospace" font-size="10">10</text>
-      </svg>
-      <div class="score-num"><span id="score">0</span><small>/10</small></div>
+      <div class="ring">
+        <svg viewBox="0 0 220 220" aria-hidden="true">
+          <circle class="track" id="g-track" cx="110" cy="110" r="92" stroke="var(--accent)"/>
+          <circle class="arc" id="g-arc" cx="110" cy="110" r="92" stroke="var(--accent)" pathLength="100" stroke-dasharray="0 100"/>
+        </svg>
+        <div class="score-num"><span id="score">0</span><small>/10</small></div>
+      </div>
       <div class="level" id="level"></div>
       <p class="level-sub" id="level-sub"></p>
     </div>
@@ -437,7 +444,10 @@ button{font:inherit;color:inherit;cursor:pointer}
     $("q-text").textContent = q.q;
     $("q-count").textContent = String(idx+1).padStart(2,"0")+" / "+String(Q.length).padStart(2,"0");
     $("counter").textContent = "PREGUNTA "+(idx+1)+" DE "+Q.length;
-    $("prog").style.width = ((idx+1)/(Q.length+1)*100)+"%";
+    const prog = $("prog");
+    if(prog.children.length !== Q.length) prog.innerHTML = "<i></i>".repeat(Q.length);
+    [...prog.children].forEach((seg,i) => seg.classList.toggle("on", i <= idx));
+    prog.setAttribute("aria-valuemin","0"); prog.setAttribute("aria-valuemax",String(Q.length)); prog.setAttribute("aria-valuenow",String(idx+1));
     const box = $("q-opts"); box.innerHTML = "";
     q.o.forEach((opt,i) => {
       const b = document.createElement("button");
@@ -490,7 +500,9 @@ button{font:inherit;color:inherit;cursor:pointer}
     $("level").textContent = lvl; $("level").style.color = color;
     $("level-sub").textContent = sub;
 
-    const arc = $("g-arc"); arc.style.stroke = color;
+    const arc = $("g-arc"); arc.style.stroke = color; $("g-track").style.stroke = color;
+    arc.style.setProperty("--ring-glow", color);
+    arc.setAttribute("stroke-dasharray", "0 100");
     requestAnimationFrame(()=>requestAnimationFrame(()=>{ arc.setAttribute("stroke-dasharray", (score*10)+" 100"); }));
     animateNum(score);
 
@@ -500,7 +512,10 @@ button{font:inherit;color:inherit;cursor:pointer}
       const c = a.pts===2?"var(--good)":a.pts===1?"var(--warn)":"var(--bad)";
       const lbl = a.pts===2?"BIEN":a.pts===1?"MEDIO":"BAJO";
       const row = document.createElement("div"); row.className="bar-row";
-      row.innerHTML = '<span class="name"></span><span class="bar-track"><span style="width:'+(a.pts===0?8:a.pts*50)+'%;background:'+c+'"></span></span><span class="st" style="color:'+c+'">'+lbl+'</span>';
+      const filled = a.pts===2 ? 6 : a.pts===1 ? 3 : 1;
+      let segs = "";
+      for(let i=0;i<6;i++) segs += '<i'+(i<filled?' class="on" style="--i:'+i+'"':'')+'></i>';
+      row.innerHTML = '<span class="name"></span><span class="segbar sm grow" style="--seg:'+c+'" aria-hidden="true">'+segs+'</span><span class="st" style="color:'+c+'">'+lbl+'</span>';
       row.firstChild.textContent = a.q.area;
       bars.appendChild(row);
     });
@@ -529,7 +544,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     // mensaje de WhatsApp precargado
     const rubro = rubroLabel;
     const n = $("biz-name").value.trim();
-    let msg = "Hola PXM! Hice el Diagnóstico Digital y saqué "+fmt(score)+"/10 ("+lvl+").";
+    let msg = "Hola PXM! Hice el Chequeo Digital y saqué "+fmt(score)+"/10 ("+lvl+").";
     if(n) msg += "\nNegocio: "+n+(rubro?" ("+rubro+")":"");
     else if(rubro) msg += "\nRubro: "+rubro;
     if(weak.length) msg += "\nQuiero mejorar: "+weak.map(a=>a.q.area.toLowerCase()).join(", ")+".";
@@ -538,7 +553,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
     $("share").onclick = () => {
       const url = /netlify\.app|pxm/i.test(location.hostname) ? location.origin+location.pathname : FALLBACK_URL;
-      const txt = "Saqué "+fmt(score)+"/10 en el Diagnóstico Digital de PXM Studio 📊 ¿Qué tan digital es tu negocio? Hacelo gratis acá: "+url;
+      const txt = "Saqué "+fmt(score)+"/10 en el Chequeo Digital de PXM Studio ✅ ¿Qué tan digital es tu negocio? Hacelo gratis acá: "+url;
       copy(txt);
     };
   }
@@ -563,7 +578,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   }
 
   $("go-start").onclick = () => { show("s-data"); $("counter").textContent="PASO INICIAL"; };
-  $("data-back").onclick = () => { show("s-intro"); $("counter").textContent="DIAGNÓSTICO GRATIS"; };
+  $("data-back").onclick = () => { show("s-intro"); $("counter").textContent="CHEQUEO GRATIS"; };
   $("data-next").onclick = () => {
     const sel = $("biz-type");
     if(!sel.value){
@@ -579,7 +594,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     idx = 0; show("s-q"); renderQ();
   };
   $("q-back").onclick = () => { if(idx>0){ idx--; renderQ(); } else { show("s-data"); $("counter").textContent="PASO INICIAL"; } };
-  $("restart").onclick = () => { answers=[]; idx=0; $("toast").textContent=""; show("s-intro"); $("counter").textContent="DIAGNÓSTICO GRATIS"; };
+  $("restart").onclick = () => { answers=[]; idx=0; $("toast").textContent=""; show("s-intro"); $("counter").textContent="CHEQUEO GRATIS"; };
 })();
 </script>
 </body>

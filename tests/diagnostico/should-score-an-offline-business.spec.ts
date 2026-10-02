@@ -31,7 +31,7 @@ test.describe('Diagnóstico', () => {
 
     // All middle answers → 5/10
     await page.getByRole('button', { name: 'Hacer el test de nuevo' }).click();
-    await page.getByRole('button', { name: 'Empezar el diagnóstico →' }).click();
+    await page.getByRole('button', { name: 'Empezar el chequeo →' }).click();
     await page.getByRole('button', { name: 'Siguiente →' }).click();
     await answerAll(page, 'B');
     await expect(page.locator('#score')).toHaveText('5');
