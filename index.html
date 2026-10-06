@@ -109,63 +109,129 @@
       <dialog id="casos" class="panel cases" aria-label="Casos">
         <button type="button" class="panel-close" aria-label="Cerrar">&times;</button>
         <div class="container">
-          <span class="eyebrow reveal">Caso real · Farmacia</span>
-          <div class="section-head">
-            <h2 class="reveal">Cómo digitalizamos una <em class="em-green">farmacia de barrio</em>.</h2>
+          <div class="case-tabs reveal" role="tablist" aria-label="Casos reales">
+            <button type="button" role="tab" id="tab-farmacia" aria-controls="caso-farmacia" aria-selected="true" aria-label="Farmacia Garmendia">Farmacia<span class="tab-extra"> Garmendia</span></button>
+            <button type="button" role="tab" id="tab-keuken" aria-controls="caso-keuken" aria-selected="false" tabindex="-1" aria-label="Keuken · Centro cultural">Keuken<span class="tab-extra"> · Centro cultural</span></button>
           </div>
-          <p class="case-sub reveal">
-            Farmacia Garmendia, Laferrere. Una farmacia de barrio compitiendo con las
-            cadenas, con web, club de fidelidad, videos y software propio.
-          </p>
-          <ul class="case-list">
-            <li class="case-item reveal-up">
-              <img src="/casos/farmacia-tienda.webp" alt="Tienda online de Farmacia Garmendia con buscador y botón de consulta por WhatsApp en cada producto" width="921" height="422" loading="lazy" />
-              <span class="case-tag">01 · Web y tienda</span>
-              <h3>La farmacia, abierta las 24&nbsp;h.</h3>
-              <p>Tienda online con más de 575 productos. El vecino busca, encuentra y consulta directo por WhatsApp.</p>
-            </li>
-            <li class="case-item reveal-up">
-              <img src="/casos/farmacia-fidelidad.webp" alt="Tarjeta de sellos digital del Club Farmendia y página para consultar el progreso" width="924" height="394" loading="lazy" />
-              <span class="case-tag">02 · Fidelización</span>
-              <h3>Clientes que vuelven.</h3>
-              <p>Club Farmendia: cada $15.000 de compra suma un sello. Con 10 sellos, el cliente elige su premio.</p>
-            </li>
-            <li class="case-item reveal-up">
-              <img src="/casos/farmacia-contenido.webp" alt="Ejemplos de contenido: video con IA, carrusel educativo y producto destacado" width="924" height="408" loading="lazy" />
-              <span class="case-tag">03 · Videos y contenido</span>
-              <h3>Contenido que trae gente.</h3>
-              <p>Videos con IA, carruseles educativos y productos destacados para @farma.garmendia, con identidad propia.</p>
-            </li>
-            <li class="case-item reveal-up">
-              <img src="/casos/farmacia-vencimientos.webp" alt="Sistema de inventario y vencimientos con escáner de código de barras y alertas" width="924" height="405" loading="lazy" />
-              <span class="case-tag">04 · Software a medida</span>
-              <h3>Nada se vence en la góndola.</h3>
-              <p>Sistema propio de inventario y vencimientos: se escanea el código de barras y avisa 4 meses antes qué hay que vender primero.</p>
-            </li>
-            <li class="case-item case-item-wide reveal-up">
-              <div class="case-item-body">
-                <span class="case-tag">05 · FarmaClick</span>
-                <h3>¿Quién está de turno? En un toque.</h3>
-                <p>Las farmacias de turno de La Matanza en una web. El vecino elige su localidad y lo sabe al instante.</p>
-                <ul class="case-points">
-                  <li>Calendario oficial 2026, por localidad</li>
-                  <li>Afiche con QR para el mostrador</li>
-                  <li>Cada consulta muestra la farmacia y su WhatsApp</li>
-                </ul>
-              </div>
-              <img src="/casos/farmacia-farmaclick.webp" alt="FarmaClick: farmacias de turno de Laferrere para el día, con la ficha de Farmacia Garmendia" width="430" height="478" loading="lazy" />
-            </li>
-          </ul>
-          <p class="case-note reveal">Todo funcionando hoy, en un negocio real.</p>
-          <div class="case-actions reveal">
-            <a
-              href="https://farmagarmendia.netlify.app/"
-              class="btn btn-primary"
-              target="_blank"
-              rel="noopener"
-            >Ver la web de la farmacia</a>
-            <a href="#cotizar" class="btn btn-ghost">Quiero lo mismo para mi negocio</a>
-          </div>
+          <section class="case" id="caso-farmacia" role="tabpanel" aria-labelledby="tab-farmacia">
+
+            <span class="eyebrow reveal">Caso real · Farmacia</span>
+            <div class="section-head">
+              <h2 class="reveal">Cómo digitalizamos una <em class="em-green">farmacia de barrio</em>.</h2>
+            </div>
+            <p class="case-sub reveal">
+              Farmacia Garmendia, Laferrere. Una farmacia de barrio compitiendo con las
+              cadenas, con web, club de fidelidad, videos y software propio.
+            </p>
+            <ul class="case-list">
+              <li class="case-item reveal-up">
+                <img src="/casos/farmacia-tienda.webp" alt="Tienda online de Farmacia Garmendia con buscador y botón de consulta por WhatsApp en cada producto" width="921" height="422" loading="lazy" />
+                <span class="case-tag">01 · Web y tienda</span>
+                <h3>La farmacia, abierta las 24&nbsp;h.</h3>
+                <p>Tienda online con más de 575 productos. El vecino busca, encuentra y consulta directo por WhatsApp.</p>
+              </li>
+              <li class="case-item reveal-up">
+                <img src="/casos/farmacia-fidelidad.webp" alt="Tarjeta de sellos digital del Club Farmendia y página para consultar el progreso" width="924" height="394" loading="lazy" />
+                <span class="case-tag">02 · Fidelización</span>
+                <h3>Clientes que vuelven.</h3>
+                <p>Club Farmendia: cada $15.000 de compra suma un sello. Con 10 sellos, el cliente elige su premio.</p>
+              </li>
+              <li class="case-item reveal-up">
+                <img src="/casos/farmacia-contenido.webp" alt="Ejemplos de contenido: video con IA, carrusel educativo y producto destacado" width="924" height="408" loading="lazy" />
+                <span class="case-tag">03 · Videos y contenido</span>
+                <h3>Contenido que trae gente.</h3>
+                <p>Videos con IA, carruseles educativos y productos destacados para @farma.garmendia, con identidad propia.</p>
+              </li>
+              <li class="case-item reveal-up">
+                <img src="/casos/farmacia-vencimientos.webp" alt="Sistema de inventario y vencimientos con escáner de código de barras y alertas" width="924" height="405" loading="lazy" />
+                <span class="case-tag">04 · Software a medida</span>
+                <h3>Nada se vence en la góndola.</h3>
+                <p>Sistema propio de inventario y vencimientos: se escanea el código de barras y avisa 4 meses antes qué hay que vender primero.</p>
+              </li>
+              <li class="case-item case-item-wide reveal-up">
+                <div class="case-item-body">
+                  <span class="case-tag">05 · FarmaClick</span>
+                  <h3>¿Quién está de turno? En un toque.</h3>
+                  <p>Las farmacias de turno de La Matanza en una web. El vecino elige su localidad y lo sabe al instante.</p>
+                  <ul class="case-points">
+                    <li>Calendario oficial 2026, por localidad</li>
+                    <li>Afiche con QR para el mostrador</li>
+                    <li>Cada consulta muestra la farmacia y su WhatsApp</li>
+                  </ul>
+                </div>
+                <img src="/casos/farmacia-farmaclick.webp" alt="FarmaClick: farmacias de turno de Laferrere para el día, con la ficha de Farmacia Garmendia" width="430" height="478" loading="lazy" />
+              </li>
+            </ul>
+            <p class="case-note reveal">Todo funcionando hoy, en un negocio real.</p>
+            <div class="case-actions reveal">
+              <a
+                href="https://farmagarmendia.netlify.app/"
+                class="btn btn-primary"
+                target="_blank"
+                rel="noopener"
+              >Ver la web de la farmacia</a>
+              <a href="#cotizar" class="btn btn-ghost">Quiero lo mismo para mi negocio</a>
+            </div>
+          </section>
+          <section class="case" id="caso-keuken" role="tabpanel" aria-labelledby="tab-keuken" hidden>
+            <span class="eyebrow reveal">Caso real · Gastronomía</span>
+            <div class="section-head">
+              <h2>Le hicimos el <em>sistema de caja</em> a un centro cultural en la Patagonia.</h2>
+            </div>
+            <img class="case-logo" src="/casos/keuken-logo.webp" alt="Centro Cultural Keuken Aonikenk" width="382" height="102" loading="lazy" />
+            <p class="case-sub">
+              Resto bar café en Lago Puelo, con bar, cocina y cafetería atendiendo eventos.
+              Cobro, comandas y clientes en un solo programa.
+            </p>
+            <ul class="case-list">
+              <li class="case-item">
+                <img src="/casos/keuken-problema.webp" alt="El problema: pedidos que se pierden, cortes de luz e internet y cierres de caja eternos" width="952" height="486" loading="lazy" />
+                <span class="case-tag">01 · El problema</span>
+                <h3>Mostrador lleno y comandas a mano.</h3>
+                <p>Todo pasaba por papel y de boca en boca: pedidos que se perdían, cortes de luz e internet y cierres de caja eternos.</p>
+              </li>
+              <li class="case-item">
+                <img src="/casos/keuken-caja.webp" alt="Caja Keuken: productos por sector y pedido listo para cobrar y enviar comandas a 3 impresoras" width="952" height="306" loading="lazy" />
+                <span class="case-tag">02 · Caja y comandas</span>
+                <h3>Cobrás y la comanda sale sola.</h3>
+                <p>Cada producto sabe a qué sector va: al cobrar, el pedido se imprime en cocina, barra o cafetería.</p>
+              </li>
+              <li class="case-item">
+                <img src="/casos/keuken-patagonia.webp" alt="Cobros, comandas e impresoras funcionando sin conexión a internet, con copia de seguridad diaria" width="952" height="500" loading="lazy" />
+                <span class="case-tag">03 · Hecho para la Patagonia</span>
+                <h3>Se corta internet. La caja sigue.</h3>
+                <p>Programa de Windows que guarda todo en la PC del local, con copia de seguridad automática todos los días. No depende de la nube ni de una suscripción.</p>
+              </li>
+              <li class="case-item">
+                <img src="/casos/keuken-fidelizacion.webp" alt="Ficha de cliente con 1.250 puntos disponibles y botón para canjear" width="952" height="515" loading="lazy" />
+                <span class="case-tag">04 · Fidelización</span>
+                <h3>Clientes que vuelven.</h3>
+                <p>Cada compra suma puntos que el cliente canjea en el mostrador. Sin tarjetas ni apps extra.</p>
+              </li>
+              <li class="case-item case-item-wide">
+                <div class="case-item-body">
+                  <span class="case-tag">05 · Control del dueño</span>
+                  <h3>Cada peso, a la vista.</h3>
+                  <ul class="case-points">
+                    <li>Clave para precios, clientes y configuración</li>
+                    <li>Cierre de caja con cada ingreso, retiro y cambio registrado</li>
+                    <li>El cajón se abre solo al cobrar en efectivo</li>
+                    <li>Si se anula un pedido, cocina y barra se enteran al instante</li>
+                  </ul>
+                </div>
+                <img src="/casos/keuken-control.webp" alt="Funciones de control del dueño: clave, cierre de caja, cajón automático y anulaciones" width="952" height="674" loading="lazy" />
+              </li>
+            </ul>
+            <div class="case-actions">
+              <a
+                href="https://www.instagram.com/keukenaonikenk/"
+                class="btn btn-primary"
+                target="_blank"
+                rel="noopener"
+              >Ver Keuken en Instagram</a>
+              <a href="#cotizar" class="btn btn-ghost">Quiero lo mismo para mi negocio</a>
+            </div>
+          </section>
         </div>
       </dialog>
 
