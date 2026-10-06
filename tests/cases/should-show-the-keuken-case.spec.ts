@@ -27,6 +27,11 @@ test.describe('Casos', () => {
       await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
     }
 
+    await expect(panel.getByRole('link', { name: 'Ver Keuken en Instagram' })).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/keukenaonikenk/',
+    );
+
     // 2. The CTA opens the quote panel
     await panel.getByRole('link', { name: 'Quiero lo mismo para mi negocio' }).click();
     await expect(page).toHaveURL(/#cotizar$/);

@@ -138,6 +138,7 @@ Instagram CTAs. A footer repeats anchor links to each section.
   1. Open Casos and select the "Keuken · Centro cultural" tab
     - expect: the tab is selected and the farmacia panel is hidden
     - expect: the "Le hicimos el sistema de caja…" heading, the Keuken logo and 5 illustrated items are visible; every image loads
+    - expect: "Ver Keuken en Instagram" links to https://www.instagram.com/keukenaonikenk/
   2. Click "Quiero lo mismo para mi negocio"
     - expect: the quote panel opens
   3. With a tab focused, press ArrowRight
