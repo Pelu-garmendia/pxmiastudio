@@ -1,12 +1,14 @@
 import gsap from "gsap";
 import { initBackground } from "./background.js";
 import { initQuoteForm } from "./quote-form.js";
+import { initCaseTabs } from "./case-tabs.js";
 
 const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 initBackground(document.getElementById("bg-canvas"), { reduceMotion });
 initQuoteForm();
+initCaseTabs();
 
 if (reduceMotion) {
   gsap.set(".hero .reveal, .hero-title, .hero-title .reveal-line > span", {

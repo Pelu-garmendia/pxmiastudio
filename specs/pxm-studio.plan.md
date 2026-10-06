@@ -130,6 +130,19 @@ Instagram CTAs. A footer repeats anchor links to each section.
   2. Click "Quiero lo mismo para mi negocio"
     - expect: the quote panel opens and the Casos panel closes
 
+#### 4b.2. should-show-the-keuken-case
+
+**File:** `tests/cases/should-show-the-keuken-case.spec.ts`
+
+**Steps:**
+  1. Open Casos and select the "Keuken · Centro cultural" tab
+    - expect: the tab is selected and the farmacia panel is hidden
+    - expect: the "Le hicimos el sistema de caja…" heading, the Keuken logo and 5 illustrated items are visible; every image loads
+  2. Click "Quiero lo mismo para mi negocio"
+    - expect: the quote panel opens
+  3. With a tab focused, press ArrowRight
+    - expect: focus and selection move to the next case, wrapping around
+
 ### 5. Chequeo Digital (`/diagnostico/`, alias `/chequeo/`)
 
 **Helpers:** `tests/diagnostico/helpers.ts` (the page is standalone, so these

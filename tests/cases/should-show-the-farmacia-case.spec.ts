@@ -8,7 +8,10 @@ test.describe('Casos', () => {
     await page.locator('.nav').getByRole('link', { name: 'Casos' }).click();
 
     await expect(page).toHaveURL(/#casos$/);
-    const panel = page.getByRole('dialog', { name: 'Casos' });
+    const dialog = page.getByRole('dialog', { name: 'Casos' });
+    // The farmacia is the case selected by default.
+    await expect(dialog.getByRole('tab', { name: 'Farmacia Garmendia' })).toHaveAttribute('aria-selected', 'true');
+    const panel = dialog.getByRole('tabpanel', { name: 'Farmacia Garmendia' });
     await expect(panel.getByRole('heading', { name: 'Cómo digitalizamos una farmacia de barrio.' })).toBeVisible();
     await expect(panel.locator('.case-item')).toHaveCount(5);
     // Every item is illustrated with its slide image.
@@ -27,6 +30,6 @@ test.describe('Casos', () => {
     await panel.getByRole('link', { name: 'Quiero lo mismo para mi negocio' }).click();
     await expect(page).toHaveURL(/#cotizar$/);
     await expect(page.getByRole('heading', { name: 'Cotizá tu servicio.' })).toBeVisible();
-    await expect(panel).toBeHidden();
+    await expect(dialog).toBeHidden();
   });
 });
