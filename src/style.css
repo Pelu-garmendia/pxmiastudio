@@ -605,6 +605,11 @@ button:focus-visible {
     white-space: nowrap;
   }
 
+  /* Taller hit area so a thumb lands on the link, not between them. */
+  .nav a {
+    padding: 10px 0;
+  }
+
   dl.price-list {
     gap: 14px;
   }
@@ -848,10 +853,33 @@ p.price-list.price-note {
 }
 
 @media (max-width: 560px) {
+  .hero {
+    padding-top: 176px;
+  }
+
+  /* Six links don't fit one row on a phone: lay them out as a 3×2 grid of
+     pill buttons big enough to tap. */
   .nav {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 4px 14px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 6px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .nav a.nav-diag {
+    border-color: var(--accent);
   }
 }
 

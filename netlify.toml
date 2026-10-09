@@ -2,12 +2,6 @@
   command = "npm run build"
   publish = "dist"
 
-# La vitrina se puede probar con el link directo, pero no aparece en buscadores
-[[headers]]
-  for = "/vitrina/*"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
 # El Chequeo Digital vive en /diagnostico/ (links ya compartidos); /chequeo/ es su alias
 [[redirects]]
   from = "/chequeo"

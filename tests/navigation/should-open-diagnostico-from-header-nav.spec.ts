@@ -20,4 +20,15 @@ test.describe('Navigation', () => {
       expect(fits, `nav fits at ${width}px`).toBe(true);
     }
   });
+
+  test('should give each header link a tappable height on phones', async ({ page }) => {
+    for (const width of [320, 390, 560]) {
+      await page.setViewportSize({ width, height: 800 });
+      const heights = await page.locator('.nav a').evaluateAll((links) =>
+        links.map((a) => a.getBoundingClientRect().height),
+      );
+      expect(heights).toHaveLength(6);
+      for (const h of heights) expect(h, `link height at ${width}px`).toBeGreaterThanOrEqual(40);
+    }
+  });
 });
