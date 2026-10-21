@@ -57,9 +57,6 @@ const CONNECTIONS = [
   [15, 16], [4, 31], [24, 9], [22, 19], [18, 28],
 ];
 
-// Hubs the AI node talks to; spread across the planet so some are always facing us.
-const AI_HUBS = [0, 5, 8, 16, 19, 24, 26, 14];
-
 function latLonToVector3(lat, lon, radius) {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lon + 180) * (Math.PI / 180);
@@ -67,15 +64,6 @@ function latLonToVector3(lat, lon, radius) {
     -radius * Math.sin(phi) * Math.cos(theta),
     radius * Math.cos(phi),
     radius * Math.sin(phi) * Math.sin(theta)
-  );
-}
-
-function quadPoint(a, c, b, t, out) {
-  const u = 1 - t;
-  return out.set(
-    u * u * a.x + 2 * u * t * c.x + t * t * b.x,
-    u * u * a.y + 2 * u * t * c.y + t * t * b.y,
-    u * u * a.z + 2 * u * t * c.z + t * t * b.z
   );
 }
 
@@ -166,57 +154,6 @@ function buildEarthTextures() {
   return { map: mk(color), emissive: mk(lights) };
 }
 
-function buildAiIconTexture() {
-  const S = 256;
-  const cv = document.createElement("canvas");
-  cv.width = cv.height = S;
-  const c = cv.getContext("2d");
-  c.beginPath();
-  c.arc(128, 128, 116, 0, Math.PI * 2);
-  c.fillStyle = "rgba(4,10,20,0.88)";
-  c.fill();
-  c.lineWidth = 6;
-  c.strokeStyle = "#5b9bff";
-  c.stroke();
-
-  const sparkle = (cx, cy, r) => {
-    c.beginPath();
-    c.moveTo(cx, cy - r);
-    c.quadraticCurveTo(cx, cy, cx + r, cy);
-    c.quadraticCurveTo(cx, cy, cx, cy + r);
-    c.quadraticCurveTo(cx, cy, cx - r, cy);
-    c.quadraticCurveTo(cx, cy, cx, cy - r);
-    c.closePath();
-    c.fill();
-  };
-  c.fillStyle = "#eaf1ff";
-  sparkle(116, 108, 58);
-  c.fillStyle = "#5b9bff";
-  sparkle(176, 68, 24);
-  sparkle(180, 136, 16);
-  c.fillStyle = "#eaf1ff";
-  c.font = "700 44px Inter, system-ui, sans-serif";
-  c.textAlign = "center";
-  c.fillText("IA", 128, 216);
-
-  const t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
-
-function buildHaloTexture() {
-  const cv = document.createElement("canvas");
-  cv.width = cv.height = 64;
-  const c = cv.getContext("2d");
-  const g = c.createRadialGradient(32, 32, 0, 32, 32, 32);
-  g.addColorStop(0, "rgba(111,227,255,0.8)");
-  g.addColorStop(0.4, "rgba(111,227,255,0.25)");
-  g.addColorStop(1, "rgba(111,227,255,0)");
-  c.fillStyle = g;
-  c.fillRect(0, 0, 64, 64);
-  return new THREE.CanvasTexture(cv);
-}
-
 function buildPlanet(radius) {
   const system = new THREE.Group();
   const planet = new THREE.Group();
@@ -273,47 +210,7 @@ function buildPlanet(radius) {
     pulses.push({ curve, pulse, delay: (i * 0.37) % 3 });
   });
 
-  // AI badge: fixed above the planet (not spinning), wired to hubs on the surface.
-  const aiPos = new THREE.Vector3(radius * 0.35, radius * 1.75, radius * 0.7);
-  const halo = new THREE.Sprite(
-    new THREE.SpriteMaterial({
-      map: buildHaloTexture(),
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    })
-  );
-  halo.position.copy(aiPos);
-  halo.scale.setScalar(radius * 1.1);
-  system.add(halo);
-
-  const badge = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map: buildAiIconTexture(), transparent: true, depthTest: false })
-  );
-  badge.position.copy(aiPos);
-  badge.scale.setScalar(radius * 0.55);
-  badge.renderOrder = 10;
-  system.add(badge);
-
-  const LINK_PTS = 28;
-  const links = AI_HUBS.map((n) => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(LINK_PTS * 3), 3));
-    const line = new THREE.Line(
-      geo,
-      new THREE.LineBasicMaterial({ color: 0xbff3ff, transparent: true, opacity: 0.55 })
-    );
-    line.frustumCulled = false;
-    system.add(line);
-    const pulse = new THREE.Mesh(
-      new THREE.SphereGeometry(radius * 0.02, 6, 6),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 })
-    );
-    system.add(pulse);
-    return { node: nodePositions[n], line, pulse, t: 0, visible: false, ctrl: new THREE.Vector3(), end: new THREE.Vector3() };
-  });
-
-  return { system, planet, pulses, ai: { pos: aiPos, badge, halo, links, LINK_PTS } };
+  return { system, planet, pulses };
 }
 
 export function initBackground(canvas, { reduceMotion = false } = {}) {
@@ -355,7 +252,9 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
   sun.position.set(-5, 3, 5);
   scene.add(sun);
 
-  const { system, planet, pulses, ai } = buildPlanet(1.9);
+  const { system, planet, pulses } = buildPlanet(1.9);
+  // Point beside the globe (system space) that the stacked layout pins below the hero copy.
+  const ANCHOR = new THREE.Vector3(1.9 * 0.35, 1.9 * 1.75, 1.9 * 0.7);
   planet.rotation.set(0.4, 0, 0);
   scene.add(system);
 
@@ -367,59 +266,28 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
     if (wide) {
       system.position.set(Math.min(2.7 * aspect, 5.13 * aspect - 2.6), -0.6, -2);
       system.scale.setScalar(1.1);
-      ai.badge.scale.setScalar(1.045);
       return;
     }
-    // Stacked layout: hang the AI badge just below the hero copy and its
+    // Stacked layout: hang the anchor point just below the hero copy and its
     // buttons. On short screens there is no room below them (the canvas is
     // fixed, so it would never scroll into view): sit it beside the buttons.
     const halfH = Math.tan(THREE.MathUtils.degToRad(25)) * 11;
     const halfW = halfH * aspect;
     const anchor = document.querySelector(".hero-actions") || document.querySelector(".hero-sub");
     const box = anchor ? anchor.getBoundingClientRect() : { top: h * 0.45, bottom: h * 0.55 };
-    let badgeX = 0.44 * halfW;
-    let badgeY = halfH - ((box.bottom + 34) / h) * 2 * halfH;
+    let anchorX = 0.44 * halfW;
+    let anchorY = halfH - ((box.bottom + 34) / h) * 2 * halfH;
     if (h - box.bottom < 150) {
       const centerY = (box.top + box.bottom) / 2;
-      badgeY = halfH - (centerY / h) * 2 * halfH;
-      badgeX = ((w - 64) / w) * 2 * halfW - halfW;
+      anchorY = halfH - (centerY / h) * 2 * halfH;
+      anchorX = ((w - 64) / w) * 2 * halfW - halfW;
     }
     system.scale.setScalar(1);
-    ai.badge.scale.setScalar(0.85);
-    system.position.set(badgeX - ai.pos.x, badgeY - ai.pos.y, -2);
+    system.position.set(anchorX - ANCHOR.x, anchorY - ANCHOR.y, -2);
   };
   placeGlobe();
   window.addEventListener("load", placeGlobe);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeGlobe);
-
-  const tmpA = new THREE.Vector3();
-  const tmpB = new THREE.Vector3();
-  const center = new THREE.Vector3();
-
-  function updateAiLinks() {
-    system.updateMatrixWorld(true);
-    system.getWorldPosition(center);
-    ai.links.forEach((lk) => {
-      tmpA.copy(lk.node).applyMatrix4(planet.matrixWorld);
-      const facing = tmpA.clone().sub(center).normalize().dot(tmpB.copy(camera.position).sub(tmpA).normalize());
-      lk.visible = facing > 0.05;
-      lk.line.visible = lk.visible;
-      if (!lk.visible) {
-        lk.pulse.material.opacity = 0;
-        return;
-      }
-      lk.end.copy(tmpA).sub(system.position);
-      lk.ctrl.copy(ai.pos).add(lk.end).multiplyScalar(0.5).multiplyScalar(1.12);
-      const attr = lk.line.geometry.attributes.position;
-      for (let i = 0; i < ai.LINK_PTS; i++) {
-        quadPoint(ai.pos, lk.ctrl, lk.end, i / (ai.LINK_PTS - 1), tmpB);
-        attr.setXYZ(i, tmpB.x, tmpB.y, tmpB.z);
-      }
-      attr.needsUpdate = true;
-      quadPoint(ai.pos, lk.ctrl, lk.end, lk.t, tmpB);
-      lk.pulse.position.copy(tmpB);
-    });
-  }
 
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -430,7 +298,6 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
 
   if (reduceMotion) {
     planet.rotation.y = 1.6;
-    updateAiLinks();
     renderer.render(scene, camera);
     return;
   }
@@ -449,21 +316,6 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
       },
     });
   });
-
-  ai.links.forEach((lk, i) => {
-    gsap.to(lk, {
-      t: 1,
-      duration: 1.6,
-      delay: i * 0.45,
-      repeat: -1,
-      repeatDelay: 1,
-      ease: "power1.inOut",
-      onUpdate: () => {
-        if (lk.visible) lk.pulse.material.opacity = Math.sin(lk.t * Math.PI);
-      },
-    });
-  });
-  gsap.to(ai.halo.scale, { x: 2.4, y: 2.4, duration: 2.4, yoyo: true, repeat: -1, ease: "sine.inOut" });
 
   const mouse = { x: 0, y: 0 };
   window.addEventListener("pointermove", (e) => {
@@ -487,15 +339,10 @@ export function initBackground(canvas, { reduceMotion = false } = {}) {
     points.rotation.x = t * 0.01;
     planet.rotation.y = 1.6 + t * 0.09;
 
-    const bob = Math.sin(t * 0.9) * 0.05;
-    ai.badge.position.y = ai.pos.y + bob;
-    ai.halo.position.y = ai.pos.y + bob;
-
     camera.position.x += (mouse.x * 0.6 - camera.position.x) * 0.02;
     camera.position.y += (-mouse.y * 0.4 - camera.position.y) * 0.02;
     camera.lookAt(0, 0, 0);
 
-    updateAiLinks();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   }
