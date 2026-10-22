@@ -18,3 +18,9 @@
   from = "/chequeo/*"
   to = "/diagnostico/"
   status = 301
+
+# Demos para clientes: se abren con el link directo, no aparecen en buscadores
+[[headers]]
+  for = "/demos/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
