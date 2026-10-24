@@ -167,8 +167,6 @@ td.n,th.n{text-align:right}
     <label>Punto de venta interno</label><input id="cfPv" type="number">
     <label>Al cobrar</label><select id="cfImp"><option value="preguntar">Preguntar si imprimo el ticket</option><option value="auto">Imprimir el ticket siempre</option><option value="no">No imprimir</option></select>
     <p class="mut" style="margin:6px 0 0">Para que imprima directo, sin la ventana de impresión, abrí Chrome con la opción <code>--kiosk-printing</code>.</p>
-    <label>Etiquetas de la balanza</label><select id="cfBal"><option value="importe">Traen el precio total</option><option value="peso">Traen el peso</option></select>
-    <p class="mut" style="margin:6px 0 0" id="cfBalEj"></p>
     <button class="p" style="margin-top:14px" onclick="saveCfg()">Guardar</button>
    </div>
    <div class="card soon"><h2>Factura electrónica ARCA <span class="tag red">Opcional</span></h2>
@@ -176,6 +174,7 @@ td.n,th.n{text-align:right}
     <label>CUIT emisor</label><input disabled placeholder="Se configura al activar el agregado">
     <label>Condición frente al IVA</label><select disabled><option>Responsable Inscripto / Monotributo</option></select>
    </div>
+   <div class="card"><h2>Datos de ejemplo</h2><div id="demoBox"></div></div>
    <div class="card"><h2>Copia de seguridad</h2>
     <p class="mut">Los datos quedan guardados en esta computadora. Descargá una copia seguido.</p>
     <div class="row"><button onclick="backup()">Descargar copia</button><button onclick="document.getElementById('restIn').click()">Restaurar copia</button>
@@ -230,13 +229,14 @@ function norm(d){
  o.cajas.forEach(c=>{if(!ID.test(c.id)||!Array.isArray(c.movs))throw 0;c.inicial=+c.inicial||0});
  o.ventas.forEach(v=>{if(!ID.test(v.id)||!Array.isArray(v.items)||!Array.isArray(v.pagos)||!v.pagos.every(p=>MEDIOS[p.medio]&&numOk(+p.monto)))throw 0});
  o.gastos.forEach(g=>{if(!ID.test(g.id)||!numOk(+g.monto))throw 0});
+ o.demo=!!d.demo;
  o.seq=Math.max(o.seq,...o.ventas.map(v=>(+v.nro||0)+1));
  return o;
 }
 function load(){try{const r=localStorage.getItem(KEY);if(r)return norm(JSON.parse(r))}catch(e){}return null}
 // Devuelve false si el navegador no dejó guardar (por ejemplo, sin espacio)
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast('⚠ No se pudo guardar. Descargá una copia de seguridad.',6000);return false}}
-let S=load()||seed();
+let S=load()||seed(),primeraVez=!S.ventas.length&&(()=>{try{return !localStorage.getItem(KEY)}catch(e){return true}})();
 const hoy=d=>new Date(d).toDateString()===new Date().toDateString();
 let cart=[],catSel='Todos';
 
@@ -359,7 +359,7 @@ function rCobro(){
  ${pagos.map((p,k)=>`<div class="card" style="padding:10px;margin-bottom:8px">
   <div class="row"><select style="flex:1" onchange="pagos[${k}].medio=this.value;rCobro()">${opt(p.medio)}</select><input type="number" style="width:120px" value="${p.monto}" onchange="editPago(${k},this.value)">${pagos.length>1?`<button class="s" onclick="delPago(${k})">✕</button>`:''}</div>
   ${pagos.length>1&&p.auto?'<div class="mut" style="margin-top:4px">Completa lo que falta</div>':''}
-  ${p.medio==='efectivo'?`<div class="row" style="margin-top:8px"><span class="mut" style="flex:1">Paga con</span><input type="number" style="width:120px" value="${p.recibe}" placeholder="opcional" oninput="pagos[${k}].recibe=this.value;const v=(+this.value||0)-(+pagos[${k}].monto||0);document.getElementById('vu${k}').textContent=v>0?'Vuelto: '+fmt(v):''"></div><div id="vu${k}" style="text-align:right;font-weight:700;color:var(--ok)">${(+p.recibe||0)>p.monto?'Vuelto: '+fmt(p.recibe-p.monto):''}</div>`:''}
+  ${p.medio==='efectivo'&&+p.monto>0?`<div class="row" style="margin-top:8px"><span class="mut" style="flex:1">Paga con</span><input type="number" style="width:120px" value="${p.recibe}" placeholder="opcional" oninput="pagos[${k}].recibe=this.value;const v=(+this.value||0)-(+pagos[${k}].monto||0);document.getElementById('vu${k}').textContent=v>0?'Vuelto: '+fmt(v):''"></div><div id="vu${k}" style="text-align:right;font-weight:700;color:var(--ok)">${(+p.recibe||0)>p.monto?'Vuelto: '+fmt(p.recibe-p.monto):''}</div>`:''}
  </div>`).join('')}
  <button class="s" onclick="addPago()">+ Otro medio de pago</button>
  <div id="cobErr" style="color:var(--acc);font-size:13px;margin-top:8px">${Math.abs(dif)>0.5?(dif>0?'Faltan ':'Sobran ')+fmt(Math.abs(dif))+' para llegar al total':''}</div>
@@ -393,8 +393,8 @@ function imprimirTicket(v){
 }
 
 /* CAJA */
-function resumenCaja(c){
- const vs=S.ventas.filter(v=>v.cajaId===c.id&&!v.anulada);
+function resumenCaja(c,ventas){
+ const vs=(ventas||S.ventas).filter(v=>v.cajaId===c.id&&!v.anulada);
  const med={};Object.keys(MEDIOS).forEach(k=>med[k]=0);
  vs.forEach(v=>v.pagos.forEach(p=>med[p.medio]+=p.monto));
  const ingE=c.movs.filter(m=>m.tipo==='ingreso'&&m.medio==='efectivo').reduce((a,m)=>a+m.monto,0);
@@ -410,7 +410,7 @@ function okAbrir(dc){S.cajas.push({id:uid(),apertura:new Date().toISOString(),in
 function rCaja(){
  const c=cajaAbierta(),el=$('#s-caja');
  const hist=S.cajas.filter(x=>x.cierre).slice(-15).reverse();
- const histH=`<div class="card"><h3>Cierres anteriores</h3><div class="tw"><table><thead><tr><th>Apertura</th><th>Cierre</th><th class="n">Ventas</th><th class="n">Diferencia</th><th></th></tr></thead><tbody>${hist.map(h=>{const r=resumenCaja(h);const d=h.contado-r.esperado;return `<tr><td>${fdt(h.apertura)}</td><td>${fdt(h.cierre)}</td><td class="n">${fmt(r.total)}</td><td class="n"><span class="tag ${Math.abs(d)<1?'ok':'red'}">${d>0?'+':''}${fmt(d)}</span></td><td class="n"><button class="s" onclick="imprimirCierre('${h.id}')">Imprimir</button></td></tr>`}).join('')||'<tr><td colspan="5" class="mut">Todavía no hay cierres</td></tr>'}</tbody></table></div></div>`;
+ const histH=`<div class="card"><h3>Cierres anteriores</h3><div class="tw"><table><thead><tr><th>Apertura</th><th>Cierre</th><th class="n">Ventas</th><th class="n">Diferencia</th><th></th></tr></thead><tbody>${hist.map(h=>{const r=resumenCaja(h);const d=h.contado-r.esperado;return `<tr><td>${fdt(h.apertura)}</td><td>${fdt(h.cierre)}</td><td class="n">${fmt(r.total)}</td><td class="n"><span class="tag ${Math.abs(d)<1?'ok':'red'}">${d>0?'+':d<0?'−':''}${fmt(Math.abs(d))}</span></td><td class="n"><button class="s" onclick="imprimirCierre('${h.id}')">Imprimir</button></td></tr>`}).join('')||'<tr><td colspan="5" class="mut">Todavía no hay cierres</td></tr>'}</tbody></table></div></div>`;
  if(!c){el.innerHTML=`<div class="card" style="text-align:center;padding:30px"><h2>La caja está cerrada</h2><p class="mut">Abrila para empezar a vender.</p><button class="p" onclick="abrirCaja()">Abrir caja</button></div>`+histH;return}
  const r=resumenCaja(c);
  el.innerHTML=`<div class="card"><div class="row" style="justify-content:space-between"><div><h2 style="margin:0">Caja del día</h2><span class="mut">Abierta ${fdt(c.apertura)}</span>${hoy(c.apertura)?'':' <span class="tag red">Es de otro día: cerrala</span>'}</div>
@@ -443,7 +443,7 @@ function imprimirCierre(id){
  ${Object.entries(r.med).filter(([k,v])=>v).map(([k,v])=>`<div class="r"><span>${MEDIOS[k]}</span><span>${fmt(v)}</span></div>`).join('')}<hr>
  <div class="r"><span>Efectivo inicial</span><span>${fmt(c.inicial)}</span></div><div class="r"><span>+ Ventas efectivo</span><span>${fmt(r.med.efectivo)}</span></div>
  <div class="r"><span>+ Ingresos</span><span>${fmt(r.ingE)}</span></div><div class="r"><span>- Retiros/pagos</span><span>${fmt(r.egr)}</span></div>
- <div class="r"><b>Esperado</b><b>${fmt(r.esperado)}</b></div><div class="r"><b>Contado</b><b>${fmt(c.contado)}</b></div><div class="r T"><span>DIFERENCIA</span><span>${d>0?'+':''}${fmt(d)}</span></div>
+ <div class="r"><b>Esperado</b><b>${fmt(r.esperado)}</b></div><div class="r"><b>Contado</b><b>${fmt(c.contado)}</b></div><div class="r T"><span>DIFERENCIA</span><span>${d>0?'+':d<0?'−':''}${fmt(Math.abs(d))}</span></div>
  ${c.obs?'<hr><div>Obs: '+esc(c.obs)+'</div>':''}<hr><div class="c">Comprobante interno</div></div>`;
  setTimeout(()=>window.print(),80);
 }
@@ -452,10 +452,18 @@ function verVenta(id){
  openM(`<h2>Venta N° ${v.nro} ${v.anulada?'<span class="tag red">Anulada</span>':''}</h2><p class="mut">${fdt(v.fecha)}</p>
  <table>${v.items.map(i=>`<tr><td>${esc(i.nombre)}<br><span class="mut">${fcant(i.cant,i.unidad)}</span></td><td class="n">${fmt(i.sub)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td class="n"><b>${fmt(v.total)}</b></td></tr></table>
  <p class="mut">${v.pagos.map(p=>MEDIOS[p.medio]+' '+fmt(p.monto)).join(' · ')}</p>
- <div class="row" style="margin-top:10px"><button onclick="closeM()">Cerrar</button><button onclick="imprimirTicket(S.ventas.find(x=>x.id==='${id}'))">Reimprimir</button>${!v.anulada&&cajaAbierta()&&v.cajaId===cajaAbierta().id?`<button style="color:var(--acc)" onclick="anular('${id}')">Anular</button>`:''}</div>`);
+ ${v.anulada?`<p class="mut">Anulada el ${fdt(v.anuladaFecha||v.fecha)}${v.motivo?': '+esc(v.motivo):''}</p>`:''}
+ ${!v.anulada&&!enCajaAbierta(v)?'<p class="mut">Solo se puede anular mientras la caja de esta venta está abierta, para no cambiar un cierre ya hecho.</p>':''}
+ <div class="row" style="margin-top:10px"><button onclick="closeM()">Cerrar</button><button onclick="imprimirTicket(S.ventas.find(x=>x.id==='${id}'))">Reimprimir</button>${!v.anulada&&enCajaAbierta(v)?`<button style="color:var(--acc)" onclick="anular('${id}')">Anular</button>`:''}</div>`);
 }
-function anular(id){if(!confirm('¿Anular esta venta?'))return;const v=S.ventas.find(x=>x.id===id);v.anulada=true;
- save();closeM();toast('Venta anulada');render()}
+const enCajaAbierta=v=>{const c=cajaAbierta();return !!c&&v.cajaId===c.id};
+function anular(id){
+ openM(`<h2>Anular venta</h2><label>Motivo</label><input id="mmot" autofocus placeholder="Ej: se cobró de más, el cliente devolvió" onkeydown="if(event.key==='Enter')okAnular('${id}')">
+ <div class="row" style="margin-top:14px"><button onclick="verVenta('${id}')">Volver</button><button class="p" style="flex:1" onclick="okAnular('${id}')">Anular venta</button></div>`)}
+function okAnular(id){const m=$('#mmot').value.trim();if(!m)return toast('Poné el motivo');
+ const v=S.ventas.find(x=>x.id===id);Object.assign(v,{anulada:true,motivo:m,anuladaFecha:new Date().toISOString()});
+ if(!save()){Object.assign(v,{anulada:false,motivo:undefined,anuladaFecha:undefined});return}
+ closeM();toast('Venta anulada');render()}
 
 /* PRODUCTOS */
 function rProductos(){
@@ -463,7 +471,7 @@ function rProductos(){
  $('#undoAum').style.display=undoAum?'':'none';
  const q=$('#pq').value.toLowerCase(),cat=sel.value;
  $('#ptb').innerHTML=S.productos.filter(p=>(!cat||p.cat===cat)&&(!q||p.nombre.toLowerCase().includes(q)||(p.cod||'').includes(q))).sort((a,b)=>a.cat.localeCompare(b.cat)||a.nombre.localeCompare(b.nombre))
- .map(p=>`<tr style="${p.activo?'':'opacity:.45'}"><td class="mut">${esc(p.cod||(p.plu?'Balanza '+p.plu:'—'))}</td><td>${esc(p.nombre)}</td><td>${esc(p.cat)}</td><td class="n">${p.libre?'Libre':fmt(p.precio)+(p.unidad==='kg'?'/kg':' c/u')}</td><td class="n"><button class="s" onclick="editProd('${p.id}')">Editar</button></td></tr>`).join('');
+ .map(p=>`<tr style="${p.activo?'':'opacity:.45'}"><td class="mut">${esc(p.cod||'—')}</td><td>${esc(p.nombre)}</td><td>${esc(p.cat)}</td><td class="n">${p.libre?'Libre':fmt(p.precio)+(p.unidad==='kg'?'/kg':' c/u')}</td><td class="n"><button class="s" onclick="editProd('${p.id}')">Editar</button></td></tr>`).join('');
 }
 function editProd(id){
  const p=id?S.productos.find(x=>x.id===id):{cod:'',plu:null,nombre:'',cat:'Almacén',precio:'',unidad:'u',libre:false,activo:true};
@@ -471,20 +479,16 @@ function editProd(id){
  openM(`<h2>${id?'Editar':'Nuevo'} producto</h2>
  <div class="grid2" style="gap:8px"><div><label>Código de barras (escanealo acá)</label><input id="ep" autofocus inputmode="numeric" value="${esc(p.cod||'')}" placeholder="Opcional" onkeydown="if(event.key==='Enter'){event.preventDefault();$('#en').focus()}"></div><div><label>Categoría</label><select id="ec">${cats.map(c=>`<option ${c===p.cat?'selected':''}>${esc(c)}</option>`).join('')}</select></div></div>
  <label>Nombre</label><input id="en" value="${esc(p.nombre)}">
- <div class="grid2" style="gap:8px"><div><label>Precio</label><input id="epr" type="number" value="${p.libre?'':p.precio}" ${p.libre?'disabled':''}></div><div><label>Se vende por</label><select id="eu" onchange="$('#epluw').style.display=this.value==='kg'?'':'none'"><option value="u" ${p.unidad==='u'?'selected':''}>Unidad</option><option value="kg" ${p.unidad==='kg'?'selected':''}>Kilo (fiambre, suelto)</option></select></div></div>
- <div id="epluw" style="${p.unidad==='kg'?'':'display:none'}"><label>Código en la balanza (PLU)</label><input id="eplu" type="number" value="${p.plu||''}" placeholder="Opcional, de 1 a 99999"></div>
+ <div class="grid2" style="gap:8px"><div><label>Precio</label><input id="epr" type="number" value="${p.libre?'':p.precio}" ${p.libre?'disabled':''}></div><div><label>Se vende por</label><select id="eu"><option value="u" ${p.unidad==='u'?'selected':''}>Unidad</option><option value="kg" ${p.unidad==='kg'?'selected':''}>Kilo (fiambre, suelto)</option></select></div></div>
  <label><input type="checkbox" id="el" style="width:auto" ${p.libre?'checked':''} onchange="$('#epr').disabled=this.checked"> Precio libre (se pide el importe al vender, ej: carga SUBE)</label>
  <label><input type="checkbox" id="ea" style="width:auto" ${p.activo?'checked':''}> Activo (se muestra para vender)</label>
  <div class="row" style="margin-top:14px">${id?`<button style="color:var(--acc)" onclick="delProd('${id}')">Borrar</button>`:''}<button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okProd('${id||''}')">Guardar</button></div>`);
 }
 function okProd(id){
  const d={cod:$('#ep').value.trim(),nombre:$('#en').value.trim(),cat:$('#ec').value,precio:+$('#epr').value||0,unidad:$('#eu').value,libre:$('#el').checked,activo:$('#ea').checked};
- d.plu=d.unidad==='kg'&&!d.libre?Math.round(+$('#eplu').value)||null:null;
  if(d.libre)d.precio=0;
  if(!d.nombre||!(d.libre||d.precio>0))return toast('Completá nombre y precio');
- if(d.plu&&!(d.plu>0&&d.plu<=99999))return toast('El código de balanza va de 1 a 99999');
  if(d.cod&&S.productos.some(x=>x.cod===d.cod&&x.id!==id))return toast('Ese código ya está cargado en otro producto');
- if(d.plu&&S.productos.some(x=>x.plu===d.plu&&x.id!==id))return toast('Ese código de balanza ya está en otro producto');
  if(id)Object.assign(S.productos.find(x=>x.id===id),d);else S.productos.push({id:uid(),...d});
  save();closeM();rProductos();toast('Producto guardado');
 }
@@ -521,7 +525,9 @@ function addGasto(){
  if(g.medio==='efectivo'){const c=cajaAbierta();if(!c)return toast('Para pagar con efectivo de la caja, abrila primero');c.movs.push({tipo:'egreso',monto:g.monto,desc:'Gasto: '+g.desc,medio:'efectivo',fecha:g.fecha,gastoId:g.id})}
  S.gastos.push(g);save();$('#gDesc').value='';$('#gMonto').value='';toast('Gasto guardado');render();
 }
-function delGasto(id){if(!confirm('¿Borrar el gasto?'))return;S.gastos=S.gastos.filter(g=>g.id!==id);S.cajas.forEach(c=>{if(!c.cierre)c.movs=c.movs.filter(m=>m.gastoId!==id)});save();render()}
+function delGasto(id){
+ if(S.cajas.some(c=>c.cierre&&c.movs.some(m=>m.gastoId===id)))return toast('Ese gasto se pagó con una caja que ya se cerró, así que no se puede borrar sin descuadrar ese cierre',5000);
+ if(!confirm('¿Borrar el gasto?'))return;S.gastos=S.gastos.filter(g=>g.id!==id);S.cajas.forEach(c=>{if(!c.cierre)c.movs=c.movs.filter(m=>m.gastoId!==id)});save();render()}
 
 /* REPORTES */
 function rReportes(){
@@ -539,16 +545,85 @@ function rReportes(){
  $('#rCat').innerHTML=Object.entries(cat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${fmt(v)}</td></tr>`).join('')||'<tr><td class="mut">—</td></tr>';
 }
 
+/* DATOS DE EJEMPLO: un mes de ventas, cajas y gastos para mostrar el sistema funcionando */
+function genDemo(productos){
+ let a=20261024;const rnd=()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+ const ent=(x,y)=>x+Math.floor(rnd()*(y-x+1)),elegir=l=>l[Math.floor(rnd()*l.length)];
+ const peso=o=>{let r=rnd()*Object.values(o).reduce((s,v)=>s+v,0);for(const k in o){r-=o[k];if(r<0)return k}return Object.keys(o)[0]};
+ const PC={Bebidas:30,Golosinas:30,Cigarrillos:14,'Almacén':12,'Lácteos':8,'Fiambrería':3,Limpieza:4,Otros:2};
+ const porCat={};productos.filter(p=>p.activo).forEach(p=>(porCat[p.cat]=porCat[p.cat]||[]).push(p));
+ Object.keys(PC).forEach(k=>{if(!porCat[k])delete PC[k]});
+ const PM={efectivo:45,qr:22,debito:20,transferencia:9,credito:4};
+ const MOT=['Se cobró de más','El cliente devolvió el producto','Se cargó un producto equivocado'];
+ const ventas=[],cajas=[],gastos=[];
+ const item=()=>{const p=elegir(porCat[peso(PC)]);
+  if(p.libre){const m=ent(2,10)*500;return {pid:p.id,nombre:p.nombre,cat:p.cat,unidad:'u',precio:m,cant:1,sub:m}}
+  const cant=p.unidad==='kg'?ent(2,10)*0.05:(rnd()<0.85?1:ent(2,3));
+  return {pid:p.id,nombre:p.nombre,cat:p.cat,unidad:p.unidad,precio:p.precio,cant:r2(cant),sub:r2(cant*p.precio)}};
+ const venta=(fecha,caja)=>{
+  const items=[],n=+peso({1:55,2:30,3:10,4:5});
+  for(let i=0;i<n;i++){const it=item(),ex=items.find(x=>x.pid===it.pid&&x.unidad==='u'&&x.precio===it.precio);
+   if(ex){ex.cant+=it.cant;ex.sub=r2(ex.cant*ex.precio)}else items.push(it)}
+  const total=Math.round(items.reduce((s,i)=>s+i.sub,0));let pagos;
+  if(rnd()<0.04&&total>3000){const e=Math.floor(total/2/1000)*1000||1000;pagos=[{medio:'efectivo',monto:e,recibe:null},{medio:elegir(['debito','qr']),monto:total-e,recibe:null}]}
+  else{const m=peso(PM);let rec=null;
+   if(m==='efectivo'&&rnd()<0.6){const b=elegir([1000,2000,10000,20000]);rec=Math.ceil(total/b)*b;if(rec===total)rec=null}
+   pagos=[{medio:m,monto:total,recibe:rec}]}
+  const v={id:uid()+ventas.length.toString(36),nro:0,fecha:fecha.toISOString(),items,subtotal:r2(items.reduce((s,i)=>s+i.sub,0)),desc:0,total,pagos,cajaId:caja.id,anulada:false};
+  if(rnd()<0.006)Object.assign(v,{anulada:true,motivo:elegir(MOT),anuladaFecha:new Date(fecha.getTime()+ent(1,10)*60000).toISOString()});
+  ventas.push(v);return v};
+ const gasto=(fecha,desc,cat,monto,medio,caja)=>{const g={id:uid()+'g'+gastos.length,fecha:fecha.toISOString(),desc,cat,monto,medio};gastos.push(g);
+  if(medio==='efectivo')caja.movs.push({tipo:'egreso',monto,desc:'Gasto: '+desc,medio:'efectivo',fecha:g.fecha,gastoId:g.id})};
+ const ahora=new Date();
+ for(let d=30;d>=0;d--){
+  const dia=new Date();dia.setHours(0,0,0,0);dia.setDate(dia.getDate()-d);
+  const hoyMismo=d===0,finde=[0,6].includes(dia.getDay());
+  const ap=new Date(dia);ap.setHours(7,ent(30,55));
+  let ci=new Date(dia);ci.setHours(22,ent(0,30));
+  if(hoyMismo){if(ahora-ap<3600000)ap.setTime(ahora.getTime()-2*3600000);ci=ahora}
+  const caja={id:uid()+'c'+d,apertura:ap.toISOString(),inicial:ent(3,6)*5000,cierre:null,movs:[]};cajas.push(caja);
+  // unos 50 tickets por día (más el fin de semana), repartidos en el horario abierto
+  const hs=(ci-ap)/3600000,n=Math.round(hs*(finde?4.2:3.4)*(0.85+rnd()*0.3));
+  const horas=Array.from({length:n},()=>ap.getTime()+rnd()*(ci-ap)).sort((x,y)=>x-y);
+  horas.forEach(h=>venta(new Date(h),caja));
+  if(!hoyMismo&&rnd()<0.25)gasto(new Date(ap.getTime()+ent(1,4)*3600000),elegir(['Facturas y pan del día','Hielo','Bolsas','Artículos de limpieza']),elegir(['Proveedores / Mercadería','Insumos']),ent(4,16)*1000,'efectivo',caja);
+  // el retiro del dueño nunca supera el efectivo que hay en el cajón
+  const disp=Math.floor((resumenCaja(caja,ventas).esperado-20000)/10000)*10000;
+  if(!hoyMismo&&rnd()<0.35&&disp>=10000)caja.movs.push({tipo:'egreso',monto:Math.min(ent(4,12)*10000,disp),desc:'Retiro del dueño',medio:'efectivo',fecha:new Date(ci.getTime()-ent(20,60)*60000).toISOString()});
+  if(!hoyMismo){
+   const r=resumenCaja(caja,ventas),dif=rnd()<0.8?0:elegir([-1,1])*ent(1,15)*100;
+   Object.assign(caja,{cierre:ci.toISOString(),contado:Math.max(0,r.esperado+dif),obs:dif<0?'Faltante, se revisó con el cajero':''})}
+  // gastos que se pagan por transferencia
+  const fp=new Date(ap.getTime()+3*3600000),dm=dia.getDate();
+  if(dia.getDay()===2)gasto(fp,'Distribuidora de bebidas','Proveedores / Mercadería',ent(28,36)*10000,'transferencia');
+  if(dia.getDay()===4)gasto(fp,'Distribuidora de golosinas','Proveedores / Mercadería',ent(15,22)*10000,'transferencia');
+  if(dia.getDay()===5)gasto(fp,'Cigarrillos','Proveedores / Mercadería',ent(18,24)*10000,'transferencia');
+  if(dia.getDay()===1&&d<28)gasto(fp,'Almacén y lácteos','Proveedores / Mercadería',ent(12,18)*10000,'transferencia');
+  if(dm===1)gasto(fp,'Alquiler del local','Alquiler',450000,'transferencia');
+  if(dm===10)gasto(fp,'Luz','Servicios',86500,'transferencia');
+  if(dm===12)gasto(fp,'Internet y teléfono','Servicios',27900,'transferencia');
+  if(dm===20)gasto(fp,'Monotributo','Impuestos',62400,'transferencia');
+ }
+ ventas.forEach((v,i)=>v.nro=i+1);
+ return {ventas,cajas,gastos,seq:ventas.length+1};
+}
+function cargarDemo(){
+ if(S.ventas.length&&!confirm('Esto reemplaza las ventas, cajas y gastos actuales por los de ejemplo. ¿Seguir?'))return;
+ Object.assign(S,genDemo(S.productos),{demo:true});cart=[];if(save())toast('Datos de ejemplo cargados');render()}
+function borrarDemo(){
+ if(!confirm('Se borran todas las ventas, cajas y gastos, también los que hayas cargado probando. Los productos y los datos del comercio quedan. ¿Seguir?'))return;
+ Object.assign(S,{ventas:[],cajas:[],gastos:[],seq:1,demo:false});cart=[];save();render();toast('Listo, el sistema quedó sin ventas')}
+
 /* AJUSTES */
-function rAjustes(){const c=S.cfg;$('#cfNombre').value=c.nombre;$('#cfDir').value=c.dir;$('#cfTel').value=c.tel;$('#cfCuit').value=c.cuit;$('#cfPie').value=c.pie;$('#cfPv').value=c.pv;$('#cfImp').value=c.imprimir;$('#cfBal').value=c.balanza;
- const b='20'+'00001'+'03200',j=S.productos.find(p=>p.plu===1);
- $('#cfBalEj').textContent=j?'Para probar: escaneá o escribí '+b+eanDV(b)+' en Vender ('+j.nombre+', $ 3.200 o 3,2 kg según esta opción). El código de balanza de cada producto se carga en Productos.':'El código de balanza de cada producto se carga en Productos.'}
-function saveCfg(){Object.assign(S.cfg,{nombre:$('#cfNombre').value||'Mi comercio',dir:$('#cfDir').value,tel:$('#cfTel').value,cuit:$('#cfCuit').value,pie:$('#cfPie').value,pv:+$('#cfPv').value||1,imprimir:$('#cfImp').value,balanza:$('#cfBal').value});save();render();toast('Datos guardados')}
+function rAjustes(){const c=S.cfg;$('#cfNombre').value=c.nombre;$('#cfDir').value=c.dir;$('#cfTel').value=c.tel;$('#cfCuit').value=c.cuit;$('#cfPie').value=c.pie;$('#cfPv').value=c.pv;$('#cfImp').value=c.imprimir;$('#demoBox').innerHTML=S.demo?'<p class="mut">Ahora se ven ventas, cierres de caja y gastos de ejemplo de los últimos 30 días, para que puedas recorrer todo el sistema. Los productos y los datos del comercio no se tocan.</p><button class="p" onclick="borrarDemo()">Borrar los datos de ejemplo</button>':'<p class="mut">El sistema no tiene datos de ejemplo.</p><button onclick="cargarDemo()">Cargar un mes de ventas de ejemplo</button>'}
+function saveCfg(){Object.assign(S.cfg,{nombre:$('#cfNombre').value||'Mi comercio',dir:$('#cfDir').value,tel:$('#cfTel').value,cuit:$('#cfCuit').value,pie:$('#cfPie').value,pv:+$('#cfPv').value||1,imprimir:$('#cfImp').value});save();render();toast('Datos guardados')}
 function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='gestion-copia-'+new Date().toISOString().slice(0,10)+'.json';a.click()}
 function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=norm(JSON.parse(r.result));if(!confirm('Esto reemplaza todos los datos actuales. ¿Seguir?'))return;const prev=S;S=d;cart=[];undoAum=null;if(!save()){S=prev;return}render();toast('Copia restaurada')}catch(e){toast('El archivo no es una copia válida')}};r.readAsText(f);inp.value=''}
 function resetAll(){if(!confirm('Se borran productos, ventas, cajas y gastos. ¿Seguro?'))return;S=seed();save();cart=[];undoAum=null;render();toast('Sistema reiniciado')}
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();if(e.key==='F2'&&cur==='vender'){e.preventDefault();cobrar()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();if(e.key==='F2'&&cur==='vender'&&!$('#ov').classList.contains('on')){e.preventDefault();cobrar()}});
+// la primera vez que se abre, arranca con un mes de ventas de ejemplo
+if(primeraVez){Object.assign(S,genDemo(S.productos),{demo:true});save()}
 render();$('#scan').focus();
 </script>
 </body>
