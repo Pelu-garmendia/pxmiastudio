@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestión Kiosco y Almacén</title>
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#17202e;--mut:#667085;--line:#e2e6ec;--acc:#1f5fd6;--acc2:#1749a8;--ok:#1f8a4c;--warn:#c27c0e;--r:12px}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:#eceff4;color:var(--ink)}
+button.p{background:var(--acc);color:#fff;font-weight:600}
+button.p:hover{background:var(--acc2)}
+button.g{background:var(--ok);color:#fff;font-weight:600}
+button.s{padding:6px 10px;font-size:13px}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px}
+label{font-size:13px;color:var(--mut);display:block;margin:10px 0 4px}
+header{background:var(--ink);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+header h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.2px}
+.pill{font-size:12px;padding:4px 10px;border-radius:99px;background:#2c3648}
+.pill.on{background:var(--ok)}.pill.off{background:var(--warn)}
+nav{display:flex;gap:4px;overflow-x:auto;margin-left:auto}
+nav button{background:transparent;color:#c9d2e0;padding:8px 12px;white-space:nowrap}
+nav button.act{background:var(--acc);color:#fff}
+main{padding:16px;max-width:1300px;margin:0 auto}
+.sec{display:none}.sec.act{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0 0 10px}
+.mut{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:12px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+td.n,th.n{text-align:right}
+td.n{white-space:nowrap}
+.tw{overflow-x:auto}
+/* POS */
+.pos{display:grid;grid-template-columns:1fr 380px;gap:14px;align-items:start}
+.pos>*{min-width:0}
+.scan{font-size:18px;padding:14px}
+.chips{display:flex;gap:6px;overflow-x:auto;margin:10px 0}
+.chips button{padding:7px 12px;font-size:13px;white-space:nowrap}
+.chips button.act{background:var(--ink);color:#fff}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:8px}
+.prod{background:#fff;border:1px solid var(--line);text-align:left;padding:10px;border-radius:10px;min-height:78px;display:flex;flex-direction:column;justify-content:space-between}
+.prod:hover{border-color:var(--acc)}
+.prod b{font-size:14px;line-height:1.2}
+.prod span{font-size:13px;color:var(--acc);font-weight:700}
+.prod i{font-style:normal;font-size:11px;color:var(--mut)}
+.cart{position:sticky;top:70px}
+.cl{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.cl small{color:var(--mut);display:block}
+.cl .x{background:none;color:var(--mut);padding:2px 6px}
+.tot{font-size:30px;font-weight:800;text-align:right;margin:12px 0}
+.empty{color:var(--mut);text-align:center;padding:30px 0;font-size:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.kpi b{display:block;font-size:22px;margin-top:4px}
+.bar{display:flex;align-items:flex-end;gap:4px;height:140px;padding-top:10px}
+.bar div{flex:1;background:var(--acc);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+.bar div span{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--mut)}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;background:#eceff4;color:var(--mut)}
+.tag.red{background:#fde4e4;color:#c0262d}.tag.ok{background:#dff3e7;color:var(--ok)}
+.soon{border:2px dashed #c8d3e6;background:#f8faff}
+.warnbox{background:#fff4df;border:1px solid #f0d49b;color:#7a4d00;border-radius:var(--r);padding:10px 14px;margin-bottom:12px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.warnbox:empty{display:none}
+/* modal */
+#ov{position:fixed;inset:0;background:rgba(10,16,28,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#ov.on{display:flex}
+#md{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:460px;max-height:90vh;overflow:auto}
+.seg{display:flex;background:#eceff4;border-radius:10px;padding:3px}
+.seg button{flex:1;background:transparent;padding:8px}
+.seg button.act{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1);font-weight:600}
+.big{font-size:26px;text-align:center;padding:14px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;transition:.25s;z-index:60;font-size:14px}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#print{display:none}
+@media (max-width:860px){.pos{grid-template-columns:1fr}.cart{position:static}main{padding:10px}}
+@media print{
+ body *{visibility:hidden}
+ #print,#print *{visibility:visible}
+ #print{display:block;position:absolute;left:0;top:0;width:72mm;font-family:"Courier New",monospace;font-size:12px;color:#000}
+ @page{size:80mm auto;margin:3mm}
+}
+.tk{text-align:left}.tk .c{text-align:center}.tk hr{border:0;border-top:1px dashed #000;margin:6px 0}
+.tk .r{display:flex;justify-content:space-between}.tk .T{font-size:16px;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+ <h1 id="hName">Kiosco</h1>
+ <span id="cajaPill" class="pill off">Caja cerrada</span>
+ <nav id="nav">
+  <button data-s="vender" class="act">Vender</button>
+  <button data-s="caja">Caja</button>
+  <button data-s="productos">Productos</button>
+  <button data-s="proveedores">Proveedores</button>
+  <button data-s="gastos">Gastos</button>
+  <button data-s="reportes">Reportes</button>
+  <button data-s="ajustes">Ajustes</button>
+ </nav>
+</header>
+<main>
+ <!-- VENDER -->
+ <section id="s-vender" class="sec act">
+  <div class="warnbox" id="cajaVieja"></div>
+  <div class="pos">
+   <div>
+    <input id="scan" class="scan" placeholder="Escaneá el código de barras o escribí el nombre" autocomplete="off">
+    <div class="chips" id="chips"></div>
+    <div class="prods" id="prods"></div>
+   </div>
+   <div class="card cart">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">Ticket actual</h3><button class="s" onclick="vaciar()">Vaciar</button></div>
+    <div id="cart"></div>
+    <div class="tot" id="tot">$ 0</div>
+    <button class="p" style="width:100%;padding:16px;font-size:18px" onclick="cobrar()">Cobrar</button>
+   </div>
+  </div>
+ </section>
+ <!-- CAJA -->
+ <section id="s-caja" class="sec"></section>
+ <!-- PRODUCTOS -->
+ <section id="s-productos" class="sec">
+  <div class="warnbox" id="stockAlerta"></div>
+  <div class="card">
+   <div class="row" style="justify-content:space-between"><h2 style="margin:0">Productos y precios</h2>
+    <div class="row"><button id="undoAum" style="display:none" onclick="deshacerAum()">Deshacer último cambio de precios</button><button onclick="aumento()">Aumento masivo</button><button onclick="exportarLista()">Exportar lista</button><button class="p" onclick="editProd()">+ Nuevo</button></div></div>
+   <div class="row" style="margin-top:12px"><input id="pq" placeholder="Buscar" style="flex:2;min-width:160px" oninput="rProductos()"><select id="pcat" style="flex:1;min-width:140px" onchange="rProductos()"></select><select id="pprov" style="flex:1;min-width:140px" onchange="rProductos()"></select>
+    <label style="margin:0;display:flex;gap:6px;align-items:center;white-space:nowrap"><input type="checkbox" id="pbajo" style="width:auto" onchange="rProductos()"> Solo stock bajo</label></div>
+   <div class="tw" style="margin-top:10px"><table><thead><tr><th>Código</th><th>Producto</th><th>Proveedor</th><th class="n">Costo</th><th class="n">Precio</th><th class="n">Ganancia</th><th class="n">Stock</th><th></th></tr></thead><tbody id="ptb"></tbody></table></div>
+  </div>
+ </section>
+ <!-- PROVEEDORES -->
+ <section id="s-proveedores" class="sec">
+  <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Proveedores</h2>
+   <div class="row"><button onclick="editProv()">+ Proveedor</button><button onclick="importarLista()">Importar lista de precios</button><button class="p" onclick="nuevaCompra()">+ Cargar compra</button></div></div>
+   <div class="tw" style="margin-top:10px"><table><thead><tr><th>Proveedor</th><th>Teléfono</th><th class="n">Productos</th><th class="n">Compras del mes</th><th class="n">Le debo</th><th></th></tr></thead><tbody id="provtb"></tbody></table></div></div>
+  <div class="card"><h3>Últimas compras</h3><div class="tw"><table><thead><tr><th>Fecha</th><th>Proveedor</th><th>Comprobante</th><th>Pago</th><th class="n">Total</th><th></th></tr></thead><tbody id="comptb"></tbody></table></div></div>
+ </section>
+ <!-- GASTOS -->
+ <section id="s-gastos" class="sec">
+  <div class="card">
+   <h2>Cargar gasto</h2>
+   <div class="grid2">
+    <div><label>Concepto</label><input id="gDesc" placeholder="Ej: distribuidora de bebidas, luz, bolsas"></div>
+    <div><label>Categoría</label><select id="gCat"><option>Insumos</option><option>Servicios</option><option>Sueldos</option><option>Alquiler</option><option>Impuestos</option><option>Otros</option></select></div>
+    <div><label>Monto</label><input id="gMonto" type="number" inputmode="decimal" placeholder="0"></div>
+    <div><label>Cómo se pagó</label><select id="gMedio"><option value="efectivo">Efectivo de la caja</option><option value="transferencia">Transferencia</option><option value="otro">Otro</option></select></div>
+   </div>
+   <p class="mut" style="margin:10px 0 0">Las compras de mercadería se cargan en Proveedores: así suman al stock y actualizan el costo.</p>
+   <button class="p" style="margin-top:14px" onclick="addGasto()">Guardar gasto</button>
+  </div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Gastos del mes</h3><b id="gTot"></b></div>
+   <div class="tw"><table><thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Medio</th><th class="n">Monto</th><th></th></tr></thead><tbody id="gtb"></tbody></table></div></div>
+ </section>
+ <!-- REPORTES -->
+ <section id="s-reportes" class="sec">
+  <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Reportes</h2>
+   <select id="rPer" style="width:auto" onchange="rReportes()"><option value="1">Hoy</option><option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="0">Todo</option></select></div></div>
+  <div class="grid2" id="kpis"></div>
+  <div class="warnbox" id="rNota" style="margin-top:12px"></div>
+  <div class="card" style="margin-top:14px"><h3>Ventas de los últimos 14 días</h3><div class="bar" id="chart"></div><div style="height:20px"></div></div>
+  <div class="grid2">
+   <div class="card"><h3>Lo más vendido</h3><div class="tw"><table><thead><tr><th>Producto</th><th class="n">Cantidad</th><th class="n">Importe</th><th class="n">Ganancia</th></tr></thead><tbody id="rTop"></tbody></table></div></div>
+   <div class="card"><h3>Por medio de pago</h3><table><tbody id="rMed"></tbody></table><h3 style="margin-top:16px">Por categoría</h3><table><thead><tr><th></th><th class="n">Importe</th><th class="n">Ganancia</th></tr></thead><tbody id="rCat"></tbody></table></div>
+  </div>
+ </section>
+ <!-- AJUSTES -->
+ <section id="s-ajustes" class="sec">
+  <div class="grid2">
+   <div class="card"><h2>Datos del comercio</h2>
+    <label>Nombre</label><input id="cfNombre">
+    <label>Dirección</label><input id="cfDir">
+    <label>Teléfono</label><input id="cfTel">
+    <label>CUIT</label><input id="cfCuit">
+    <label>Mensaje al pie del ticket</label><input id="cfPie">
+    <label>Punto de venta interno</label><input id="cfPv" type="number">
+    <div class="grid2" style="gap:8px"><div><label>Ganancia % para productos nuevos</label><input id="cfMg" type="number"></div><div><label>Redondear precios a</label><select id="cfRd"><option value="1">$ 1</option><option value="10">$ 10</option><option value="50">$ 50</option><option value="100">$ 100</option></select></div></div>
+    <label>Al cobrar</label><select id="cfImp"><option value="preguntar">Preguntar si imprimo el ticket</option><option value="auto">Imprimir el ticket siempre</option><option value="no">No imprimir</option></select>
+    <p class="mut" style="margin:6px 0 0">Para que imprima directo, sin la ventana de impresión, abrí Chrome con la opción <code>--kiosk-printing</code>.</p>
+    <button class="p" style="margin-top:14px" onclick="saveCfg()">Guardar</button>
+   </div>
+   <div class="card soon"><h2>Factura electrónica ARCA <span class="tag red">Opcional</span></h2>
+    <p class="mut">Emisión de Factura A, B y C desde el mismo cobro, con CAE y QR en el ticket. Se contrata aparte. Sin este agregado, el sistema emite comprobantes internos (no válidos como factura).</p>
+    <label>CUIT emisor</label><input disabled placeholder="Se configura al activar el agregado">
+    <label>Condición frente al IVA</label><select disabled><option>Responsable Inscripto / Monotributo</option></select>
+   </div>
+   <div class="card"><h2>Datos de ejemplo</h2><div id="demoBox"></div></div>
+   <div class="card"><h2>Copia de seguridad</h2>
+    <p class="mut">Los datos quedan guardados en esta computadora. Descargá una copia seguido.</p>
+    <div class="row"><button onclick="backup()">Descargar copia</button><button onclick="document.getElementById('restIn').click()">Restaurar copia</button>
+    <input type="file" id="restIn" accept=".json" style="display:none" onchange="restore(this)"></div>
+    <button style="margin-top:14px;color:var(--acc)" onclick="resetAll()">Borrar todo y empezar de cero</button>
+   </div>
+  </div>
+ </section>
+</main>
+<div id="ov" onclick="if(event.target===this)closeM()"><div id="md"></div></div>
+<div id="toast"></div>
+<div id="print"></div>
+<script>
+const KEY='kiosco_gestion_base_v1';
+const CATS=['Bebidas','Golosinas','Cigarrillos','Almacén','Lácteos','Fiambrería','Limpieza','Otros'];
+const MEDIOS={efectivo:'Efectivo',debito:'Débito',credito:'Crédito',transferencia:'Transferencia',qr:'QR / Mercado Pago'};
+const $=s=>document.querySelector(s);
+const fmt=n=>'$ '+Math.round(n||0).toLocaleString('es-AR');
+const fkg=n=>(n||0).toLocaleString('es-AR',{minimumFractionDigits:3,maximumFractionDigits:3})+' kg';
+const fcant=(c,u)=>u==='kg'?fkg(c):(c+' u');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const r2=n=>Math.round(n*100)/100;
+const fdt=d=>new Date(d).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+const fd=d=>new Date(d).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'});
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const r3=n=>Math.round(n*1000)/1000;
+const MCOMPRA={efectivo:'Efectivo de la caja',transferencia:'Transferencia',cuenta:'A cuenta (se lo debo)',otro:'Otro'};
+const fpct=n=>n==null||!isFinite(n)?'—':Math.round(n)+'%';
+// ganancia % sobre el costo (lo que en el kiosco se llama "le pongo un 35%")
+const markup=p=>p.costo>0&&p.precio>0?(p.precio/p.costo-1)*100:null;
+const fstock=p=>p.stock==null?'—':p.unidad==='kg'?fkg(p.stock):p.stock+' u';
+const stockBajo=p=>p.activo&&!p.libre&&p.stock!=null&&p.stock<=p.stockMin;
+const provNom=id=>(S.proveedores.find(x=>x.id===id)||{}).nombre||'';
+const redPrecio=n=>{const r=S.cfg.redondeo||1;return Math.max(r,Math.round(n/r)*r)};
+// costo de un renglón vendido; null si el producto no tiene costo cargado
+const costoItem=(i,p)=>p.libre?r2(i.sub*(1-(p.comision||0)/100)):p.costo>0?r2(i.cant*p.costo):null;
+// suma (+1) o descuenta (-1) del stock lo que dicen los renglones
+function movStock(items,signo){items.forEach(i=>{const p=S.productos.find(x=>x.id===i.pid);if(p&&p.stock!=null)p.stock=r3(p.stock+signo*i.cant)})}
+
+function seed(){
+ const P=[['Bebidas','Gaseosa cola 2,25 L',4200],['Bebidas','Gaseosa lima-limón 2,25 L',3900],['Bebidas','Agua mineral 500 ml',1100],['Bebidas','Agua saborizada 1,5 L',2300],['Bebidas','Jugo en polvo',450],['Bebidas','Cerveza lata 473 ml',2100],['Bebidas','Energizante lata',2600],['Bebidas','Gaseosa cola 500 ml',1800],
+ ['Golosinas','Alfajor triple',1300],['Golosinas','Alfajor simple',800],['Golosinas','Chicles',700],['Golosinas','Caramelos masticables',150],['Golosinas','Chocolate 25 g',1200],['Golosinas','Turrón',500],['Golosinas','Papas fritas 80 g',2000],['Golosinas','Galletitas dulces',1500],
+ ['Cigarrillos','Cigarrillos box 20',3800],['Cigarrillos','Encendedor',900],
+ ['Almacén','Yerba 1 kg',4800],['Almacén','Fideos 500 g',1400],['Almacén','Arroz 1 kg',1900],['Almacén','Aceite girasol 900 ml',2800],['Almacén','Azúcar 1 kg',1300],['Almacén','Harina 1 kg',1100],['Almacén','Puré de tomate',900],['Almacén','Pan lactal',2700],
+ ['Lácteos','Leche entera 1 L',1500],['Lácteos','Yogur bebible 1 L',2400],['Lácteos','Manteca 200 g',2900],['Lácteos','Huevos x 12',3900],
+ ['Fiambrería','Jamón cocido (kg)',16000,'kg'],['Fiambrería','Queso de máquina (kg)',13500,'kg'],['Fiambrería','Salame (kg)',19000,'kg'],
+ ['Limpieza','Lavandina 1 L',1100],['Limpieza','Detergente 500 ml',1600],['Limpieza','Papel higiénico x 4',2600],['Limpieza','Jabón en polvo 800 g',3900],
+ ['Otros','Carga SUBE',0,'u',true],['Otros','Pilas AA x 2',2500]];
+ let n=1,plu=1;const ean=()=>{const b='779'+String(1234500+(n++)).padStart(9,'0');return b+eanDV(b)};
+ const proveedores=[['Distribuidora Del Sur','11 4000-1111'],['Golosinas Mayorista Norte','11 4000-2222'],['Distribuidora Tabacalera','11 4000-3333'],['Almacén Mayorista Oeste','11 4000-4444']]
+  .map(x=>({id:uid(),nombre:x[0],tel:x[1],cuit:'',notas:''}));
+ const provDe=cat=>proveedores[{Bebidas:0,Golosinas:1,Cigarrillos:2}[cat]??3];
+ // costo aproximado: el precio dividido la ganancia típica de cada rubro
+ const MK={Bebidas:1.4,Golosinas:1.5,Cigarrillos:1.12,'Almacén':1.3,'Lácteos':1.3,'Fiambrería':1.45,Limpieza:1.35,Otros:1.4};
+ const BAJO={'Leche entera 1 L':3,'Yerba 1 kg':2,'Alfajor triple':4,'Queso de máquina (kg)':0.8};
+ const nprov={};
+ return {cfg:{...CFG0,nombre:'Maxikiosco El Rápido',dir:'Av. Siempre Viva 123',tel:'11 1234-5678',pie:'¡Gracias por su compra!'},
+  productos:P.map((p,i)=>{const kg=p[3]==='kg',libre=!!p[4],pr=libre?null:provDe(p[0]),np=pr?(nprov[pr.id]=(nprov[pr.id]||0)+1):0;
+   return {id:uid(),cat:p[0],cod:kg?'':ean(),plu:kg?plu++:null,nombre:p[1],precio:p[2],unidad:p[3]||'u',libre,activo:true,
+    costo:libre?0:Math.round(p[2]/MK[p[0]]/10)*10,comision:libre?3:0,
+    stock:libre?null:BAJO[p[1]]??(kg?2+i%4:12+(i*7)%36),stockMin:libre?0:kg?1:p[0]==='Cigarrillos'?10:6,
+    provId:pr?pr.id:null,codProv:pr?pr.nombre.slice(0,3).toUpperCase()+String(np).padStart(3,'0'):''}}),
+  proveedores,ventas:[],cajas:[],gastos:[],compras:[],pagosProv:[],ajustes:[],seq:1};
+}
+const CFG0={nombre:'Mi comercio',dir:'',tel:'',cuit:'',pie:'',pv:1,imprimir:'preguntar',balanza:'importe',margenDef:35,redondeo:10};
+// dígito verificador EAN-13 de los primeros 12 dígitos
+const eanDV=b=>{let s=0;for(let i=0;i<12;i++)s+=(+b[i])*(i%2?3:1);return (10-s%10)%10};
+// Valida y completa un estado (guardado o de una copia). Tira error si no sirve.
+function norm(d){
+ const ID=/^[a-z0-9]+$/i,arr=a=>Array.isArray(a)?a:[],numOk=x=>typeof x==='number'&&isFinite(x);
+ if(!d||typeof d!=='object'||!Array.isArray(d.productos)||!Array.isArray(d.ventas))throw 0;
+ const o={cfg:{...CFG0,...(d.cfg&&typeof d.cfg==='object'?d.cfg:{})},productos:d.productos,ventas:d.ventas,cajas:arr(d.cajas),gastos:arr(d.gastos),seq:+d.seq||1};
+ if(!['preguntar','auto','no'].includes(o.cfg.imprimir))o.cfg.imprimir='preguntar';
+ if(!['importe','peso'].includes(o.cfg.balanza))o.cfg.balanza='importe';
+ if(!(+o.cfg.margenDef>=0))o.cfg.margenDef=35;if(![1,10,50,100].includes(+o.cfg.redondeo))o.cfg.redondeo=10;o.cfg.margenDef=+o.cfg.margenDef;o.cfg.redondeo=+o.cfg.redondeo;
+ o.productos.forEach(p=>{if(!ID.test(p.id)||!numOk(+p.precio))throw 0;p.precio=+p.precio;p.unidad=p.unidad==='kg'?'kg':'u';p.cat=String(p.cat||'Otros');p.nombre=String(p.nombre||'');p.cod=String(p.cod||'');p.plu=+p.plu||null;p.libre=!!p.libre;p.activo=p.activo!==false;
+  p.costo=+p.costo||0;p.comision=+p.comision||0;p.stock=p.stock==null||p.stock===''||!isFinite(+p.stock)?null:+p.stock;p.stockMin=+p.stockMin||0;p.provId=p.provId?String(p.provId):null;p.codProv=String(p.codProv||'')});
+ o.proveedores=arr(d.proveedores);o.compras=arr(d.compras);o.pagosProv=arr(d.pagosProv);o.ajustes=arr(d.ajustes);
+ o.proveedores.forEach(x=>{if(!ID.test(x.id))throw 0;x.nombre=String(x.nombre||'');x.tel=String(x.tel||'');x.cuit=String(x.cuit||'');x.notas=String(x.notas||'')});
+ o.compras.forEach(c=>{if(!ID.test(c.id)||!Array.isArray(c.items)||!numOk(+c.total))throw 0;if(!MCOMPRA[c.medio])c.medio='otro'});
+ o.pagosProv.forEach(x=>{if(!ID.test(x.id)||!numOk(+x.monto))throw 0});
+ o.ajustes.forEach(x=>{if(!ID.test(x.id))throw 0});
+ o.cajas.forEach(c=>{if(!ID.test(c.id)||!Array.isArray(c.movs))throw 0;c.inicial=+c.inicial||0});
+ o.ventas.forEach(v=>{if(!ID.test(v.id)||!Array.isArray(v.items)||!Array.isArray(v.pagos)||!v.pagos.every(p=>MEDIOS[p.medio]&&numOk(+p.monto)))throw 0});
+ o.gastos.forEach(g=>{if(!ID.test(g.id)||!numOk(+g.monto))throw 0});
+ o.demo=!!d.demo;
+ o.seq=Math.max(o.seq,...o.ventas.map(v=>(+v.nro||0)+1));
+ return o;
+}
+function load(){try{const r=localStorage.getItem(KEY);if(r)return norm(JSON.parse(r))}catch(e){}return null}
+// Devuelve false si el navegador no dejó guardar (por ejemplo, sin espacio)
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast('⚠ No se pudo guardar. Descargá una copia de seguridad.',6000);return false}}
+let S=load()||seed(),primeraVez=!S.ventas.length&&(()=>{try{return !localStorage.getItem(KEY)}catch(e){return true}})();
+const hoy=d=>new Date(d).toDateString()===new Date().toDateString();
+let cart=[],catSel='Todos';
+
+function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),ms||2200)}
+function openM(h){$('#md').style.maxWidth='';$('#md').innerHTML=h;$('#ov').classList.add('on');const f=$('#md').querySelector('[autofocus]');if(f)setTimeout(()=>{f.focus();f.select&&f.select()},30)}
+function closeM(){$('#ov').classList.remove('on');if(cur==='vender')setTimeout(()=>$('#scan').focus(),30)}
+const cajaAbierta=()=>S.cajas.find(c=>!c.cierre);
+
+/* NAV */
+let cur='vender';
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.s));
+function go(s){cur=s;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('act',b.dataset.s===s));
+ document.querySelectorAll('.sec').forEach(x=>x.classList.toggle('act',x.id==='s-'+s));render()}
+function render(){
+ $('#hName').textContent=S.cfg.nombre;document.title=S.cfg.nombre+' · Gestión';
+ const c=cajaAbierta(),vieja=c&&!hoy(c.apertura);const p=$('#cajaPill');
+ p.textContent=!c?'Caja cerrada':vieja?'Caja abierta desde el '+fd(c.apertura):'Caja abierta';p.className='pill '+(c&&!vieja?'on':'off');
+ $('#cajaVieja').innerHTML=vieja?`<span>La caja quedó abierta desde el <b>${fdt(c.apertura)}</b>: cerrala y abrí una nueva para que las ventas de hoy no se mezclen con las de ese día.</span><button class="s" onclick="go('caja')">Ir a Caja</button>`:'';
+ ({vender:rVender,caja:rCaja,productos:rProductos,proveedores:rProveedores,gastos:rGastos,reportes:rReportes,ajustes:rAjustes})[cur]();
+}
+
+/* VENDER */
+function rVender(){
+ $('#chips').innerHTML=['Todos',...CATS].map(c=>`<button class="${c===catSel?'act':''}" onclick="catSel='${c}';rVender()">${c}</button>`).join('');
+ const q=$('#scan').value.trim().toLowerCase();
+ const list=S.productos.filter(p=>p.activo&&(catSel==='Todos'||p.cat===catSel)&&(!q||p.nombre.toLowerCase().includes(q)||(p.cod||'').startsWith(q)));
+ $('#prods').innerHTML=list.map(p=>`<button class="prod" onclick="pickProd('${p.id}')"><i>${esc(p.cat)}</i><b>${esc(p.nombre)}</b>${stockBajo(p)?`<i style="color:#c0262d;font-weight:600">${p.stock<=0?'Sin stock':'Quedan '+fstock(p)}</i>`:''}<span>${p.libre?'Precio libre':fmt(p.precio)+(p.unidad==='kg'?'/kg':'')}</span></button>`).join('')||'<div class="empty">No hay productos</div>';
+ rCart();
+}
+function rCart(){
+ const tot=cart.reduce((a,i)=>a+i.sub,0);
+ $('#cart').innerHTML=cart.length?cart.map((i,k)=>`<div class="cl"><div><b>${esc(i.nombre)}</b><small>${fcant(i.cant,i.unidad)} × ${fmt(i.precio)}</small></div><div class="row" style="gap:4px;flex-wrap:nowrap"><b>${fmt(i.sub)}</b>${i.unidad==='u'?`<button class="x" onclick="qty(${k},-1)">−</button><button class="x" onclick="qty(${k},1)">+</button>`:''}<button class="x" onclick="cart.splice(${k},1);rCart()">✕</button></div></div>`).join(''):'<div class="empty">Escaneá o tocá un producto</div>';
+ $('#tot').textContent=fmt(tot);
+}
+function vaciar(){cart=[];rCart();$('#scan').focus()}
+function qty(k,d){const i=cart[k];i.cant+=d;if(i.cant<1){cart.splice(k,1)}else i.sub=r2(i.cant*i.precio);rCart()}
+function addItem(p,cant,sub){
+ cant=p.unidad==='kg'?Math.round(cant*1000)/1000:Math.round(cant);
+ if(!(cant>0)){toast('Cantidad inválida');return}
+ const ex=p.unidad==='u'&&cart.find(i=>i.pid===p.id&&i.precio===p.precio);
+ if(ex){ex.cant+=cant;ex.sub=r2(ex.cant*ex.precio)}
+ else cart.push({pid:p.id,nombre:p.nombre,cat:p.cat,unidad:p.unidad,precio:p.precio,cant,sub:sub!=null?r2(sub):r2(cant*p.precio)});
+ rCart();
+ // se puede vender igual (el stock cargado puede estar mal), pero se avisa
+ const enTicket=cart.filter(i=>i.pid===p.id).reduce((a,i)=>a+i.cant,0);
+ if(p.stock!=null&&enTicket>p.stock){toast('Ojo: en el stock figuran '+fstock(p),3500);return true}
+}
+$('#scan').addEventListener('input',()=>rVender());
+$('#scan').addEventListener('keydown',e=>{
+ if(e.key!=='Enter')return;
+ let v=e.target.value.trim();if(!v)return;
+ let mult=1;const m=v.match(/^(\d{1,3})\s*[x*]\s*(.+)$/i);if(m){mult=+m[1];v=m[2].trim()}
+ const p=S.productos.find(x=>x.activo&&x.cod&&x.cod===v)||(()=>{const l=S.productos.filter(x=>x.activo&&x.nombre.toLowerCase().includes(v.toLowerCase()));return l.length===1?l[0]:null})();
+ e.target.value='';
+ if(!p){
+  const b=leerBalanza(v);
+  if(b){if(b.error)toast(b.error);else if(!addItem(b.p,b.cant,b.sub))toast(b.p.nombre+' '+fkg(b.cant));rVender();return}
+  toast('No encontré ese producto');rVender();return}
+ if(p.unidad==='u'&&!p.libre){if(!addItem(p,mult))toast(p.nombre+(mult>1?' x '+mult:''));rVender();return}
+ rVender();pickProd(p.id);
+});
+// Etiqueta de balanza EAN-13: 2 + dígito libre + PLU (5) + precio total o peso en gramos (5) + verificador
+function leerBalanza(v){
+ if(!/^2\d{12}$/.test(v)||eanDV(v)!==+v[12])return null;
+ const plu=+v.slice(2,7),val=+v.slice(7,12);
+ const p=S.productos.find(x=>x.activo&&x.unidad==='kg'&&x.plu===plu);
+ if(!p)return {error:'Etiqueta de balanza con código '+plu+' sin producto asignado'};
+ if(!(val>0))return {error:'La etiqueta no trae importe ni peso'};
+ return S.cfg.balanza==='peso'?{p,cant:val/1000}:{p,cant:val/p.precio,sub:val};
+}
+let pesoModo='kg';
+function pickProd(id){
+ const p=S.productos.find(x=>x.id===id);
+ if(p.libre){
+  openM(`<h2>${esc(p.nombre)}</h2><label>Importe ($)</label><input id="mq" class="big" type="number" inputmode="decimal" autofocus onkeydown="if(event.key==='Enter')okLibre('${id}')">
+  <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okLibre('${id}')">Agregar</button></div>`);return}
+ if(p.unidad==='u'){addItem(p,1);$('#scan').focus();return}
+ pesoModo='kg';
+ openM(`<h2>${esc(p.nombre)}</h2><p class="mut">${fmt(p.precio)} el kilo</p>
+ <div class="seg"><button id="sk" class="act" onclick="setPM('kg')">Por kilos</button><button id="sp" onclick="setPM('$')">Por importe</button></div>
+ <label id="ml">Kilos (ej: 1,250)</label><input id="mq" class="big" inputmode="decimal" autofocus oninput="prevKg(${p.precio})" onkeydown="if(event.key==='Enter')okKg('${id}')">
+ <div id="mprev" class="mut" style="text-align:center;margin-top:8px">&nbsp;</div>
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okKg('${id}')">Agregar</button></div>`);
+}
+function setPM(m){pesoModo=m;$('#sk').classList.toggle('act',m==='kg');$('#sp').classList.toggle('act',m==='$');$('#ml').textContent=m==='kg'?'Kilos (ej: 1,250)':'Importe que pide el cliente ($)';$('#mq').value='';$('#mprev').innerHTML='&nbsp;';$('#mq').focus()}
+const num=v=>parseFloat(String(v).replace(/\./g,'').replace(',','.'));
+const numKg=v=>parseFloat(String(v).replace(',','.'));
+function prevKg(precio){const v=$('#mq').value;if(!v){$('#mprev').innerHTML='&nbsp;';return}
+ if(pesoModo==='kg'){const k=numKg(v);$('#mprev').textContent=k>0?fmt(k*precio):''}else{const i=num(v);$('#mprev').textContent=i>0?'≈ '+fkg(i/precio):''}}
+function okKg(id){const p=S.productos.find(x=>x.id===id);const v=$('#mq').value;
+ if(pesoModo==='kg'){const k=numKg(v);if(!(k>0))return toast('Poné los kilos');addItem(p,k)}
+ else{const i=num(v);if(!(i>0))return toast('Poné el importe');addItem(p,i/p.precio,i)}closeM()}
+function okLibre(id){const i=r2(+$('#mq').value);if(!(i>0))return toast('Poné el importe');const p=S.productos.find(x=>x.id===id);
+ cart.push({pid:p.id,nombre:p.nombre,cat:p.cat,unidad:'u',precio:i,cant:1,sub:i});rCart();closeM()}
+
+/* COBRO */
+let pagos=[],descPct=0;
+function cobrar(){
+ if(!cart.length)return toast('El ticket está vacío');
+ if(!cajaAbierta()){abrirCaja(true);return}
+ descPct=0;pagos=[{medio:'efectivo',monto:0,recibe:'',auto:true}];rCobro();
+}
+const subtotal=()=>r2(cart.reduce((a,i)=>a+i.sub,0));
+const totalCobro=()=>Math.round(subtotal()*(1-descPct/100));
+// El pago marcado "auto" se queda siempre con lo que falta para llegar al total
+function recalcPagos(){
+ const T=totalCobro(),a=pagos.find(p=>p.auto);
+ if(a)a.monto=Math.max(0,T-pagos.filter(p=>p!==a).reduce((s,p)=>s+(+p.monto||0),0));
+}
+function addPago(){pagos.forEach(p=>p.auto=false);pagos.push({medio:'debito',monto:0,recibe:'',auto:true});rCobro()}
+function delPago(k){const era=pagos[k].auto;pagos.splice(k,1);if(era||!pagos.some(p=>p.auto))pagos[pagos.length-1].auto=true;rCobro()}
+function editPago(k,v){const p=pagos[k];p.monto=Math.max(0,+v||0);
+ // si edita el automático, pasa a automático el último de los otros
+ if(p.auto&&pagos.length>1){p.auto=false;const o=[...pagos].reverse().find(x=>x!==p);o.auto=true}
+ rCobro()}
+function rCobro(){
+ recalcPagos();
+ const T=totalCobro(),dif=T-pagos.reduce((a,p)=>a+(+p.monto||0),0);
+ const opt=m=>Object.entries(MEDIOS).map(([k,v])=>`<option value="${k}" ${k===m?'selected':''}>${v}</option>`).join('');
+  openM(`<h2>Cobrar</h2>
+ <div class="row" style="justify-content:space-between"><span class="mut">Subtotal</span><b>${fmt(subtotal())}</b></div>
+ <div class="row" style="margin-top:6px"><span class="mut" style="flex:1">Descuento %</span><input type="number" style="width:90px" value="${descPct}" onchange="descPct=Math.max(0,Math.min(100,+this.value||0));pagos=[{...pagos[0],auto:true}];rCobro()"></div>
+ <div class="tot">${fmt(T)}</div>
+ ${pagos.map((p,k)=>`<div class="card" style="padding:10px;margin-bottom:8px">
+  <div class="row"><select style="flex:1" onchange="pagos[${k}].medio=this.value;rCobro()">${opt(p.medio)}</select><input type="number" style="width:120px" value="${p.monto}" onchange="editPago(${k},this.value)">${pagos.length>1?`<button class="s" onclick="delPago(${k})">✕</button>`:''}</div>
+  ${pagos.length>1&&p.auto?'<div class="mut" style="margin-top:4px">Completa lo que falta</div>':''}
+  ${p.medio==='efectivo'&&+p.monto>0?`<div class="row" style="margin-top:8px"><span class="mut" style="flex:1">Paga con</span><input type="number" style="width:120px" value="${p.recibe}" placeholder="opcional" oninput="pagos[${k}].recibe=this.value;const v=(+this.value||0)-(+pagos[${k}].monto||0);document.getElementById('vu${k}').textContent=v>0?'Vuelto: '+fmt(v):''"></div><div id="vu${k}" style="text-align:right;font-weight:700;color:var(--ok)">${(+p.recibe||0)>p.monto?'Vuelto: '+fmt(p.recibe-p.monto):''}</div>`:''}
+ </div>`).join('')}
+ <button class="s" onclick="addPago()">+ Otro medio de pago</button>
+ <div id="cobErr" style="color:var(--acc);font-size:13px;margin-top:8px">${Math.abs(dif)>0.5?(dif>0?'Faltan ':'Sobran ')+fmt(Math.abs(dif))+' para llegar al total':''}</div>
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Volver</button><button class="g" style="flex:1;padding:14px" onclick="confirmar()">Confirmar e imprimir</button></div>`);
+}
+function confirmar(){
+ const T=totalCobro();const sum=pagos.reduce((a,p)=>a+(+p.monto||0),0);
+ if(Math.abs(sum-T)>0.5){$('#cobErr').textContent='Los pagos suman '+fmt(sum)+' y el total es '+fmt(T);return}
+ const caja=cajaAbierta();
+ const v={id:uid(),nro:S.seq++,fecha:new Date().toISOString(),items:cart.map(i=>{const p=S.productos.find(x=>x.id===i.pid);return {...i,costo:p?costoItem(i,p):null}}),subtotal:subtotal(),desc:descPct,total:T,
+  pagos:pagos.filter(p=>+p.monto>0).map(p=>({medio:p.medio,monto:+p.monto,recibe:p.medio==='efectivo'&&+p.recibe>+p.monto?+p.recibe:null})),cajaId:caja.id,anulada:false};
+ S.ventas.push(v);movStock(v.items,-1);
+ // si no se pudo guardar, la venta no cuenta: se deshace y el ticket queda abierto para reintentar
+ if(!save()){S.ventas.pop();S.seq--;movStock(v.items,1);$('#cobErr').textContent='No se pudo guardar la venta en este navegador. No se registró. Descargá una copia de seguridad desde Ajustes y volvé a intentar.';return}
+ cart=[];closeM();rCart();toast('Venta N° '+v.nro+' registrada');render();
+ if(S.cfg.imprimir==='auto')imprimirTicket(v);
+ else if(S.cfg.imprimir==='preguntar')openM(`<h2>Venta N° ${v.nro} registrada</h2><p class="mut">Total ${fmt(v.total)}</p>
+  <div class="row" style="margin-top:14px"><button onclick="closeM()">No imprimir</button><button class="p" style="flex:1" autofocus onclick="closeM();imprimirTicket(S.ventas.find(x=>x.id==='${v.id}'))">Imprimir ticket</button></div>`);
+}
+const nroFmt=n=>String(S.cfg.pv||1).padStart(4,'0')+'-'+String(n).padStart(8,'0');
+function imprimirTicket(v){
+ const c=S.cfg;
+ $('#print').innerHTML=`<div class="tk"><div class="c"><b style="font-size:15px">${esc(c.nombre)}</b><br>${esc(c.dir)}<br>${c.tel?'Tel. '+esc(c.tel)+'<br>':''}${c.cuit?'CUIT '+esc(c.cuit):''}</div><hr>
+ <div>Comprobante interno N° ${nroFmt(v.nro)}</div><div>${fdt(v.fecha)}</div>${v.anulada?'<div class="c"><b>*** ANULADO ***</b></div>':''}<hr>
+ ${v.items.map(i=>`<div>${esc(i.nombre)}</div><div class="r"><span>${fcant(i.cant,i.unidad)} x ${fmt(i.precio)}</span><span>${fmt(i.sub)}</span></div>`).join('')}<hr>
+ ${v.desc?`<div class="r"><span>Subtotal</span><span>${fmt(v.subtotal)}</span></div><div class="r"><span>Descuento ${v.desc}%</span><span>-${fmt(v.subtotal-v.total)}</span></div>`:''}
+ <div class="r T"><span>TOTAL</span><span>${fmt(v.total)}</span></div>
+ ${v.pagos.map(p=>`<div class="r"><span>${MEDIOS[p.medio]}</span><span>${fmt(p.monto)}</span></div>${p.recibe?`<div class="r"><span>Paga con</span><span>${fmt(p.recibe)}</span></div><div class="r"><span>Vuelto</span><span>${fmt(p.recibe-p.monto)}</span></div>`:''}`).join('')}
+ <hr><div class="c">NO VÁLIDO COMO FACTURA</div><div class="c">${esc(c.pie)}</div></div>`;
+ setTimeout(()=>window.print(),80);
+}
+
+/* CAJA */
+function resumenCaja(c,ventas){
+ const vs=(ventas||S.ventas).filter(v=>v.cajaId===c.id&&!v.anulada);
+ const med={};Object.keys(MEDIOS).forEach(k=>med[k]=0);
+ vs.forEach(v=>v.pagos.forEach(p=>med[p.medio]+=p.monto));
+ const ingE=c.movs.filter(m=>m.tipo==='ingreso'&&m.medio==='efectivo').reduce((a,m)=>a+m.monto,0);
+ const ingO=c.movs.filter(m=>m.tipo==='ingreso'&&m.medio!=='efectivo').reduce((a,m)=>a+m.monto,0);
+ const egr=c.movs.filter(m=>m.tipo==='egreso').reduce((a,m)=>a+m.monto,0);
+ const total=vs.reduce((a,v)=>a+v.total,0);
+ return {vs,med,ingE,ingO,egr,total,esperado:c.inicial+med.efectivo+ingE-egr};
+}
+function abrirCaja(desdeCobro){
+ openM(`<h2>Abrir caja</h2><p class="mut">Contá el efectivo con el que arrancás el día.</p><label>Efectivo inicial</label><input id="mi" class="big" type="number" value="0" autofocus onkeydown="if(event.key==='Enter')okAbrir(${!!desdeCobro})"><div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okAbrir(${!!desdeCobro})">Abrir caja</button></div>`);
+}
+function okAbrir(dc){S.cajas.push({id:uid(),apertura:new Date().toISOString(),inicial:+$('#mi').value||0,cierre:null,movs:[]});save();closeM();toast('Caja abierta');render();if(dc)cobrar()}
+function rCaja(){
+ const c=cajaAbierta(),el=$('#s-caja');
+ const hist=S.cajas.filter(x=>x.cierre).slice(-15).reverse();
+ const histH=`<div class="card"><h3>Cierres anteriores</h3><div class="tw"><table><thead><tr><th>Apertura</th><th>Cierre</th><th class="n">Ventas</th><th class="n">Diferencia</th><th></th></tr></thead><tbody>${hist.map(h=>{const r=resumenCaja(h);const d=h.contado-r.esperado;return `<tr><td>${fdt(h.apertura)}</td><td>${fdt(h.cierre)}</td><td class="n">${fmt(r.total)}</td><td class="n"><span class="tag ${Math.abs(d)<1?'ok':'red'}">${d>0?'+':d<0?'−':''}${fmt(Math.abs(d))}</span></td><td class="n"><button class="s" onclick="imprimirCierre('${h.id}')">Imprimir</button></td></tr>`}).join('')||'<tr><td colspan="5" class="mut">Todavía no hay cierres</td></tr>'}</tbody></table></div></div>`;
+ if(!c){el.innerHTML=`<div class="card" style="text-align:center;padding:30px"><h2>La caja está cerrada</h2><p class="mut">Abrila para empezar a vender.</p><button class="p" onclick="abrirCaja()">Abrir caja</button></div>`+histH;return}
+ const r=resumenCaja(c);
+ el.innerHTML=`<div class="card"><div class="row" style="justify-content:space-between"><div><h2 style="margin:0">Caja del día</h2><span class="mut">Abierta ${fdt(c.apertura)}</span>${hoy(c.apertura)?'':' <span class="tag red">Es de otro día: cerrala</span>'}</div>
+ <div class="row"><button onclick="movCaja('ingreso')">+ Ingreso</button><button onclick="movCaja('egreso')">− Retiro / pago</button><button class="p" onclick="cerrarCaja()">Cerrar caja</button></div></div></div>
+ <div class="grid2"><div class="kpi"><span class="mut">Vendido</span><b>${fmt(r.total)}</b><span class="mut">${r.vs.length} tickets</span></div>
+ <div class="kpi"><span class="mut">Efectivo que tendría que haber</span><b>${fmt(r.esperado)}</b><span class="mut">inicial ${fmt(c.inicial)}</span></div>
+ ${Object.entries(r.med).filter(([k,v])=>v).map(([k,v])=>`<div class="kpi"><span class="mut">${MEDIOS[k]}</span><b>${fmt(v)}</b></div>`).join('')}</div>
+ <div class="grid2" style="margin-top:14px"><div class="card"><h3>Ventas de esta caja</h3><div class="tw"><table><thead><tr><th>N°</th><th>Hora</th><th class="n">Total</th><th></th></tr></thead><tbody>
+ ${S.ventas.filter(v=>v.cajaId===c.id).slice().reverse().map(v=>`<tr style="${v.anulada?'opacity:.45;text-decoration:line-through':''}"><td>${v.nro}</td><td>${new Date(v.fecha).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</td><td class="n">${fmt(v.total)}</td><td class="n"><button class="s" onclick="verVenta('${v.id}')">Ver</button></td></tr>`).join('')||'<tr><td colspan="4" class="mut">Sin ventas todavía</td></tr>'}</tbody></table></div></div>
+ <div class="card"><h3>Movimientos de caja</h3><table><tbody>${c.movs.slice().reverse().map(m=>`<tr><td>${new Date(m.fecha).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</td><td>${esc(m.desc)}<br><span class="mut">${MEDIOS[m.medio]||''}</span></td><td class="n" style="color:${m.tipo==='egreso'?'var(--acc)':'var(--ok)'}">${m.tipo==='egreso'?'−':'+'}${fmt(m.monto)}</td></tr>`).join('')||'<tr><td class="mut">Sin movimientos</td></tr>'}</tbody></table></div></div>`+histH;
+}
+function movCaja(tipo){
+ openM(`<h2>${tipo==='ingreso'?'Ingreso de dinero':'Retiro o pago en efectivo'}</h2><label>Monto</label><input id="mm" class="big" type="number" autofocus><label>Motivo</label><input id="md2" placeholder="${tipo==='ingreso'?'Ej: cambio':'Ej: retiro del dueño'}">
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okMov('${tipo}')">Guardar</button></div>`);
+}
+function okMov(tipo){const m=+$('#mm').value;if(!(m>0))return toast('Poné el monto');cajaAbierta().movs.push({tipo,monto:m,desc:$('#md2').value||(tipo==='ingreso'?'Ingreso':'Retiro'),medio:'efectivo',fecha:new Date().toISOString()});save();closeM();render()}
+function cerrarCaja(){
+ const c=cajaAbierta(),r=resumenCaja(c);
+ openM(`<h2>Cerrar caja</h2><p class="mut">Contá el efectivo del cajón sin mirar el esperado.</p><label>Efectivo contado</label><input id="mc" class="big" type="number" autofocus oninput="const d=(+this.value||0)-${r.esperado};document.getElementById('dif').innerHTML=this.value===''?'&nbsp;':(Math.abs(d)<1?'<span class=\\'tag ok\\'>Cierra justo</span>':'<span class=\\'tag red\\'>'+(d>0?'Sobran ':'Faltan ')+fmt(Math.abs(d))+'</span>')">
+ <div id="dif" style="text-align:center;margin-top:8px">&nbsp;</div><label>Observaciones</label><input id="mob">
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okCierre()">Cerrar e imprimir</button></div>`);
+}
+function okCierre(){const v=$('#mc').value;if(v==='')return toast('Poné el efectivo contado');const c=cajaAbierta();c.contado=+v;c.obs=$('#mob').value;c.cierre=new Date().toISOString();save();closeM();imprimirCierre(c.id);toast('Caja cerrada');render()}
+function imprimirCierre(id){
+ const c=S.cajas.find(x=>x.id===id),r=resumenCaja(c),d=c.contado-r.esperado;
+ const an=S.ventas.filter(v=>v.cajaId===c.id&&v.anulada).length;
+ $('#print').innerHTML=`<div class="tk"><div class="c"><b style="font-size:15px">${esc(S.cfg.nombre)}</b><br><b>CIERRE DE CAJA</b></div><hr>
+ <div>Apertura: ${fdt(c.apertura)}</div><div>Cierre: ${fdt(c.cierre)}</div><hr>
+ <div class="r"><span>Tickets</span><span>${r.vs.length}${an?' ('+an+' anul.)':''}</span></div><div class="r T"><span>VENTAS</span><span>${fmt(r.total)}</span></div><hr>
+ ${Object.entries(r.med).filter(([k,v])=>v).map(([k,v])=>`<div class="r"><span>${MEDIOS[k]}</span><span>${fmt(v)}</span></div>`).join('')}<hr>
+ <div class="r"><span>Efectivo inicial</span><span>${fmt(c.inicial)}</span></div><div class="r"><span>+ Ventas efectivo</span><span>${fmt(r.med.efectivo)}</span></div>
+ <div class="r"><span>+ Ingresos</span><span>${fmt(r.ingE)}</span></div><div class="r"><span>- Retiros/pagos</span><span>${fmt(r.egr)}</span></div>
+ <div class="r"><b>Esperado</b><b>${fmt(r.esperado)}</b></div><div class="r"><b>Contado</b><b>${fmt(c.contado)}</b></div><div class="r T"><span>DIFERENCIA</span><span>${d>0?'+':d<0?'−':''}${fmt(Math.abs(d))}</span></div>
+ ${c.obs?'<hr><div>Obs: '+esc(c.obs)+'</div>':''}<hr><div class="c">Comprobante interno</div></div>`;
+ setTimeout(()=>window.print(),80);
+}
+function verVenta(id){
+ const v=S.ventas.find(x=>x.id===id);
+ openM(`<h2>Venta N° ${v.nro} ${v.anulada?'<span class="tag red">Anulada</span>':''}</h2><p class="mut">${fdt(v.fecha)}</p>
+ <table>${v.items.map(i=>`<tr><td>${esc(i.nombre)}<br><span class="mut">${fcant(i.cant,i.unidad)}</span></td><td class="n">${fmt(i.sub)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td class="n"><b>${fmt(v.total)}</b></td></tr></table>
+ <p class="mut">${v.pagos.map(p=>MEDIOS[p.medio]+' '+fmt(p.monto)).join(' · ')}</p>
+ ${v.anulada?`<p class="mut">Anulada el ${fdt(v.anuladaFecha||v.fecha)}${v.motivo?': '+esc(v.motivo):''}</p>`:''}
+ ${!v.anulada&&!enCajaAbierta(v)?'<p class="mut">Solo se puede anular mientras la caja de esta venta está abierta, para no cambiar un cierre ya hecho.</p>':''}
+ <div class="row" style="margin-top:10px"><button onclick="closeM()">Cerrar</button><button onclick="imprimirTicket(S.ventas.find(x=>x.id==='${id}'))">Reimprimir</button>${!v.anulada&&enCajaAbierta(v)?`<button style="color:var(--acc)" onclick="anular('${id}')">Anular</button>`:''}</div>`);
+}
+const enCajaAbierta=v=>{const c=cajaAbierta();return !!c&&v.cajaId===c.id};
+function anular(id){
+ openM(`<h2>Anular venta</h2><label>Motivo</label><input id="mmot" autofocus placeholder="Ej: se cobró de más, el cliente devolvió" onkeydown="if(event.key==='Enter')okAnular('${id}')">
+ <div class="row" style="margin-top:14px"><button onclick="verVenta('${id}')">Volver</button><button class="p" style="flex:1" onclick="okAnular('${id}')">Anular venta</button></div>`)}
+function okAnular(id){const m=$('#mmot').value.trim();if(!m)return toast('Poné el motivo');
+ const v=S.ventas.find(x=>x.id===id);Object.assign(v,{anulada:true,motivo:m,anuladaFecha:new Date().toISOString()});movStock(v.items,1);
+ if(!save()){Object.assign(v,{anulada:false,motivo:undefined,anuladaFecha:undefined});movStock(v.items,-1);return}
+ closeM();toast('Venta anulada');render()}
+
+/* PRODUCTOS */
+function rProductos(){
+ const sel=$('#pcat');if(!sel.options.length)sel.innerHTML='<option value="">Todas las categorías</option>'+CATS.map(c=>`<option>${c}</option>`).join('');
+ const sp=$('#pprov'),pv=sp.value;
+ sp.innerHTML='<option value="">Todos los proveedores</option>'+S.proveedores.map(x=>`<option value="${x.id}">${esc(x.nombre)}</option>`).join('')+'<option value="-">Sin proveedor</option>';sp.value=pv;
+ $('#undoAum').style.display=undoAum?'':'none';
+ const bajos=S.productos.filter(stockBajo).length;
+ $('#stockAlerta').innerHTML=bajos&&!$('#pbajo').checked?`<span><b>${bajos} producto${bajos>1?'s':''}</b> con poco stock o sin stock.</span><button class="s" onclick="$('#pbajo').checked=true;rProductos()">Ver cuáles</button>`:'';
+ const q=$('#pq').value.toLowerCase(),cat=sel.value,prov=sp.value,bajo=$('#pbajo').checked;
+ $('#ptb').innerHTML=S.productos.filter(p=>(!cat||p.cat===cat)&&(!prov||(prov==='-'?!p.provId:p.provId===prov))&&(!bajo||stockBajo(p))
+  &&(!q||p.nombre.toLowerCase().includes(q)||(p.cod||'').includes(q)||(p.codProv||'').toLowerCase().includes(q))).sort((a,b)=>a.cat.localeCompare(b.cat)||a.nombre.localeCompare(b.nombre))
+ .map(p=>`<tr style="${p.activo?'':'opacity:.45'}"><td class="mut">${esc(p.cod||p.codProv||'—')}</td><td>${esc(p.nombre)}<br><span class="mut">${esc(p.cat)}</span></td><td>${esc(provNom(p.provId))||'<span class="mut">—</span>'}</td>
+  <td class="n">${p.libre?'—':p.costo?fmt(p.costo):'<span class="tag red">Falta</span>'}</td><td class="n">${p.libre?'Libre':fmt(p.precio)+(p.unidad==='kg'?'/kg':'')}</td>
+  <td class="n">${p.libre?(p.comision?p.comision+'%':'—'):fpct(markup(p))}</td>
+  <td class="n">${p.stock==null?'<span class="mut">No controla</span>':`<span class="tag ${stockBajo(p)?'red':'ok'}">${fstock(p)}</span>`}</td>
+  <td class="n"><button class="s" onclick="editProd('${p.id}')">Editar</button></td></tr>`).join('')||'<tr><td colspan="8" class="mut">No hay productos con ese filtro</td></tr>';
+}
+function editProd(id){
+ const p=id?S.productos.find(x=>x.id===id):{cod:'',plu:null,nombre:'',cat:'Almacén',precio:'',costo:'',unidad:'u',libre:false,activo:true,stock:0,stockMin:0,provId:null,codProv:'',comision:0};
+ const cats=CATS.includes(p.cat)?CATS:[...CATS,p.cat],gan=p.libre?p.comision:markup(p)!=null?Math.round(markup(p)):id?'':S.cfg.margenDef,ctrl=p.stock!=null;
+ openM(`<h2>${id?'Editar':'Nuevo'} producto</h2>
+ <div class="grid2" style="gap:8px"><div><label>Código de barras (escanealo acá)</label><input id="ep" autofocus inputmode="numeric" value="${esc(p.cod||'')}" placeholder="Opcional" onkeydown="if(event.key==='Enter'){event.preventDefault();$('#en').focus()}"></div><div><label>Categoría</label><select id="ec">${cats.map(c=>`<option ${c===p.cat?'selected':''}>${esc(c)}</option>`).join('')}</select></div></div>
+ <label>Nombre</label><input id="en" value="${esc(p.nombre)}">
+ <div class="grid2" style="gap:8px"><div><label>Proveedor</label><select id="epv"><option value="">Sin proveedor</option>${S.proveedores.map(x=>`<option value="${x.id}" ${x.id===p.provId?'selected':''}>${esc(x.nombre)}</option>`).join('')}</select></div><div><label>Código del proveedor</label><input id="ecp" value="${esc(p.codProv||'')}" placeholder="Opcional"></div></div>
+ <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+  <div><label>Costo</label><input id="eco" type="number" value="${p.libre?'':p.costo||''}" ${p.libre?'disabled':''} oninput="epCalc('costo')"></div>
+  <div><label id="egal">${p.libre?'Comisión %':'Ganancia %'}</label><input id="ega" type="number" value="${gan}" oninput="epCalc('gan')"></div>
+  <div><label>Precio</label><input id="epr" type="number" value="${p.libre?'':p.precio}" ${p.libre?'disabled':''} oninput="epCalc('precio')"></div></div>
+ <label>Se vende por</label><select id="eu"><option value="u" ${p.unidad==='u'?'selected':''}>Unidad</option><option value="kg" ${p.unidad==='kg'?'selected':''}>Kilo (fiambre, suelto)</option></select>
+ <div id="estw" style="${p.libre?'display:none':''}"><label><input type="checkbox" id="es" style="width:auto" ${ctrl?'checked':''} onchange="$('#estg').style.display=this.checked?'':'none'"> Controlar stock</label>
+  <div class="grid2" id="estg" style="gap:8px;${ctrl?'':'display:none'}"><div><label>Stock actual</label><input id="est" type="number" value="${ctrl?p.stock:0}"></div><div><label>Avisar cuando queden</label><input id="esm" type="number" value="${p.stockMin||0}"></div></div></div>
+ <label><input type="checkbox" id="el" style="width:auto" ${p.libre?'checked':''} onchange="epLibre(this.checked)"> Precio libre (se pide el importe al vender, ej: carga SUBE)</label>
+ <label><input type="checkbox" id="ea" style="width:auto" ${p.activo?'checked':''}> Activo (se muestra para vender)</label>
+ <div class="row" style="margin-top:14px">${id?`<button style="color:var(--acc)" onclick="delProd('${id}')">Borrar</button>`:''}<button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okProd('${id||''}')">Guardar</button></div>`);
+}
+// costo, ganancia % y precio se calculan entre sí: se completa el que no se está tocando
+function epCalc(src){if($('#el').checked)return;const c=+$('#eco').value||0,g=$('#ega'),pr=$('#epr');
+ if(src==='precio')g.value=c>0&&+pr.value>0?Math.round((+pr.value/c-1)*100):'';
+ else if(c>0&&g.value!=='')pr.value=redPrecio(c*(1+(+g.value)/100))}
+function epLibre(on){$('#eco').disabled=$('#epr').disabled=on;$('#egal').textContent=on?'Comisión %':'Ganancia %';$('#estw').style.display=on?'none':''}
+function okProd(id){
+ const libre=$('#el').checked,ctrl=!libre&&$('#es').checked;
+ const d={cod:$('#ep').value.trim(),nombre:$('#en').value.trim(),cat:$('#ec').value,unidad:$('#eu').value,libre,activo:$('#ea').checked,
+  precio:libre?0:+$('#epr').value||0,costo:libre?0:Math.max(0,+$('#eco').value||0),comision:libre?Math.max(0,Math.min(100,+$('#ega').value||0)):0,
+  provId:$('#epv').value||null,codProv:$('#ecp').value.trim(),stock:ctrl?r3(+$('#est').value||0):null,stockMin:ctrl?Math.max(0,+$('#esm').value||0):0};
+ if(!d.nombre||!(d.libre||d.precio>0))return toast('Completá nombre y precio');
+ if(d.cod&&S.productos.some(x=>x.cod===d.cod&&x.id!==id))return toast('Ese código ya está cargado en otro producto');
+ if(d.codProv&&S.productos.some(x=>x.codProv===d.codProv&&x.provId===d.provId&&x.id!==id))return toast('Ese código del proveedor ya está en otro producto');
+ if(id){const p=S.productos.find(x=>x.id===id);
+  // queda registrado cuando alguien corrige el stock a mano
+  if(p.stock!=null&&d.stock!=null&&p.stock!==d.stock)S.ajustes.push({id:uid(),fecha:new Date().toISOString(),pid:id,nombre:d.nombre,antes:p.stock,despues:d.stock,motivo:'Corrección manual'});
+  Object.assign(p,d)}
+ else S.productos.push({id:uid(),plu:null,...d});
+ save();closeM();rProductos();toast('Producto guardado');
+}
+function delProd(id){if(!confirm('¿Borrar el producto? Las ventas viejas no se tocan.'))return;S.productos=S.productos.filter(x=>x.id!==id);save();closeM();rProductos()}
+let undoAum=null; // costos y precios anteriores al último cambio masivo
+function aumento(){
+ openM(`<h2>Aumento masivo</h2><p class="mut">Para bajar, poné un porcentaje negativo.</p>
+ <div class="grid2" style="gap:8px"><div><label>Categoría</label><select id="ac"><option value="">Todas</option>${CATS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+  <div><label>Proveedor</label><select id="apv"><option value="">Todos</option>${S.proveedores.map(x=>`<option value="${x.id}">${esc(x.nombre)}</option>`).join('')}</select></div></div>
+ <label>Qué aumenta</label><select id="aqu"><option value="precio">El precio de venta</option><option value="costo">El costo (aumentó el proveedor) y el precio mantiene la ganancia %</option></select>
+ <div class="grid2" style="gap:8px"><div><label>Porcentaje (%)</label><input id="apct" type="number" value="5" min="-50" max="200" autofocus></div><div><label>Redondear precios a</label><select id="ar">${[1,10,50,100].map(r=>`<option value="${r}" ${r===S.cfg.redondeo?'selected':''}>$ ${r}</option>`).join('')}</select></div></div>
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okAum()">Aplicar</button></div>`);
+}
+function okAum(){const c=$('#ac').value,pv=$('#apv').value,qu=$('#aqu').value,pct=+$('#apct').value,rd=+$('#ar').value;
+ if(!pct)return toast('Poné un porcentaje');
+ if(pct<-50||pct>200)return toast('El porcentaje tiene que estar entre -50 y 200');
+ const todos=S.productos.filter(p=>!p.libre&&(!c||p.cat===c)&&(!pv||p.provId===pv));
+ // para mover el costo hace falta tenerlo cargado
+ const l=qu==='costo'?todos.filter(p=>p.costo>0):todos,sin=todos.length-l.length;
+ if(!l.length)return toast(sin?'Esos productos no tienen el costo cargado':'No hay productos con ese filtro');
+ if(!confirm(`Se ${pct>0?'aumentan':'bajan'} ${l.length} ${qu==='costo'?'costos':'precios'} un ${Math.abs(pct)}%${sin?` (${sin} sin costo cargado quedan igual)`:''}. ¿Seguir?`))return;
+ undoAum=l.map(p=>({id:p.id,precio:p.precio,costo:p.costo}));
+ // el precio nunca queda en $0: como mínimo vale el redondeo elegido
+ l.forEach(p=>{if(qu==='costo'){const m=p.precio/p.costo;p.costo=r2(p.costo*(1+pct/100));p.precio=Math.max(rd,Math.round(p.costo*m/rd)*rd)}
+  else p.precio=Math.max(rd,Math.round(p.precio*(1+pct/100)/rd)*rd)});
+ save();closeM();rProductos();toast(l.length+' productos actualizados')}
+function deshacerAum(){if(!undoAum||!confirm('¿Volver costos y precios a como estaban antes del último cambio masivo?'))return;
+ undoAum.forEach(u=>{const p=S.productos.find(x=>x.id===u.id);if(p){p.precio=u.precio;if(u.costo!=null)p.costo=u.costo}});undoAum=null;save();rProductos();toast('Precios restaurados')}
+// planilla para Excel (separada por ; y con coma decimal, como la abre Excel en Argentina)
+function exportarLista(){
+ const cel=v=>{v=String(v==null?'':v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v},dec=n=>String(r2(n)).replace('.',',');
+ const f=[['Código','Código proveedor','Producto','Categoría','Proveedor','Costo','Ganancia %','Precio','Unidad','Stock']]
+  .concat(S.productos.filter(p=>!p.libre).map(p=>[p.cod,p.codProv,p.nombre,p.cat,provNom(p.provId),dec(p.costo),markup(p)==null?'':Math.round(markup(p)),dec(p.precio),p.unidad==='kg'?'kg':'unidad',p.stock==null?'':dec(p.stock)]));
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+f.map(r=>r.map(cel).join(';')).join('\r\n')],{type:'text/csv'}));
+ a.download='lista-de-precios-'+new Date().toISOString().slice(0,10)+'.csv';a.click()}
+
+/* PROVEEDORES */
+// lo que se le debe: compras "a cuenta" menos los pagos hechos
+const saldoProv=id=>r2(S.compras.filter(c=>c.provId===id&&c.medio==='cuenta').reduce((a,c)=>a+c.total,0)-S.pagosProv.filter(x=>x.provId===id).reduce((a,x)=>a+x.monto,0));
+function rProveedores(){
+ const now=new Date(),mes=f=>{const d=new Date(f);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()};
+ $('#provtb').innerHTML=S.proveedores.map(x=>{const s=saldoProv(x.id);return `<tr><td><b>${esc(x.nombre)}</b></td><td>${esc(x.tel)}</td><td class="n">${S.productos.filter(p=>p.provId===x.id).length}</td>
+  <td class="n">${fmt(S.compras.filter(c=>c.provId===x.id&&mes(c.fecha)).reduce((a,c)=>a+c.total,0))}</td><td class="n">${s>0.5?`<span class="tag red">${fmt(s)}</span>`:'<span class="mut">—</span>'}</td>
+  <td class="n" style="white-space:nowrap">${s>0.5?`<button class="s" onclick="pagarProv('${x.id}')">Pagar</button> `:''}<button class="s" onclick="verProv('${x.id}')">Ver</button> <button class="s" onclick="editProv('${x.id}')">Editar</button></td></tr>`}).join('')||'<tr><td colspan="6" class="mut">Todavía no cargaste proveedores</td></tr>';
+ $('#comptb').innerHTML=S.compras.slice(-30).reverse().map(c=>`<tr><td>${fd(c.fecha)}</td><td>${esc(provNom(c.provId))||'—'}</td><td>${esc(c.comp||'')}</td><td>${MCOMPRA[c.medio]}</td><td class="n">${fmt(c.total)}</td><td class="n"><button class="s" onclick="verCompra('${c.id}')">Ver</button></td></tr>`).join('')||'<tr><td colspan="6" class="mut">Todavía no cargaste compras</td></tr>';
+}
+function editProv(id){
+ const x=id?S.proveedores.find(v=>v.id===id):{nombre:'',tel:'',cuit:'',notas:''};
+ openM(`<h2>${id?'Editar':'Nuevo'} proveedor</h2><label>Nombre</label><input id="vn" autofocus value="${esc(x.nombre)}">
+ <div class="grid2" style="gap:8px"><div><label>Teléfono</label><input id="vt" value="${esc(x.tel)}"></div><div><label>CUIT</label><input id="vc" value="${esc(x.cuit)}"></div></div>
+ <label>Notas</label><input id="vno" value="${esc(x.notas)}" placeholder="Ej: viene los martes, pedido mínimo $ 100.000">
+ <div class="row" style="margin-top:14px">${id?`<button style="color:var(--acc)" onclick="delProv('${id}')">Borrar</button>`:''}<button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okProv('${id||''}')">Guardar</button></div>`)}
+function okProv(id){const d={nombre:$('#vn').value.trim(),tel:$('#vt').value.trim(),cuit:$('#vc').value.trim(),notas:$('#vno').value.trim()};
+ if(!d.nombre)return toast('Poné el nombre');
+ if(id)Object.assign(S.proveedores.find(x=>x.id===id),d);else S.proveedores.push({id:uid(),...d});save();closeM();render();toast('Proveedor guardado')}
+function delProv(id){
+ if(S.compras.some(c=>c.provId===id)||S.pagosProv.some(x=>x.provId===id))return toast('Tiene compras o pagos cargados, así que no se puede borrar',4000);
+ if(!confirm('¿Borrar el proveedor? Sus productos quedan sin proveedor.'))return;
+ S.proveedores=S.proveedores.filter(x=>x.id!==id);S.productos.forEach(p=>{if(p.provId===id)p.provId=null});save();closeM();render()}
+function verProv(id){
+ const x=S.proveedores.find(v=>v.id===id);
+ const movs=[...S.compras.filter(c=>c.provId===id).map(c=>({f:c.fecha,d:'Compra'+(c.comp?' '+c.comp:'')+(c.medio==='cuenta'?'':' · '+MCOMPRA[c.medio]),debe:c.medio==='cuenta'?c.total:0,ver:c.id})),
+  ...S.pagosProv.filter(v=>v.provId===id).map(v=>({f:v.fecha,d:'Pago · '+(MCOMPRA[v.medio]||'')+(v.nota?' · '+v.nota:''),pago:v.monto}))].sort((a,b)=>a.f<b.f?1:-1);
+ const s=saldoProv(id);
+ openM(`<h2>${esc(x.nombre)}</h2><p class="mut">${[x.tel,x.cuit&&'CUIT '+x.cuit,x.notas].filter(Boolean).map(esc).join(' · ')||'&nbsp;'}</p>
+ <div class="row" style="justify-content:space-between"><span class="mut">Le debo</span><b style="font-size:20px">${fmt(Math.max(0,s))}</b></div>
+ <div class="tw" style="max-height:45vh;margin-top:8px"><table><tbody>${movs.slice(0,40).map(m=>`<tr><td>${fd(m.f)}</td><td>${esc(m.d)}</td><td class="n">${m.pago?`<span style="color:var(--ok)">−${fmt(m.pago)}</span>`:m.debe?fmt(m.debe):'<span class="mut">pagada</span>'}</td><td class="n">${m.ver?`<button class="s" onclick="verCompra('${m.ver}')">Ver</button>`:''}</td></tr>`).join('')||'<tr><td class="mut">Sin compras ni pagos</td></tr>'}</tbody></table></div>
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cerrar</button><button onclick="nuevaCompra('${id}')">+ Cargar compra</button>${s>0.5?`<button class="p" style="flex:1" onclick="pagarProv('${id}')">Pagar</button>`:''}</div>`)}
+function pagarProv(id){const s=saldoProv(id);
+ openM(`<h2>Pago a ${esc(provNom(id))}</h2><p class="mut">Le debés ${fmt(s)}</p><label>Monto</label><input id="ppm" class="big" type="number" value="${Math.max(0,Math.round(s))}" autofocus>
+ <label>Cómo se pagó</label><select id="ppd"><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo de la caja</option><option value="otro">Otro</option></select>
+ <label>Nota</label><input id="ppn" placeholder="Opcional">
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okPagoProv('${id}')">Registrar pago</button></div>`)}
+function okPagoProv(id){const v={id:uid(),fecha:new Date().toISOString(),provId:id,monto:r2(+$('#ppm').value),medio:$('#ppd').value,nota:$('#ppn').value.trim()};
+ if(!(v.monto>0))return toast('Poné el monto');
+ const prev=JSON.stringify(S);
+ if(v.medio==='efectivo'){const c=cajaAbierta();if(!c)return toast('Para pagar con efectivo de la caja, abrila primero');c.movs.push({tipo:'egreso',monto:v.monto,desc:'Pago a '+provNom(id),medio:'efectivo',fecha:v.fecha,pagoProvId:v.id})}
+ S.pagosProv.push(v);if(!save()){S=JSON.parse(prev);return}closeM();render();toast('Pago registrado')}
+
+/* COMPRAS: suman stock y actualizan costos */
+let compra=null;
+function nuevaCompra(provId){compra={provId:provId||'',comp:'',medio:'transferencia',items:[],actCosto:true,actPrecio:true};rCompra()}
+function rCompra(){
+ const c=compra,prods=S.productos.filter(p=>!p.libre).sort((a,b)=>(b.provId===c.provId)-(a.provId===c.provId)||a.nombre.localeCompare(b.nombre));
+ const tot=c.items.reduce((a,i)=>a+i.cant*i.costo,0),nombre=pid=>(S.productos.find(p=>p.id===pid)||{}).nombre||'';
+ openM(`<h2>Cargar compra</h2>
+ <div class="grid2" style="gap:8px"><div><label>Proveedor</label><select onchange="compra.provId=this.value;rCompra()"><option value="">Sin proveedor</option>${S.proveedores.map(x=>`<option value="${x.id}" ${x.id===c.provId?'selected':''}>${esc(x.nombre)}</option>`).join('')}</select></div>
+  <div><label>Factura o remito</label><input value="${esc(c.comp)}" placeholder="Opcional" onchange="compra.comp=this.value"></div></div>
+ <label>Escaneá o elegí los productos</label>
+ <div class="row"><input id="cscan" autofocus placeholder="Código de barras o del proveedor" style="flex:1;min-width:150px" onkeydown="if(event.key==='Enter')compraScan(this.value)">
+  <select style="flex:1;min-width:150px" onchange="if(this.value)compraAdd(this.value)"><option value="">Elegir producto…</option>${prods.map(p=>`<option value="${p.id}">${esc(p.nombre)}</option>`).join('')}</select></div>
+ <div class="tw" style="margin-top:8px"><table><thead><tr><th>Producto</th><th class="n">Cantidad</th><th class="n">Costo c/u</th><th class="n">Subtotal</th><th></th></tr></thead><tbody>
+ ${c.items.map((i,k)=>`<tr><td>${esc(nombre(i.pid))}</td><td class="n"><input type="number" style="width:80px" value="${i.cant}" onchange="compra.items[${k}].cant=Math.max(0,+this.value||0);rCompra()"></td>
+  <td class="n"><input type="number" style="width:100px" value="${i.costo}" onchange="compra.items[${k}].costo=Math.max(0,+this.value||0);rCompra()"></td><td class="n">${fmt(i.cant*i.costo)}</td>
+  <td><button class="x" style="background:none" onclick="compra.items.splice(${k},1);rCompra()">✕</button></td></tr>`).join('')||'<tr><td colspan="5" class="mut">Todavía no agregaste productos</td></tr>'}</tbody></table></div>
+ <div class="tot">${fmt(tot)}</div>
+ <label><input type="checkbox" style="width:auto" ${c.actCosto?'checked':''} onchange="compra.actCosto=this.checked;rCompra()"> Actualizar el costo de los productos con el de esta compra</label>
+ ${c.actCosto?`<label><input type="checkbox" style="width:auto" ${c.actPrecio?'checked':''} onchange="compra.actPrecio=this.checked"> Actualizar también el precio de venta, manteniendo la ganancia %</label>`:''}
+ <label>Cómo se pagó</label><select onchange="compra.medio=this.value">${Object.entries(MCOMPRA).map(([k,v])=>`<option value="${k}" ${k===c.medio?'selected':''}>${v}</option>`).join('')}</select>
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="okCompra()">Guardar compra</button></div>`);
+ $('#md').style.maxWidth='640px';
+}
+function compraAdd(pid){const p=S.productos.find(x=>x.id===pid),ex=compra.items.find(i=>i.pid===pid);
+ if(ex)ex.cant=r3(ex.cant+1);else compra.items.push({pid,cant:1,costo:p.costo||0});
+ if(!compra.provId&&p.provId)compra.provId=p.provId;rCompra()}
+function compraScan(v){v=v.trim();if(!v)return;
+ const p=S.productos.find(x=>!x.libre&&x.cod===v)||S.productos.find(x=>!x.libre&&x.codProv===v&&(!compra.provId||x.provId===compra.provId));
+ if(!p){$('#cscan').value='';return toast('No encontré ese producto')}compraAdd(p.id)}
+function okCompra(){
+ const c=compra,its=c.items.filter(i=>i.cant>0);if(!its.length)return toast('Agregá al menos un producto');
+ const prev=JSON.stringify(S);
+ const v={id:uid(),fecha:new Date().toISOString(),provId:c.provId||null,comp:c.comp.trim(),medio:c.medio,
+  items:its.map(i=>{const p=S.productos.find(x=>x.id===i.pid);return {pid:i.pid,nombre:p.nombre,unidad:p.unidad,cant:r3(i.cant),costo:r2(i.costo),sub:r2(i.cant*i.costo)}})};
+ v.total=r2(v.items.reduce((a,i)=>a+i.sub,0));
+ if(v.medio==='cuenta'&&!v.provId)return toast('Para dejarla a cuenta, elegí el proveedor');
+ if(v.medio==='efectivo'){const caja=cajaAbierta();if(!caja)return toast('Para pagar con efectivo de la caja, abrila primero');
+  caja.movs.push({tipo:'egreso',monto:v.total,desc:'Compra a '+(provNom(v.provId)||'proveedor'),medio:'efectivo',fecha:v.fecha,compraId:v.id});v.cajaId=caja.id}
+ movStock(v.items,1);
+ if(c.actCosto)v.items.forEach(i=>{const p=S.productos.find(x=>x.id===i.pid);if(!(i.costo>0))return;
+  if(c.actPrecio&&p.costo>0&&p.precio>0)p.precio=redPrecio(i.costo*p.precio/p.costo);p.costo=i.costo;if(!p.provId&&v.provId)p.provId=v.provId});
+ S.compras.push(v);
+ if(!save()){S=JSON.parse(prev);return}
+ compra=null;closeM();render();toast('Compra guardada: '+v.items.length+(v.items.length>1?' productos sumados':' producto sumado')+' al stock')}
+function verCompra(id){const c=S.compras.find(x=>x.id===id);
+ openM(`<h2>Compra ${esc(c.comp||'')}</h2><p class="mut">${fdt(c.fecha)} · ${esc(provNom(c.provId))||'Sin proveedor'} · ${MCOMPRA[c.medio]}</p>
+ <table>${c.items.map(i=>`<tr><td>${esc(i.nombre)}<br><span class="mut">${fcant(i.cant,i.unidad)} × ${fmt(i.costo)}</span></td><td class="n">${fmt(i.sub)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td class="n"><b>${fmt(c.total)}</b></td></tr></table>
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cerrar</button><button style="color:var(--acc)" onclick="delCompra('${id}')">Borrar compra</button></div>`)}
+function delCompra(id){const c=S.compras.find(x=>x.id===id);
+ if(S.cajas.some(k=>k.cierre&&k.movs.some(m=>m.compraId===id)))return toast('Se pagó con una caja que ya se cerró, así que no se puede borrar sin descuadrar ese cierre',5000);
+ if(c.medio==='cuenta'&&saldoProv(c.provId)-c.total< -0.5)return toast('Ya hay pagos que cubren esta compra; no se puede borrar',4000);
+ if(!confirm('¿Borrar la compra? Se descuenta del stock lo que sumó. Los costos y precios no vuelven atrás.'))return;
+ movStock(c.items,-1);S.compras=S.compras.filter(x=>x.id!==id);S.cajas.forEach(k=>{if(!k.cierre)k.movs=k.movs.filter(m=>m.compraId!==id)});save();closeM();render()}
+
+/* LISTA DE PRECIOS DEL PROVEEDOR: se pega de Excel o se sube el CSV */
+let imp=null;
+// "$ 1.234,56", "1234.56" y "1.234" (miles) dan el número correcto
+function parsePrecio(v){v=String(v||'').replace(/[$\s]/g,'');if(!v)return NaN;
+ if(v.includes(','))return parseFloat(v.replace(/\./g,'').replace(',','.'));
+ if(/^\d{1,3}(\.\d{3})+$/.test(v))return parseFloat(v.replace(/\./g,''));
+ return parseFloat(v)}
+function parseTabla(t){
+ const lin=t.replace(/^﻿/,'').split(/\r?\n/).filter(l=>l.trim());if(!lin.length)return [];
+ const h=lin[0],sep=h.includes('\t')?'\t':(h.split(';').length>=h.split(',').length?';':',');
+ return lin.map(l=>{const r=[];let cur='',q=false;
+  for(let i=0;i<l.length;i++){const ch=l[i];
+   if(q){if(ch==='"'&&l[i+1]==='"'){cur+='"';i++}else if(ch==='"')q=false;else cur+=ch}
+   else if(ch==='"')q=true;else if(ch===sep){r.push(cur.trim());cur=''}else cur+=ch}
+  r.push(cur.trim());return r})}
+function importarLista(){imp={provId:(S.proveedores[0]||{}).id||'',texto:'',filas:[],cab:true,cCod:-1,cDesc:0,cCosto:1,actPrecio:true,crear:false,catNuevo:'Almacén',ganNuevo:S.cfg.margenDef};rImp1()}
+function rImp1(){
+ openM(`<h2>Importar lista de precios</h2><p class="mut">Pegá la lista que te mandó el proveedor (copiada de Excel) o subí el archivo CSV. Tiene que tener una columna con el costo y otra con el código o la descripción.</p>
+ <label>Proveedor</label><select id="ipv"><option value="">Sin proveedor</option>${S.proveedores.map(x=>`<option value="${x.id}" ${x.id===imp.provId?'selected':''}>${esc(x.nombre)}</option>`).join('')}</select>
+ <label>Lista</label><textarea id="itx" rows="8" style="font-family:monospace;font-size:13px" placeholder="Código&#9;Descripción&#9;Precio&#10;DIS001&#9;Gaseosa cola 2,25 L&#9;3.150,00">${esc(imp.texto)}</textarea>
+ <div class="row" style="margin-top:8px"><button class="s" onclick="$('#ifile').click()">Subir archivo CSV</button><input type="file" id="ifile" accept=".csv,.txt" style="display:none" onchange="impArchivo(this)"></div>
+ <div class="row" style="margin-top:14px"><button onclick="closeM()">Cancelar</button><button class="p" style="flex:1" onclick="impLeer()">Siguiente</button></div>`);
+ $('#md').style.maxWidth='640px'}
+// Excel en Windows guarda los CSV en Windows-1252: si los acentos salen rotos, se vuelve a leer así
+function impArchivo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{if(r.result.includes('�')){const r2=new FileReader();r2.onload=()=>$('#itx').value=r2.result;r2.readAsText(f,'windows-1252')}else $('#itx').value=r.result};
+ r.readAsText(f);inp.value=''}
+function impLeer(){
+ imp.provId=$('#ipv').value;imp.texto=$('#itx').value;const f=parseTabla(imp.texto);
+ const n=Math.max(0,...f.map(r=>r.length));if(f.length<1||n<2)return toast('Pegá la lista con al menos dos columnas');
+ imp.filas=f;
+ // se adivinan las columnas: el costo es la última con números; la descripción, la de textos más largos
+ const mu=f.slice(1,30),nums=c=>mu.filter(r=>parsePrecio(r[c])>0).length;
+ let cC=-1;for(let c=n-1;c>=0;c--)if(nums(c)>=mu.length*0.6){cC=c;break}
+ const largo=c=>mu.reduce((a,r)=>a+(isNaN(parsePrecio(r[c]))?(r[c]||'').length:0),0);
+ let cD=-1,best=-1;for(let c=0;c<n;c++)if(c!==cC&&largo(c)>best){best=largo(c);cD=c}
+ const cK=[...Array(n).keys()].find(c=>c!==cC&&c!==cD);
+ Object.assign(imp,{cCosto:cC<0?n-1:cC,cDesc:cD,cCod:cK==null?-1:cK,cab:!(parsePrecio(f[0][cC<0?n-1:cC])>0)});
+ rImp2()}
+function rImp2(){
+ const n=Math.max(...imp.filas.map(r=>r.length)),ej=c=>esc(imp.filas[imp.cab?1:0]?.[c]||'').slice(0,30);
+ const op=(sel,ninguna)=>(ninguna?`<option value="-1" ${sel<0?'selected':''}>No tiene</option>`:'')+[...Array(n).keys()].map(c=>`<option value="${c}" ${c===sel?'selected':''}>Columna ${c+1}${ej(c)?': '+ej(c):''}</option>`).join('');
+ openM(`<h2>¿Qué es cada columna?</h2><p class="mut">Revisá que esté bien elegido. Se leyeron ${imp.filas.length} filas.</p>
+ <label>Código</label><select id="icc">${op(imp.cCod,true)}</select>
+ <label>Descripción</label><select id="icd">${op(imp.cDesc,true)}</select>
+ <label>Costo</label><select id="ico">${op(imp.cCosto)}</select>
+ <label><input type="checkbox" id="icab" style="width:auto" ${imp.cab?'checked':''}> La primera fila son los títulos</label>
+ <div class="tw" style="margin-top:8px"><table><tbody>${imp.filas.slice(0,4).map(r=>`<tr>${r.map(v=>`<td class="mut">${esc(v).slice(0,25)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+ <div class="row" style="margin-top:14px"><button onclick="rImp1()">Volver</button><button class="p" style="flex:1" onclick="impMatch()">Siguiente</button></div>`);
+ $('#md').style.maxWidth='640px'}
+// busca el producto: por código del proveedor, después por código de barras, después por nombre igual
+function impBuscar(cod,desc){
+ const c=String(cod||'').replace(/^'/,'').trim(),dn=String(desc||'').trim().toLowerCase();
+ return (c&&(S.productos.find(p=>p.codProv===c&&(!imp.provId||p.provId===imp.provId))||S.productos.find(p=>p.cod===c)))
+  ||(dn&&S.productos.find(p=>p.nombre.trim().toLowerCase()===dn))||null}
+function impMatch(){
+ if($('#icc'))Object.assign(imp,{cCod:+$('#icc').value,cDesc:+$('#icd').value,cCosto:+$('#ico').value,cab:$('#icab').checked});
+ if(imp.cCod<0&&imp.cDesc<0)return toast('Elegí la columna del código o la de la descripción');
+ imp.res=imp.filas.slice(imp.cab?1:0).map(r=>{const cod=imp.cCod<0?'':(r[imp.cCod]||'').replace(/^'/,'').trim(),desc=imp.cDesc<0?'':(r[imp.cDesc]||'').trim(),costo=r2(parsePrecio(r[imp.cCosto]));
+  return {cod,desc,costo,p:costo>0?impBuscar(cod,desc):null}}).filter(x=>x.costo>0&&(x.cod||x.desc));
+ if(!imp.res.length)return toast('No encontré filas con costo');
+ rImp3()}
+function impPrecio(x){const p=x.p;return imp.actPrecio&&p.costo>0&&p.precio>0?redPrecio(x.costo*p.precio/p.costo):p.precio}
+function rImp3(){
+ const enc=imp.res.filter(x=>x.p),cambian=enc.filter(x=>Math.abs(x.costo-x.p.costo)>0.009),nuevos=imp.res.filter(x=>!x.p&&x.desc);
+ const varPct=x=>x.p.costo>0?(x.costo/x.p.costo-1)*100:null;
+ openM(`<h2>Revisá los cambios</h2>
+ <p class="mut">${enc.length} productos encontrados, ${cambian.length} cambian de costo. ${imp.res.length-enc.length} filas no coinciden con ningún producto.</p>
+ ${cambian.length?`<div class="tw" style="max-height:38vh"><table><thead><tr><th>Producto</th><th class="n">Costo</th><th class="n">Nuevo</th><th class="n">Var.</th><th class="n">Precio nuevo</th></tr></thead><tbody>
+  ${cambian.map(x=>`<tr><td>${esc(x.p.nombre)}</td><td class="n">${x.p.costo?fmt(x.p.costo):'—'}</td><td class="n">${fmt(x.costo)}</td><td class="n">${varPct(x)==null?'—':(varPct(x)>0?'+':'')+fpct(varPct(x))}</td><td class="n">${fmt(impPrecio(x))}${impPrecio(x)!==x.p.precio?` <span class="mut">(${fmt(x.p.precio)})</span>`:''}</td></tr>`).join('')}</tbody></table></div>`:''}
+ <label><input type="checkbox" style="width:auto" ${imp.actPrecio?'checked':''} onchange="imp.actPrecio=this.checked;rImp3()"> Actualizar también el precio de venta, manteniendo la ganancia %</label>
+ ${nuevos.length?`<label><input type="checkbox" style="width:auto" ${imp.crear?'checked':''} onchange="imp.crear=this.checked;rImp3()"> Crear los ${nuevos.length} productos que no están (sin stock, para revisar después)</label>
+  ${imp.crear?`<div class="grid2" style="gap:8px"><div><label>Categoría</label><select onchange="imp.catNuevo=this.value">${CATS.map(c=>`<option ${c===imp.catNuevo?'selected':''}>${c}</option>`).join('')}</select></div><div><label>Ganancia %</label><input type="number" value="${imp.ganNuevo}" onchange="imp.ganNuevo=Math.max(0,+this.value||0)"></div></div>`:''}
+  <p class="mut">${nuevos.slice(0,6).map(x=>esc(x.desc)).join(' · ')}${nuevos.length>6?' …':''}</p>`:''}
+ <div class="row" style="margin-top:14px"><button onclick="rImp2()">Volver</button><button class="p" style="flex:1" onclick="impAplicar()">Aplicar</button></div>`);
+ $('#md').style.maxWidth='640px'}
+function impAplicar(){
+ const enc=imp.res.filter(x=>x.p),nuevos=imp.crear?imp.res.filter(x=>!x.p&&x.desc):[];
+ if(!enc.length&&!nuevos.length)return toast('No hay nada para aplicar');
+ const prev=JSON.stringify(S);
+ undoAum=enc.map(x=>({id:x.p.id,precio:x.p.precio,costo:x.p.costo}));
+ enc.forEach(x=>{const p=x.p;p.precio=impPrecio(x);p.costo=x.costo;if(!p.provId&&imp.provId)p.provId=imp.provId;if(!p.codProv&&x.cod&&!/^\d{8,14}$/.test(x.cod))p.codProv=x.cod});
+ // un código de 8 a 14 números es de barras; cualquier otro es el del proveedor
+ nuevos.forEach(x=>{const ean=/^\d{8,14}$/.test(x.cod)&&!S.productos.some(p=>p.cod===x.cod);
+  S.productos.push({id:uid(),cat:imp.catNuevo,cod:ean?x.cod:'',codProv:ean?'':x.cod,plu:null,nombre:x.desc,costo:x.costo,precio:redPrecio(x.costo*(1+imp.ganNuevo/100)),unidad:'u',libre:false,activo:true,stock:0,stockMin:0,provId:imp.provId||null,comision:0})});
+ if(!save()){S=JSON.parse(prev);undoAum=null;return}
+ imp=null;closeM();go('productos');toast(`${enc.length} productos actualizados${nuevos.length?' y '+nuevos.length+' creados':''}`,3500)}
+
+/* GASTOS */
+function rGastos(){
+ const now=new Date(),l=S.gastos.filter(g=>{const d=new Date(g.fecha);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).reverse();
+ $('#gTot').textContent=fmt(l.reduce((a,g)=>a+g.monto,0));
+ $('#gtb').innerHTML=l.map(g=>`<tr><td>${fd(g.fecha)}</td><td>${esc(g.desc)}</td><td>${esc(g.cat)}</td><td>${g.medio==='efectivo'?'Efectivo caja':g.medio==='transferencia'?'Transferencia':'Otro'}</td><td class="n">${fmt(g.monto)}</td><td class="n"><button class="s" onclick="delGasto('${g.id}')">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="mut">Sin gastos este mes</td></tr>';
+}
+function addGasto(){
+ const g={id:uid(),fecha:new Date().toISOString(),desc:$('#gDesc').value.trim(),cat:$('#gCat').value,monto:+$('#gMonto').value,medio:$('#gMedio').value};
+ if(!g.desc||!(g.monto>0))return toast('Completá concepto y monto');
+ if(g.medio==='efectivo'){const c=cajaAbierta();if(!c)return toast('Para pagar con efectivo de la caja, abrila primero');c.movs.push({tipo:'egreso',monto:g.monto,desc:'Gasto: '+g.desc,medio:'efectivo',fecha:g.fecha,gastoId:g.id})}
+ S.gastos.push(g);save();$('#gDesc').value='';$('#gMonto').value='';toast('Gasto guardado');render();
+}
+function delGasto(id){
+ if(S.cajas.some(c=>c.cierre&&c.movs.some(m=>m.gastoId===id)))return toast('Ese gasto se pagó con una caja que ya se cerró, así que no se puede borrar sin descuadrar ese cierre',5000);
+ if(!confirm('¿Borrar el gasto?'))return;S.gastos=S.gastos.filter(g=>g.id!==id);S.cajas.forEach(c=>{if(!c.cierre)c.movs=c.movs.filter(m=>m.gastoId!==id)});save();render()}
+
+/* REPORTES */
+// costo de un renglón vendido; si es de antes de cargar costos, se usa el costo actual del producto
+function costoDe(i){if(i.costo!=null)return i.costo;const p=S.productos.find(x=>x.id===i.pid);return p&&!p.libre&&p.costo>0?r2(i.cant*p.costo):null}
+function rReportes(){
+ const dias=+$('#rPer').value,desde=new Date();desde.setHours(0,0,0,0);if(dias>1)desde.setDate(desde.getDate()-(dias-1));
+ const inP=f=>dias===0||new Date(f)>=desde;
+ // la mercadería ya cuenta en el costo de lo vendido: no se suma otra vez como gasto
+ const vs=S.ventas.filter(v=>!v.anulada&&inP(v.fecha)),gs=S.gastos.filter(g=>inP(g.fecha)&&g.cat!=='Proveedores / Mercadería');
+ const tot=vs.reduce((a,v)=>a+v.total,0),gas=gs.reduce((a,g)=>a+g.monto,0),comp=S.compras.filter(c=>inP(c.fecha)).reduce((a,c)=>a+c.total,0);
+ let cv=0,vcc=0,sinCosto=0;const top={},med={},cat={};
+ vs.forEach(v=>{const f=v.subtotal?v.total/v.subtotal:1;v.items.forEach(i=>{const imp=i.sub*f,co=costoDe(i),k=i.pid||i.nombre;
+  const t=top[k]||(top[k]={n:i.nombre,c:0,u:i.unidad,m:0,g:0,sc:false}),ct=cat[i.cat||'Otros']||(cat[i.cat||'Otros']={m:0,g:0,mc:0});
+  t.c+=i.cant;t.m+=imp;ct.m+=imp;
+  if(co==null){sinCosto+=imp;t.sc=true}else{cv+=co;vcc+=imp;t.g+=imp-co;ct.g+=imp-co;ct.mc+=imp}});
+  v.pagos.forEach(p=>med[p.medio]=(med[p.medio]||0)+p.monto)});
+ const gb=vcc-cv,sv=S.productos.reduce((a,p)=>a+(p.stock>0&&p.costo>0&&!p.libre?p.stock*p.costo:0),0);
+ $('#kpis').innerHTML=[['Ventas',fmt(tot)],['Tickets',vs.length],['Ticket promedio',fmt(vs.length?tot/vs.length:0)],
+  ['Ganancia bruta',fmt(gb),fpct(vcc?gb/vcc*100:null)+' de lo vendido'],['Gastos',fmt(gas),'sin contar mercadería'],['Resultado',fmt(gb-gas),'ganancia bruta − gastos'],
+  ['Compras a proveedores',fmt(comp)],['Stock valorizado',fmt(sv),'al costo, hoy']]
+  .map(k=>`<div class="kpi"><span class="mut">${k[0]}</span><b>${k[1]}</b>${k[2]?`<span class="mut">${k[2]}</span>`:''}</div>`).join('');
+ $('#rNota').innerHTML=sinCosto>0.5?`<span>Hay ${fmt(sinCosto)} vendidos de productos sin costo cargado. No entran en la ganancia hasta que les cargues el costo.</span><button class="s" onclick="go('productos')">Ir a Productos</button>`:'';
+ const days=[];for(let i=13;i>=0;i--){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);const e=new Date(d);e.setDate(e.getDate()+1);days.push({l:d.getDate(),v:S.ventas.filter(v=>!v.anulada&&new Date(v.fecha)>=d&&new Date(v.fecha)<e).reduce((a,v)=>a+v.total,0)})}
+ const mx=Math.max(1,...days.map(d=>d.v));$('#chart').innerHTML=days.map(d=>`<div style="height:${d.v/mx*100}%" title="${fmt(d.v)}"><span>${d.l}</span></div>`).join('');
+ $('#rTop').innerHTML=Object.entries(top).sort((a,b)=>b[1].m-a[1].m).slice(0,10).map(([k,t])=>`<tr><td>${esc((S.productos.find(p=>p.id===k)||t).nombre||t.n)}</td><td class="n">${fcant(t.u==='kg'?Math.round(t.c*1000)/1000:t.c,t.u)}</td><td class="n">${fmt(t.m)}</td><td class="n">${t.sc&&!t.g?'—':fmt(t.g)}</td></tr>`).join('')||'<tr><td class="mut">Sin ventas en el período</td></tr>';
+ $('#rMed').innerHTML=Object.entries(med).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${MEDIOS[k]}</td><td class="n">${fmt(v)}</td></tr>`).join('')||'<tr><td class="mut">—</td></tr>';
+ $('#rCat').innerHTML=Object.entries(cat).sort((a,b)=>b[1].m-a[1].m).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${fmt(v.m)}</td><td class="n">${fpct(v.mc?v.g/v.mc*100:null)}</td></tr>`).join('')||'<tr><td class="mut">—</td></tr>';
+}
+
+/* DATOS DE EJEMPLO: un mes de ventas, cajas y gastos para mostrar el sistema funcionando */
+function genDemo(productos,proveedores){
+ let a=20261024;const rnd=()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+ const ent=(x,y)=>x+Math.floor(rnd()*(y-x+1)),elegir=l=>l[Math.floor(rnd()*l.length)];
+ const peso=o=>{let r=rnd()*Object.values(o).reduce((s,v)=>s+v,0);for(const k in o){r-=o[k];if(r<0)return k}return Object.keys(o)[0]};
+ const PC={Bebidas:30,Golosinas:30,Cigarrillos:14,'Almacén':12,'Lácteos':8,'Fiambrería':3,Limpieza:4,Otros:2};
+ const porCat={};productos.filter(p=>p.activo).forEach(p=>(porCat[p.cat]=porCat[p.cat]||[]).push(p));
+ Object.keys(PC).forEach(k=>{if(!porCat[k])delete PC[k]});
+ const porProv={};productos.filter(p=>p.provId&&!p.libre&&p.costo>0).forEach(p=>(porProv[p.provId]=porProv[p.provId]||[]).push(p));
+ const PM={efectivo:45,qr:22,debito:20,transferencia:9,credito:4};
+ const MOT=['Se cobró de más','El cliente devolvió el producto','Se cargó un producto equivocado'];
+ const ventas=[],cajas=[],gastos=[],compras=[],pagosProv=[],vendido={},ultima={};
+ const item=()=>{const p=elegir(porCat[peso(PC)]);
+  if(p.libre){const m=ent(2,10)*500,i={pid:p.id,nombre:p.nombre,cat:p.cat,unidad:'u',precio:m,cant:1,sub:m};i.costo=costoItem(i,p);return i}
+  const cant=r2(p.unidad==='kg'?ent(2,10)*0.05:(rnd()<0.85?1:ent(2,3)));
+  return {pid:p.id,nombre:p.nombre,cat:p.cat,unidad:p.unidad,precio:p.precio,cant,sub:r2(cant*p.precio),costo:p.costo>0?r2(cant*p.costo):null}};
+ const venta=(fecha,caja)=>{
+  const items=[],n=+peso({1:55,2:30,3:10,4:5});
+  for(let i=0;i<n;i++){const it=item(),ex=items.find(x=>x.pid===it.pid&&x.unidad==='u'&&x.precio===it.precio);
+   if(ex){ex.cant+=it.cant;ex.sub=r2(ex.cant*ex.precio)}else items.push(it)}
+  const total=Math.round(items.reduce((s,i)=>s+i.sub,0));let pagos;
+  if(rnd()<0.04&&total>3000){const e=Math.floor(total/2/1000)*1000||1000;pagos=[{medio:'efectivo',monto:e,recibe:null},{medio:elegir(['debito','qr']),monto:total-e,recibe:null}]}
+  else{const m=peso(PM);let rec=null;
+   if(m==='efectivo'&&rnd()<0.6){const b=elegir([1000,2000,10000,20000]);rec=Math.ceil(total/b)*b;if(rec===total)rec=null}
+   pagos=[{medio:m,monto:total,recibe:rec}]}
+  const v={id:uid()+ventas.length.toString(36),nro:0,fecha:fecha.toISOString(),items,subtotal:r2(items.reduce((s,i)=>s+i.sub,0)),desc:0,total,pagos,cajaId:caja.id,anulada:false};
+  if(rnd()<0.006)Object.assign(v,{anulada:true,motivo:elegir(MOT),anuladaFecha:new Date(fecha.getTime()+ent(1,10)*60000).toISOString()});
+  ventas.push(v);if(!v.anulada)v.items.forEach(i=>vendido[i.pid]=(vendido[i.pid]||0)+i.cant);return v};
+ const gasto=(fecha,desc,cat,monto,medio,caja)=>{const g={id:uid()+'g'+gastos.length,fecha:fecha.toISOString(),desc,cat,monto,medio};gastos.push(g);
+  if(medio==='efectivo')caja.movs.push({tipo:'egreso',monto,desc:'Gasto: '+desc,medio:'efectivo',fecha:g.fecha,gastoId:g.id})};
+ const ahora=new Date();
+ for(let d=30;d>=0;d--){
+  const dia=new Date();dia.setHours(0,0,0,0);dia.setDate(dia.getDate()-d);
+  const hoyMismo=d===0,finde=[0,6].includes(dia.getDay());
+  const ap=new Date(dia);ap.setHours(7,ent(30,55));
+  let ci=new Date(dia);ci.setHours(22,ent(0,30));
+  if(hoyMismo){if(ahora-ap<3600000)ap.setTime(ahora.getTime()-2*3600000);ci=ahora}
+  const caja={id:uid()+'c'+d,apertura:ap.toISOString(),inicial:ent(3,6)*5000,cierre:null,movs:[]};cajas.push(caja);
+  // unos 50 tickets por día (más el fin de semana), repartidos en el horario abierto
+  const hs=(ci-ap)/3600000,n=Math.round(hs*(finde?4.2:3.4)*(0.85+rnd()*0.3));
+  const horas=Array.from({length:n},()=>ap.getTime()+rnd()*(ci-ap)).sort((x,y)=>x-y);
+  horas.forEach(h=>venta(new Date(h),caja));
+  if(!hoyMismo&&rnd()<0.25)gasto(new Date(ap.getTime()+ent(1,4)*3600000),elegir(['Hielo','Bolsas','Artículos de limpieza para el local','Rollos para la impresora']),'Insumos',ent(4,16)*1000,'efectivo',caja);
+  // el retiro del dueño nunca supera el efectivo que hay en el cajón
+  const disp=Math.floor((resumenCaja(caja,ventas).esperado-20000)/10000)*10000;
+  if(!hoyMismo&&rnd()<0.35&&disp>=10000)caja.movs.push({tipo:'egreso',monto:Math.min(ent(4,12)*10000,disp),desc:'Retiro del dueño',medio:'efectivo',fecha:new Date(ci.getTime()-ent(20,60)*60000).toISOString()});
+  if(!hoyMismo){
+   const r=resumenCaja(caja,ventas),dif=rnd()<0.8?0:elegir([-1,1])*ent(1,15)*100;
+   Object.assign(caja,{cierre:ci.toISOString(),contado:Math.max(0,r.esperado+dif),obs:dif<0?'Faltante, se revisó con el cajero':''})}
+  // cada proveedor viene un día fijo y repone lo que se vendió desde su última visita
+  const fp=new Date(ap.getTime()+3*3600000),dm=dia.getDate();
+  proveedores.forEach((pr,k)=>{if(dia.getDay()!==[2,4,5,1][k]||!porProv[pr.id])return;
+   const items=porProv[pr.id].filter(p=>vendido[p.id]>0).map(p=>{const cant=p.unidad==='kg'?Math.ceil(vendido[p.id]*2)/2:Math.ceil(vendido[p.id]/6)*6;vendido[p.id]=0;
+    return {pid:p.id,nombre:p.nombre,unidad:p.unidad,cant,costo:p.costo,sub:r2(cant*p.costo)}});
+   if(!items.length)return;
+   const medio=k===1||k===3?'cuenta':'transferencia',c={id:uid()+'p'+compras.length,fecha:fp.toISOString(),provId:pr.id,comp:'Remito '+(1000+compras.length),medio,items,total:r2(items.reduce((a,i)=>a+i.sub,0))};
+   // a los que se les compra a cuenta, se les paga la compra anterior cuando vuelven
+   if(medio==='cuenta'&&ultima[pr.id])pagosProv.push({id:uid()+'q'+pagosProv.length,fecha:fp.toISOString(),provId:pr.id,monto:ultima[pr.id].total,medio:'transferencia',nota:'Paga '+ultima[pr.id].comp});
+   compras.push(c);ultima[pr.id]=c});
+  if(dm===1)gasto(fp,'Alquiler del local','Alquiler',450000,'transferencia');
+  if(dm===10)gasto(fp,'Luz','Servicios',86500,'transferencia');
+  if(dm===12)gasto(fp,'Internet y teléfono','Servicios',27900,'transferencia');
+  if(dm===20)gasto(fp,'Monotributo','Impuestos',62400,'transferencia');
+ }
+ ventas.forEach((v,i)=>v.nro=i+1);
+ // el stock de los productos queda como estaba: el ejemplo no lo recalcula
+ return {ventas,cajas,gastos,compras,pagosProv,ajustes:[],seq:ventas.length+1};
+}
+function cargarDemo(){
+ if(S.ventas.length&&!confirm('Esto reemplaza las ventas, cajas, gastos y compras actuales por los de ejemplo. ¿Seguir?'))return;
+ Object.assign(S,genDemo(S.productos,S.proveedores),{demo:true});cart=[];if(save())toast('Datos de ejemplo cargados');render()}
+function borrarDemo(){
+ if(!confirm('Se borran todas las ventas, cajas, gastos, compras y pagos a proveedores, también los que hayas cargado probando. Los productos, los proveedores y los datos del comercio quedan. ¿Seguir?'))return;
+ Object.assign(S,{ventas:[],cajas:[],gastos:[],compras:[],pagosProv:[],ajustes:[],seq:1,demo:false});cart=[];save();render();toast('Listo, el sistema quedó sin ventas')}
+
+/* AJUSTES */
+function rAjustes(){const c=S.cfg;$('#cfNombre').value=c.nombre;$('#cfDir').value=c.dir;$('#cfTel').value=c.tel;$('#cfCuit').value=c.cuit;$('#cfPie').value=c.pie;$('#cfPv').value=c.pv;$('#cfImp').value=c.imprimir;$('#cfMg').value=c.margenDef;$('#cfRd').value=c.redondeo;$('#demoBox').innerHTML=S.demo?'<p class="mut">Ahora se ven ventas, cierres de caja, gastos y compras de ejemplo de los últimos 30 días, para que puedas recorrer todo el sistema. Los productos, los proveedores y los datos del comercio no se tocan.</p><button class="p" onclick="borrarDemo()">Borrar los datos de ejemplo</button>':'<p class="mut">El sistema no tiene datos de ejemplo.</p><button onclick="cargarDemo()">Cargar un mes de ventas de ejemplo</button>'}
+function saveCfg(){Object.assign(S.cfg,{nombre:$('#cfNombre').value||'Mi comercio',dir:$('#cfDir').value,tel:$('#cfTel').value,cuit:$('#cfCuit').value,pie:$('#cfPie').value,pv:+$('#cfPv').value||1,imprimir:$('#cfImp').value,margenDef:Math.max(0,+$('#cfMg').value||0),redondeo:+$('#cfRd').value});save();render();toast('Datos guardados')}
+function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='gestion-copia-'+new Date().toISOString().slice(0,10)+'.json';a.click()}
+function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=norm(JSON.parse(r.result));if(!confirm('Esto reemplaza todos los datos actuales. ¿Seguir?'))return;const prev=S;S=d;cart=[];undoAum=null;if(!save()){S=prev;return}render();toast('Copia restaurada')}catch(e){toast('El archivo no es una copia válida')}};r.readAsText(f);inp.value=''}
+function resetAll(){if(!confirm('Se borran productos, ventas, cajas y gastos. ¿Seguro?'))return;S=seed();save();cart=[];undoAum=null;render();toast('Sistema reiniciado')}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();if(e.key==='F2'&&cur==='vender'&&!$('#ov').classList.contains('on')){e.preventDefault();cobrar()}});
+// la primera vez que se abre, arranca con un mes de ventas de ejemplo
+if(primeraVez){Object.assign(S,genDemo(S.productos,S.proveedores),{demo:true});save()}
+render();$('#scan').focus();
+</script>
+</body>
+</html>
